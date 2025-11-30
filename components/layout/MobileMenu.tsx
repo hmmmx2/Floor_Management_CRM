@@ -12,6 +12,7 @@ import {
   RolesIcon,
   SensorsIcon,
 } from "@/components/icons/NavIcons";
+import { useTheme } from "@/lib/ThemeContext";
 
 type MobileMenuProps = {
   isOpen: boolean;
@@ -73,6 +74,7 @@ const managementItems = [
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const pathname = usePathname();
+  const { isDark } = useTheme();
 
   if (!isOpen) return null;
 
@@ -80,7 +82,10 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-40 bg-dark-charcoal/50 backdrop-blur-sm md:hidden"
+        className={clsx(
+          "fixed inset-0 z-40 backdrop-blur-sm md:hidden",
+          isDark ? "bg-dark-bg/70" : "bg-dark-charcoal/50"
+        )}
         onClick={onClose}
         aria-hidden="true"
       />
@@ -93,14 +98,36 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           isOpen ? "translate-y-0" : "-translate-y-full"
         )}
       >
-        <div className="bg-pure-white shadow-xl">
+        <div
+          className={clsx(
+            "shadow-xl",
+            isDark ? "bg-dark-card" : "bg-pure-white"
+          )}
+        >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-light-grey px-4 py-4">
-            <p className="text-lg font-semibold text-dark-charcoal">Menu</p>
+          <div
+            className={clsx(
+              "flex items-center justify-between border-b px-4 py-4",
+              isDark ? "border-dark-border" : "border-light-grey"
+            )}
+          >
+            <p
+              className={clsx(
+                "text-lg font-semibold",
+                isDark ? "text-dark-text" : "text-dark-charcoal"
+              )}
+            >
+              Menu
+            </p>
             <button
               type="button"
               onClick={onClose}
-              className="flex h-10 w-10 items-center justify-center rounded-xl text-dark-charcoal transition hover:bg-light-red/40 hover:text-primary-red"
+              className={clsx(
+                "flex h-10 w-10 items-center justify-center rounded-xl transition",
+                isDark
+                  ? "text-dark-text hover:bg-dark-border hover:text-primary-red"
+                  : "text-dark-charcoal hover:bg-light-red/40 hover:text-primary-red"
+              )}
               aria-label="Close menu"
             >
               <CloseIcon className="h-6 w-6" />
@@ -110,7 +137,12 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           {/* Navigation Links */}
           <nav className="max-h-[70vh] overflow-y-auto px-4 py-4">
             {/* Main Section */}
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-dark-charcoal/50">
+            <p
+              className={clsx(
+                "mb-2 text-[10px] font-bold uppercase tracking-wider",
+                isDark ? "text-dark-text-muted" : "text-dark-charcoal/50"
+              )}
+            >
               Main
             </p>
             <div className="space-y-1">
@@ -128,14 +160,22 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     className={clsx(
                       "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
                       isActive
-                        ? "bg-light-red/60 text-primary-red"
+                        ? isDark
+                          ? "bg-primary-red/20 text-primary-red"
+                          : "bg-light-red/60 text-primary-red"
+                        : isDark
+                        ? "text-dark-text hover:bg-dark-border/50 hover:text-primary-red"
                         : "text-dark-charcoal hover:bg-light-red/40 hover:text-primary-red"
                     )}
                   >
                     <ItemIcon
                       className={clsx(
                         "h-5 w-5 shrink-0",
-                        isActive ? "text-primary-red" : "text-dark-charcoal"
+                        isActive
+                          ? "text-primary-red"
+                          : isDark
+                          ? "text-dark-text-secondary"
+                          : "text-dark-charcoal"
                       )}
                     />
                     <span>{item.label}</span>
@@ -145,8 +185,18 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </div>
 
             {/* Management Section */}
-            <div className="my-4 border-t border-light-grey" />
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-dark-charcoal/50">
+            <div
+              className={clsx(
+                "my-4 border-t",
+                isDark ? "border-dark-border" : "border-light-grey"
+              )}
+            />
+            <p
+              className={clsx(
+                "mb-2 text-[10px] font-bold uppercase tracking-wider",
+                isDark ? "text-dark-text-muted" : "text-dark-charcoal/50"
+              )}
+            >
               Management
             </p>
             <div className="space-y-1">
@@ -164,14 +214,22 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     className={clsx(
                       "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
                       isActive
-                        ? "bg-light-red/60 text-primary-red"
+                        ? isDark
+                          ? "bg-primary-red/20 text-primary-red"
+                          : "bg-light-red/60 text-primary-red"
+                        : isDark
+                        ? "text-dark-text hover:bg-dark-border/50 hover:text-primary-red"
                         : "text-dark-charcoal hover:bg-light-red/40 hover:text-primary-red"
                     )}
                   >
                     <ItemIcon
                       className={clsx(
                         "h-5 w-5 shrink-0",
-                        isActive ? "text-primary-red" : "text-dark-charcoal"
+                        isActive
+                          ? "text-primary-red"
+                          : isDark
+                          ? "text-dark-text-secondary"
+                          : "text-dark-charcoal"
                       )}
                     />
                     <span>{item.label}</span>
@@ -182,8 +240,20 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           </nav>
 
           {/* Footer */}
-          <div className="border-t border-light-grey bg-very-light-grey px-4 py-3">
-            <p className="text-center text-xs text-dark-charcoal/60">
+          <div
+            className={clsx(
+              "border-t px-4 py-3",
+              isDark
+                ? "border-dark-border bg-dark-bg"
+                : "border-light-grey bg-very-light-grey"
+            )}
+          >
+            <p
+              className={clsx(
+                "text-center text-xs",
+                isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+              )}
+            >
               © 2025 Malaysian Red Crescent
             </p>
           </div>
@@ -192,4 +262,3 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     </>
   );
 }
-
