@@ -180,6 +180,16 @@ export default function SensorsPage() {
     URL.revokeObjectURL(url);
   };
 
+  // Escape XML special characters to prevent injection attacks
+  const escapeXml = (str: string): string => {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+  };
+
   // Export to Excel (XLSX format using XML)
   const exportToExcel = () => {
     const headers = ["Node", "Water Level (ft)", "Area", "Location", "State", "Status", "Last Update", "Timestamp"];
@@ -202,19 +212,19 @@ export default function SensorsPage() {
   <Worksheet ss:Name="Sensor Data">
     <Table>
       <Row>
-        ${headers.map((h) => `<Cell ss:StyleID="Header"><Data ss:Type="String">${h}</Data></Cell>`).join("")}
+        ${headers.map((h) => `<Cell ss:StyleID="Header"><Data ss:Type="String">${escapeXml(h)}</Data></Cell>`).join("")}
       </Row>
       ${filteredRows
         .map(
           (row) => `<Row>
-        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.node_label}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${escapeXml(row.node_label)}</Data></Cell>
         <Cell ss:StyleID="Data"><Data ss:Type="Number">${row.water_level}</Data></Cell>
-        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.area}</Data></Cell>
-        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.location}</Data></Cell>
-        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.state}</Data></Cell>
-        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.status}</Data></Cell>
-        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.last_update}</Data></Cell>
-        <Cell ss:StyleID="Data"><Data ss:Type="String">${new Date(row.timestamp).toLocaleString("en-MY", { dateStyle: "medium", timeStyle: "short" })}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${escapeXml(row.area)}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${escapeXml(row.location)}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${escapeXml(row.state)}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${escapeXml(row.status)}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${escapeXml(row.last_update)}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${escapeXml(new Date(row.timestamp).toLocaleString("en-MY", { dateStyle: "medium", timeStyle: "short" }))}</Data></Cell>
       </Row>`
         )
         .join("")}
@@ -432,7 +442,7 @@ export default function SensorsPage() {
 
       <div
         className={`overflow-x-auto rounded-3xl border transition-colors ${
-          isDark ? "border-dark-border" : "border-dark-charcoal"
+          isDark ? "border-dark-border" : "border-light-grey"
         }`}
       >
         <table
