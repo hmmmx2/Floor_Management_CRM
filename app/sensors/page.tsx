@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import StatusPill from "@/components/common/StatusPill";
 import {
@@ -10,6 +10,26 @@ import {
   sensorsTableData,
 } from "@/lib/data";
 import { useTheme } from "@/lib/ThemeContext";
+
+// Export Icon
+function ExportIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  );
+}
 
 const nodeFilterOptions = [
   { label: "Node 1", value: "node_1" },
@@ -130,6 +150,109 @@ export default function SensorsPage() {
     });
   };
 
+  // Export to CSV
+  const exportToCSV = () => {
+    const headers = ["Node", "Water Level (ft)", "Area", "Location", "State", "Status", "Last Update", "Timestamp"];
+    const csvContent = [
+      headers.join(","),
+      ...filteredRows.map((row) =>
+        [
+          `"${row.node_label}"`,
+          row.water_level,
+          `"${row.area}"`,
+          `"${row.location}"`,
+          `"${row.state}"`,
+          `"${row.status}"`,
+          `"${row.last_update}"`,
+          `"${new Date(row.timestamp).toLocaleString("en-MY", { dateStyle: "medium", timeStyle: "short" })}"`,
+        ].join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `sensor-data-${new Date().toISOString().split("T")[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Export to Excel (XLSX format using XML)
+  const exportToExcel = () => {
+    const headers = ["Node", "Water Level (ft)", "Area", "Location", "State", "Status", "Last Update", "Timestamp"];
+    
+    // Create XML spreadsheet
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+  <Styles>
+    <Style ss:ID="Header">
+      <Font ss:Bold="1" ss:Color="#FFFFFF"/>
+      <Interior ss:Color="#ED1C24" ss:Pattern="Solid"/>
+      <Alignment ss:Horizontal="Center"/>
+    </Style>
+    <Style ss:ID="Data">
+      <Alignment ss:Horizontal="Left"/>
+    </Style>
+  </Styles>
+  <Worksheet ss:Name="Sensor Data">
+    <Table>
+      <Row>
+        ${headers.map((h) => `<Cell ss:StyleID="Header"><Data ss:Type="String">${h}</Data></Cell>`).join("")}
+      </Row>
+      ${filteredRows
+        .map(
+          (row) => `<Row>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.node_label}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="Number">${row.water_level}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.area}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.location}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.state}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.status}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${row.last_update}</Data></Cell>
+        <Cell ss:StyleID="Data"><Data ss:Type="String">${new Date(row.timestamp).toLocaleString("en-MY", { dateStyle: "medium", timeStyle: "short" })}</Data></Cell>
+      </Row>`
+        )
+        .join("")}
+    </Table>
+  </Worksheet>
+</Workbook>`;
+
+    const blob = new Blob([xmlContent], { type: "application/vnd.ms-excel" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `sensor-data-${new Date().toISOString().split("T")[0]}.xls`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close export menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+        setShowExportMenu(false);
+      }
+    };
+
+    if (showExportMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showExportMenu]);
+
   return (
     <section className="space-y-6">
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -150,6 +273,90 @@ export default function SensorsPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
+          {/* Export Dropdown */}
+          <div className="relative" ref={exportMenuRef}>
+            <button
+              type="button"
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              disabled={filteredRows.length === 0}
+              className={`flex items-center gap-2 rounded-full border px-5 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                isDark
+                  ? "border-dark-border text-dark-text hover:border-primary-red hover:text-primary-red"
+                  : "border-light-grey text-dark-charcoal hover:border-primary-red hover:text-primary-red"
+              }`}
+            >
+              <ExportIcon className="h-4 w-4" />
+              Export
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className={`h-4 w-4 transition-transform ${showExportMenu ? "rotate-180" : ""}`}
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+
+            {/* Dropdown Menu */}
+            {showExportMenu && (
+              <div
+                className={`absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border shadow-lg ${
+                  isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    exportToCSV();
+                    setShowExportMenu(false);
+                  }}
+                  className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium transition ${
+                    isDark
+                      ? "text-dark-text hover:bg-dark-bg"
+                      : "text-dark-charcoal hover:bg-very-light-grey"
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-5 w-5 text-status-green"
+                  >
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8.5 18v-1h2v1h-2zm0-2v-1h2v1h-2zm0-2v-1h2v1h-2zm4 4v-1h3v1h-3zm0-2v-1h3v1h-3zm0-2v-1h3v1h-3z" />
+                  </svg>
+                  Export as CSV
+                </button>
+                <div className={`border-t ${isDark ? "border-dark-border" : "border-light-grey"}`} />
+                <button
+                  type="button"
+                  onClick={() => {
+                    exportToExcel();
+                    setShowExportMenu(false);
+                  }}
+                  className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium transition ${
+                    isDark
+                      ? "text-dark-text hover:bg-dark-bg"
+                      : "text-dark-charcoal hover:bg-very-light-grey"
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-5 w-5 text-status-green"
+                  >
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM7 17h2v-4H7v4zm4 0h2v-6h-2v6zm4 0h2v-2h-2v2z" />
+                  </svg>
+                  Export as Excel
+                </button>
+              </div>
+            )}
+          </div>
+
           <button
             type="button"
             onClick={addRow}
