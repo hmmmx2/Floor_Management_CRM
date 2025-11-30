@@ -149,7 +149,7 @@ export default function AdminPage() {
         {/* Profile Card */}
         <article className={`rounded-3xl border p-6 shadow-sm transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
           <div className="flex flex-col items-center text-center">
-            <div className="flex h-24 w-24 items-center justify-center rounded-2xl border-2 border-primary-red bg-light-red/30">
+            <div className={`flex h-24 w-24 items-center justify-center rounded-2xl border-2 border-primary-red ${isDark ? "bg-primary-red/20" : "bg-light-red/30"}`}>
               <ProfileIcon className="h-12 w-12 text-primary-red" />
             </div>
             <h2 className={`mt-4 text-xl font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
@@ -162,22 +162,22 @@ export default function AdminPage() {
                 Active
               </span>
             </div>
-            <div className="mt-4 w-full space-y-2 border-t border-light-grey pt-4 text-left">
+            <div className={`mt-4 w-full space-y-2 border-t pt-4 text-left ${isDark ? "border-dark-border" : "border-light-grey"}`}>
               <div className="flex justify-between text-sm">
-                <span className="text-dark-charcoal/60">Email</span>
-                <span className="font-medium text-dark-charcoal">
+                <span className={`transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>Email</span>
+                <span className={`font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                   {formData.email}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-dark-charcoal/60">Phone</span>
-                <span className="font-medium text-dark-charcoal">
+                <span className={`transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>Phone</span>
+                <span className={`font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                   {formData.phone}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-dark-charcoal/60">Department</span>
-                <span className="font-medium text-dark-charcoal">
+                <span className={`transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>Department</span>
+                <span className={`font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                   {formData.department}
                 </span>
               </div>
@@ -193,8 +193,8 @@ export default function AdminPage() {
         </article>
 
         {/* Settings Form */}
-        <article className="rounded-3xl border border-light-grey bg-pure-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-dark-charcoal">
+        <article className={`rounded-3xl border p-6 shadow-sm transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
+          <h2 className={`text-lg font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
             Account Information
           </h2>
           <form onSubmit={handleSubmit} className="mt-4 space-y-5">
@@ -202,7 +202,7 @@ export default function AdminPage() {
               <div>
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-dark-charcoal"
+                  className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}
                 >
                   Full Name *
                 </label>
@@ -212,13 +212,17 @@ export default function AdminPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
+                    isDark
+                      ? "border-dark-border bg-dark-bg text-dark-text placeholder:text-dark-text-muted"
+                      : "border-light-grey bg-pure-white text-dark-charcoal"
+                  }`}
                 />
               </div>
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-dark-charcoal"
+                  className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}
                 >
                   Email Address *
                 </label>
@@ -228,13 +232,17 @@ export default function AdminPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
+                    isDark
+                      ? "border-dark-border bg-dark-bg text-dark-text placeholder:text-dark-text-muted"
+                      : "border-light-grey bg-pure-white text-dark-charcoal"
+                  }`}
                 />
               </div>
               <div>
                 <label
                   htmlFor="phone"
-                  className="block text-sm font-medium text-dark-charcoal"
+                  className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}
                 >
                   Phone Number
                 </label>
@@ -244,13 +252,17 @@ export default function AdminPage() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
+                    isDark
+                      ? "border-dark-border bg-dark-bg text-dark-text placeholder:text-dark-text-muted"
+                      : "border-light-grey bg-pure-white text-dark-charcoal"
+                  }`}
                 />
               </div>
               <div>
                 <label
                   htmlFor="department"
-                  className="block text-sm font-medium text-dark-charcoal"
+                  className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}
                 >
                   Department
                 </label>
@@ -259,7 +271,11 @@ export default function AdminPage() {
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
-                  className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
+                    isDark
+                      ? "border-dark-border bg-dark-bg text-dark-text"
+                      : "border-light-grey bg-pure-white text-dark-charcoal"
+                  }`}
                 >
                   <option>Operations</option>
                   <option>Engineering</option>
@@ -269,8 +285,8 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="border-t border-light-grey pt-5">
-              <h3 className="text-sm font-semibold text-dark-charcoal">
+            <div className={`border-t pt-5 ${isDark ? "border-dark-border" : "border-light-grey"}`}>
+              <h3 className={`text-sm font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                 Notification Preferences
               </h3>
               <div className="mt-3 space-y-3">
@@ -282,7 +298,7 @@ export default function AdminPage() {
                     onChange={handleChange}
                     className="h-4 w-4 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                   />
-                  <span className="text-sm text-dark-charcoal">
+                  <span className={`text-sm transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                     Enable push notifications
                   </span>
                 </label>
@@ -294,7 +310,7 @@ export default function AdminPage() {
                     onChange={handleChange}
                     className="h-4 w-4 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                   />
-                  <span className="text-sm text-dark-charcoal">
+                  <span className={`text-sm transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                     Email alerts for danger-level events
                   </span>
                 </label>
@@ -306,18 +322,18 @@ export default function AdminPage() {
                     onChange={handleChange}
                     className="h-4 w-4 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                   />
-                  <span className="text-sm text-dark-charcoal">
+                  <span className={`text-sm transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                     SMS alerts for critical events
                   </span>
                 </label>
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-between gap-3 border-t border-light-grey pt-5">
+            <div className={`flex flex-wrap justify-between gap-3 border-t pt-5 ${isDark ? "border-dark-border" : "border-light-grey"}`}>
               <button
                 type="button"
                 onClick={handleResetToDefaults}
-                className="text-sm font-semibold text-dark-charcoal/60 transition hover:text-primary-red"
+                className={`text-sm font-semibold transition hover:text-primary-red ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}
               >
                 Reset to Defaults
               </button>
@@ -326,7 +342,11 @@ export default function AdminPage() {
                   type="button"
                   onClick={handleCancel}
                   disabled={!hasChanges}
-                  className="rounded-xl border border-light-grey px-5 py-2.5 text-sm font-semibold text-dark-charcoal transition hover:bg-very-light-grey disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={`rounded-xl border px-5 py-2.5 text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isDark
+                      ? "border-dark-border text-dark-text hover:bg-dark-bg"
+                      : "border-light-grey text-dark-charcoal hover:bg-very-light-grey"
+                  }`}
                 >
                   Cancel
                 </button>
@@ -344,14 +364,14 @@ export default function AdminPage() {
       </div>
 
       {/* Security Section */}
-      <article className="rounded-3xl border border-light-grey bg-pure-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-dark-charcoal">
+      <article className={`rounded-3xl border p-6 shadow-sm transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
+        <h2 className={`text-lg font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
           Security Settings
         </h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="rounded-2xl border border-light-grey p-4">
-            <p className="text-sm font-semibold text-dark-charcoal">Password</p>
-            <p className="mt-1 text-xs text-dark-charcoal/60">
+          <div className={`rounded-2xl border p-4 transition-colors ${isDark ? "border-dark-border bg-dark-bg" : "border-light-grey"}`}>
+            <p className={`text-sm font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Password</p>
+            <p className={`mt-1 text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
               Last changed 30 days ago
             </p>
             <button
@@ -361,11 +381,11 @@ export default function AdminPage() {
               Change Password
             </button>
           </div>
-          <div className="rounded-2xl border border-light-grey p-4">
-            <p className="text-sm font-semibold text-dark-charcoal">
+          <div className={`rounded-2xl border p-4 transition-colors ${isDark ? "border-dark-border bg-dark-bg" : "border-light-grey"}`}>
+            <p className={`text-sm font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
               Two-Factor Auth
             </p>
-            <p className="mt-1 text-xs text-dark-charcoal/60">
+            <p className={`mt-1 text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
               Currently enabled
             </p>
             <button
@@ -375,11 +395,11 @@ export default function AdminPage() {
               Manage 2FA
             </button>
           </div>
-          <div className="rounded-2xl border border-light-grey p-4">
-            <p className="text-sm font-semibold text-dark-charcoal">
+          <div className={`rounded-2xl border p-4 transition-colors ${isDark ? "border-dark-border bg-dark-bg" : "border-light-grey"}`}>
+            <p className={`text-sm font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
               Active Sessions
             </p>
-            <p className="mt-1 text-xs text-dark-charcoal/60">
+            <p className={`mt-1 text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
               2 devices logged in
             </p>
             <button
@@ -393,36 +413,36 @@ export default function AdminPage() {
       </article>
 
       {/* Activity Log */}
-      <article className="rounded-3xl border border-light-grey bg-pure-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-dark-charcoal">
+      <article className={`rounded-3xl border p-6 shadow-sm transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
+        <h2 className={`text-lg font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
           Recent Activity
         </h2>
         <div className="mt-4 space-y-3">
-          <div className="flex items-center gap-3 rounded-xl bg-very-light-grey px-4 py-3">
+          <div className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isDark ? "bg-dark-bg" : "bg-very-light-grey"}`}>
             <div className="h-2 w-2 rounded-full bg-status-green" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-dark-charcoal">
+              <p className={`text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                 Settings updated
               </p>
-              <p className="text-xs text-dark-charcoal/60">Just now</p>
+              <p className={`text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>Just now</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 rounded-xl bg-very-light-grey px-4 py-3">
+          <div className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isDark ? "bg-dark-bg" : "bg-very-light-grey"}`}>
             <div className="h-2 w-2 rounded-full bg-status-green" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-dark-charcoal">
+              <p className={`text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                 Logged in from Chrome on Windows
               </p>
-              <p className="text-xs text-dark-charcoal/60">2 hours ago</p>
+              <p className={`text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>2 hours ago</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 rounded-xl bg-very-light-grey px-4 py-3">
+          <div className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-colors ${isDark ? "bg-dark-bg" : "bg-very-light-grey"}`}>
             <div className="h-2 w-2 rounded-full bg-status-warning-1" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-dark-charcoal">
+              <p className={`text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                 Password changed
               </p>
-              <p className="text-xs text-dark-charcoal/60">30 days ago</p>
+              <p className={`text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>30 days ago</p>
             </div>
           </div>
         </div>
@@ -430,4 +450,3 @@ export default function AdminPage() {
     </section>
   );
 }
-
