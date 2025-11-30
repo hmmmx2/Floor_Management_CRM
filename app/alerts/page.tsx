@@ -71,7 +71,7 @@ const alertTone = {
   },
   INACTIVE: {
     border: "border-light-grey dark:border-dark-border",
-    background: "bg-very-light-grey dark:bg-dark-bg",
+    background: "bg-inactive-light-grey dark:bg-dark-bg",
     label: "text-dark-charcoal dark:text-dark-text-secondary",
   },
 };
