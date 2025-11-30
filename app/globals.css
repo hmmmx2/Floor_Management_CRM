@@ -1,39 +1,5 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f8f9fa;
-  --foreground: #4e4b4b;
-  
-  /* Light mode colors */
-  --bg-primary: #f8f9fa;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f3f5;
-  --text-primary: #4e4b4b;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-  --border-color: #e5e7eb;
-  --card-bg: #ffffff;
-  --sidebar-bg: #ffffff;
-  --navbar-bg: rgba(255, 255, 255, 0.95);
-}
-
-.dark {
-  --background: #0f172a;
-  --foreground: #f1f5f9;
-  
-  /* Dark mode colors */
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --border-color: #334155;
-  --card-bg: #1e293b;
-  --sidebar-bg: #1e293b;
-  --navbar-bg: rgba(30, 41, 59, 0.95);
-}
-
 @theme inline {
   /* Brand colors */
   --color-primary-red: #ed1c24;
@@ -69,82 +35,9 @@
 }
 
 body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Dark mode overrides for Tailwind classes */
-.dark .bg-very-light-grey {
-  background-color: var(--bg-primary) !important;
-}
-
-.dark .bg-pure-white {
-  background-color: var(--bg-secondary) !important;
-}
-
-.dark .bg-light-red {
-  background-color: rgba(237, 28, 36, 0.2) !important;
-}
-
-.dark .bg-light-red\/40,
-.dark .bg-light-red\/50,
-.dark .bg-light-red\/60 {
-  background-color: rgba(237, 28, 36, 0.15) !important;
-}
-
-.dark .text-dark-charcoal {
-  color: var(--text-primary) !important;
-}
-
-.dark .text-dark-charcoal\/70,
-.dark .text-dark-charcoal\/60,
-.dark .text-dark-charcoal\/50,
-.dark .text-dark-charcoal\/40 {
-  color: var(--text-secondary) !important;
-}
-
-.dark .border-light-grey {
-  border-color: var(--border-color) !important;
-}
-
-.dark .border-light-red {
-  border-color: rgba(237, 28, 36, 0.4) !important;
-}
-
-/* Dark mode card styles */
-.dark .rounded-3xl.border.border-light-grey.bg-pure-white {
-  background-color: var(--card-bg) !important;
-  border-color: var(--border-color) !important;
-}
-
-/* Dark mode input styles */
-.dark input,
-.dark select,
-.dark textarea {
-  background-color: var(--bg-tertiary) !important;
-  color: var(--text-primary) !important;
-  border-color: var(--border-color) !important;
-}
-
-.dark input::placeholder,
-.dark textarea::placeholder {
-  color: var(--text-muted) !important;
-}
-
-/* Dark mode table styles */
-.dark table {
-  color: var(--text-primary);
-}
-
-.dark thead {
-  background-color: var(--bg-tertiary) !important;
-}
-
-.dark tbody tr {
-  border-color: var(--border-color) !important;
 }
 
 /* Dark mode scrollbar */
@@ -154,28 +47,14 @@ body {
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+  background: var(--color-dark-card);
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: var(--color-dark-border);
   border-radius: 4px;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #475569;
-}
-
-/* Dark mode kbd styles */
-.dark kbd {
-  background-color: var(--bg-tertiary) !important;
-  color: var(--text-secondary) !important;
-}
-
-/* Smooth transitions */
-.theme-transition {
-  transition: background-color 0.3s ease, 
-              color 0.3s ease, 
-              border-color 0.3s ease,
-              box-shadow 0.3s ease;
 }

@@ -22,36 +22,53 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const savedTheme = localStorage.getItem("flood-crm-theme") as Theme | null;
     if (savedTheme) {
       setThemeState(savedTheme);
-      document.documentElement.classList.toggle("dark", savedTheme === "dark");
+      applyTheme(savedTheme);
     } else {
-      // Check system preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (prefersDark) {
-        setThemeState("dark");
-        document.documentElement.classList.add("dark");
-      }
+      // Default to light mode
+      setThemeState("light");
+      applyTheme("light");
     }
   }, []);
+
+  // Apply theme to document
+  const applyTheme = (newTheme: Theme) => {
+    const root = document.documentElement;
+    if (newTheme === "dark") {
+      root.classList.add("dark");
+      root.style.colorScheme = "dark";
+    } else {
+      root.classList.remove("dark");
+      root.style.colorScheme = "light";
+    }
+  };
 
   // Update document class and localStorage when theme changes
   useEffect(() => {
     if (mounted) {
-      document.documentElement.classList.toggle("dark", theme === "dark");
+      applyTheme(theme);
       localStorage.setItem("flood-crm-theme", theme);
     }
   }, [theme, mounted]);
 
   const toggleTheme = () => {
-    setThemeState((prev) => (prev === "light" ? "dark" : "light"));
+    const newTheme = theme === "light" ? "dark" : "light";
+    setThemeState(newTheme);
   };
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
   };
 
-  // Prevent flash of wrong theme
+  // Prevent flash of wrong theme - show loading placeholder
   if (!mounted) {
-    return null;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-very-light-grey">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-light-grey border-t-primary-red" />
+          <p className="text-sm font-medium text-dark-charcoal/70">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -68,4 +85,3 @@ export function useTheme() {
   }
   return context;
 }
-

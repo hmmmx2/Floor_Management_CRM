@@ -228,31 +228,19 @@ export default function TopBar({
 
           {/* Right side actions */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Theme Toggle Button */}
+            {/* Theme Toggle Switch */}
             <button
               type="button"
               onClick={toggleTheme}
               aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
-              className="relative flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition-all duration-300 hover:border-primary-red hover:text-primary-red dark:border-dark-border dark:text-dark-text dark:hover:border-dark-accent dark:hover:text-dark-accent overflow-hidden"
+              className="relative flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border border-light-grey bg-very-light-grey text-dark-charcoal transition-all duration-300 hover:border-primary-red dark:border-dark-border dark:bg-dark-card dark:text-dark-text"
             >
-              <div className="relative w-5 h-5">
-                {/* Sun icon - visible in dark mode, hidden in light mode */}
-                <SunIcon 
-                  className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
-                    theme === "dark" 
-                      ? "rotate-0 scale-100 opacity-100" 
-                      : "rotate-90 scale-0 opacity-0"
-                  }`} 
-                />
-                {/* Moon icon - visible in light mode, hidden in dark mode */}
-                <MoonIcon 
-                  className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
-                    theme === "light" 
-                      ? "rotate-0 scale-100 opacity-100" 
-                      : "-rotate-90 scale-0 opacity-0"
-                  }`} 
-                />
-              </div>
+              {/* Sun icon - shown in dark mode (click to go light) */}
+              {theme === "dark" ? (
+                <SunIcon className="h-5 w-5 text-amber-400" />
+              ) : (
+                <MoonIcon className="h-5 w-5 text-slate-600" />
+              )}
             </button>
 
             <Link

@@ -232,31 +232,35 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-dark-charcoal/50 dark:text-dark-text-muted">
               Appearance
             </p>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-dark-charcoal transition-colors hover:bg-light-red/40 hover:text-primary-red dark:text-dark-text dark:hover:bg-primary-red/15"
-            >
-              <div className="relative h-5 w-5">
-                <SunIcon 
-                  className={clsx(
-                    "absolute inset-0 h-5 w-5 transition-all duration-300",
-                    theme === "dark" 
-                      ? "rotate-0 scale-100 opacity-100" 
-                      : "rotate-90 scale-0 opacity-0"
-                  )} 
-                />
-                <MoonIcon 
-                  className={clsx(
-                    "absolute inset-0 h-5 w-5 transition-all duration-300",
-                    theme === "light" 
-                      ? "rotate-0 scale-100 opacity-100" 
-                      : "-rotate-90 scale-0 opacity-0"
-                  )} 
-                />
+            <div className="flex items-center justify-between rounded-xl px-4 py-3">
+              <div className="flex items-center gap-3">
+                {theme === "dark" ? (
+                  <SunIcon className="h-5 w-5 text-amber-400" />
+                ) : (
+                  <MoonIcon className="h-5 w-5 text-slate-600 dark:text-dark-text" />
+                )}
+                <span className="text-sm font-semibold text-dark-charcoal dark:text-dark-text">
+                  {theme === "light" ? "Dark Mode" : "Light Mode"}
+                </span>
               </div>
-              <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
-            </button>
+              {/* Toggle Switch */}
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className={clsx(
+                  "relative h-7 w-12 rounded-full transition-colors duration-300",
+                  theme === "dark" ? "bg-primary-red" : "bg-light-grey"
+                )}
+                aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+              >
+                <span
+                  className={clsx(
+                    "absolute top-0.5 h-6 w-6 rounded-full bg-pure-white shadow-md transition-transform duration-300",
+                    theme === "dark" ? "translate-x-5" : "translate-x-0.5"
+                  )}
+                />
+              </button>
+            </div>
           </nav>
 
           {/* Footer */}
