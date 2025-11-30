@@ -182,9 +182,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="fixed inset-x-4 top-[10%] z-[101] mx-auto max-w-2xl sm:inset-x-auto sm:w-full">
-        <div className="overflow-hidden rounded-3xl border border-light-grey bg-pure-white shadow-2xl">
+      {/* Modal - Centered */}
+      <div className="fixed inset-0 z-[101] flex items-start justify-center px-4 pt-[10vh] sm:pt-[15vh]">
+        <div className="w-full max-w-2xl overflow-hidden rounded-3xl border border-light-grey bg-pure-white shadow-2xl">
           {/* Search Header */}
           <div className="border-b border-light-grey p-4">
             <div className="flex items-center gap-3">
@@ -298,7 +298,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </div>
 
           {/* Footer with keyboard hints */}
-          <div className="flex items-center justify-between border-t border-light-grey bg-very-light-grey/50 px-4 py-3">
+          <div className="flex items-center justify-center gap-6 border-t border-light-grey bg-very-light-grey/50 px-4 py-3">
             <div className="flex items-center gap-4 text-xs text-dark-charcoal/50">
               <span className="flex items-center gap-1.5">
                 <kbd className="rounded bg-light-grey px-2 py-1 font-mono text-[10px] font-medium">↑</kbd>
@@ -314,9 +314,6 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 <span>Close</span>
               </span>
             </div>
-            <p className="text-xs text-dark-charcoal/40">
-              Flood Management CRM
-            </p>
           </div>
         </div>
       </div>
