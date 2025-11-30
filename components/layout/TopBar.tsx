@@ -23,6 +23,19 @@ function HamburgerIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function CloseIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      {...props}
+    >
+      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+    </svg>
+  );
+}
+
 function NotificationIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -65,11 +78,15 @@ function ProfileIcon(props: React.SVGProps<SVGSVGElement>) {
 type TopBarProps = {
   isSidebarCollapsed: boolean;
   onToggleSidebar: () => void;
+  onToggleMobileMenu?: () => void;
+  isMobileMenuOpen?: boolean;
 };
 
 export default function TopBar({
   isSidebarCollapsed,
   onToggleSidebar,
+  onToggleMobileMenu,
+  isMobileMenuOpen = false,
 }: TopBarProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -77,7 +94,7 @@ export default function TopBar({
     <header className="sticky top-0 z-40 border-b border-light-grey bg-pure-white/95 backdrop-blur">
       <div className="flex flex-col gap-4 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-10">
         <div className="flex flex-1 items-center">
-          {/* Hamburger – always visible to toggle sidebar */}
+          {/* Hamburger – desktop (toggles sidebar) */}
           <button
             type="button"
             onClick={onToggleSidebar}
@@ -88,18 +105,22 @@ export default function TopBar({
             <HamburgerIcon className="h-6 w-6" />
           </button>
 
-          {/* Mobile hamburger (visible on small screens) */}
+          {/* Mobile hamburger (toggles mobile menu) */}
           <button
             type="button"
-            onClick={onToggleSidebar}
-            aria-pressed={!isSidebarCollapsed}
-            aria-label="Toggle navigation"
+            onClick={onToggleMobileMenu}
+            aria-pressed={isMobileMenuOpen}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             className="flex md:hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-light-red text-primary-red transition hover:bg-light-red/40"
           >
-            <HamburgerIcon className="h-6 w-6" />
+            {isMobileMenuOpen ? (
+              <CloseIcon className="h-6 w-6" />
+            ) : (
+              <HamburgerIcon className="h-6 w-6" />
+            )}
           </button>
 
-          {/* Dynamic spacer – adjusts based on sidebar state */}
+          {/* Dynamic spacer – adjusts based on sidebar state (desktop only) */}
           <div
             className={`hidden md:block shrink-0 transition-[width] duration-200 ${
               isSidebarCollapsed ? "w-4" : "w-40 lg:w-52 xl:w-64"
@@ -184,7 +205,7 @@ export default function TopBar({
           </Link>
           <Link
             href="/settings"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
+            className="hidden sm:flex h-11 w-11 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
             aria-label="Settings"
           >
             <SettingsIcon className="h-5 w-5" />
@@ -213,4 +234,3 @@ export default function TopBar({
     </header>
   );
 }
-

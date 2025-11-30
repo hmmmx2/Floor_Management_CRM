@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import Footer from "./Footer";
+import MobileMenu from "./MobileMenu";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
 
@@ -12,8 +13,11 @@ type AppShellProps = {
 
 export default function AppShell({ children }: AppShellProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarCollapsed((prev) => !prev);
+  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <div className="flex min-h-screen flex-col bg-very-light-grey text-dark-charcoal">
@@ -21,7 +25,12 @@ export default function AppShell({ children }: AppShellProps) {
       <TopBar
         isSidebarCollapsed={isSidebarCollapsed}
         onToggleSidebar={toggleSidebar}
+        onToggleMobileMenu={toggleMobileMenu}
+        isMobileMenuOpen={isMobileMenuOpen}
       />
+
+      {/* Mobile Menu Dropdown */}
+      <MobileMenu isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
 
       {/* Sidebar + main content below navbar */}
       <div className="flex flex-1">
