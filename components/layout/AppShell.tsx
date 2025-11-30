@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
 
@@ -12,19 +13,26 @@ type AppShellProps = {
 export default function AppShell({ children }: AppShellProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+  const toggleSidebar = () => setIsSidebarCollapsed((prev) => !prev);
+
   return (
-    <div className="flex min-h-screen bg-very-light-grey text-dark-charcoal">
-      <Sidebar isCollapsed={isSidebarCollapsed} />
-      <div className="flex flex-1 flex-col">
-        <TopBar
-          isSidebarCollapsed={isSidebarCollapsed}
-          onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
-        />
+    <div className="flex min-h-screen flex-col bg-very-light-grey text-dark-charcoal">
+      {/* Top navbar spans full width */}
+      <TopBar
+        isSidebarCollapsed={isSidebarCollapsed}
+        onToggleSidebar={toggleSidebar}
+      />
+
+      {/* Sidebar + main content below navbar */}
+      <div className="flex flex-1">
+        <Sidebar isCollapsed={isSidebarCollapsed} />
         <main className="flex-1 overflow-y-auto px-4 pb-8 pt-6 sm:px-6 lg:px-10">
           <div className="mx-auto w-full max-w-7xl space-y-6">{children}</div>
         </main>
       </div>
+
+      {/* Footer spans full width at the bottom */}
+      <Footer />
     </div>
   );
 }
-
