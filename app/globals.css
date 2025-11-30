@@ -24,6 +24,12 @@
   --color-status-warning-2: #ff9f1c;
   --color-status-danger: #d7263d;
   
+  /* Alert notification colors */
+  --color-light-purple: #e9d5ff;
+  --color-purple: #a855f7;
+  --color-light-blue: #dbeafe;
+  --color-blue: #3b82f6;
+  
   /* Dark mode colors */
   --color-dark-bg: #1a1a2e;
   --color-dark-card: #16213e;

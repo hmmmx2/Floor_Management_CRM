@@ -65,14 +65,16 @@ const alertTone = {
     label: "text-status-warning-2",
   },
   "NEW NODE": {
-    border: "border-status-green",
-    background: "bg-status-green/15 dark:bg-status-green/25",
-    label: "text-status-green",
+    // Light blue theme for new nodes
+    border: "border-blue",
+    background: "bg-light-blue dark:bg-blue/20",
+    label: "text-blue",
   },
   INACTIVE: {
-    border: "border-light-grey dark:border-dark-border",
-    background: "bg-inactive-light-grey dark:bg-dark-bg",
-    label: "text-dark-charcoal dark:text-dark-text-secondary",
+    // Light purple theme for inactive nodes
+    border: "border-purple",
+    background: "bg-light-purple dark:bg-purple/20",
+    label: "text-purple",
   },
 };
 
