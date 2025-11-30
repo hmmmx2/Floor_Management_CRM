@@ -13,14 +13,14 @@ export default function FloodMapPage() {
     <section className="space-y-6">
       <header className="flex flex-col gap-2">
         <h1
-          className={`text-3xl font-semibold ${
+          className={`text-3xl font-semibold transition-colors ${
             isDark ? "text-dark-text" : "text-dark-charcoal"
           }`}
         >
           Flood Map
         </h1>
         <p
-          className={`text-sm ${
+          className={`text-sm transition-colors ${
             isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
           }`}
         >
@@ -40,14 +40,14 @@ export default function FloodMapPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p
-                className={`text-xs uppercase tracking-wide ${
+                className={`text-xs uppercase tracking-wide transition-colors ${
                   isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
                 }`}
               >
                 Live View
               </p>
               <h2
-                className={`text-lg font-semibold ${
+                className={`text-lg font-semibold transition-colors ${
                   isDark ? "text-dark-text" : "text-dark-charcoal"
                 }`}
               >
@@ -55,7 +55,7 @@ export default function FloodMapPage() {
               </h2>
             </div>
             <div
-              className={`flex items-center gap-4 text-sm font-semibold ${
+              className={`flex items-center gap-4 text-sm font-semibold transition-colors ${
                 isDark ? "text-dark-text" : "text-dark-charcoal"
               }`}
             >
@@ -70,19 +70,19 @@ export default function FloodMapPage() {
             </div>
           </div>
           <div
-            className={`mt-4 rounded-3xl border ${
+            className={`mt-4 rounded-3xl border transition-colors ${
               isDark ? "border-dark-border" : "border-light-grey"
             }`}
           >
             <NodeMap nodes={nodes} height={460} zoom={14} />
           </div>
           <div
-            className={`mt-4 flex flex-wrap items-center gap-4 text-sm ${
+            className={`mt-4 flex flex-wrap items-center gap-4 text-sm transition-colors ${
               isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
             }`}
           >
             <span
-              className={`font-semibold ${
+              className={`font-semibold transition-colors ${
                 isDark ? "text-dark-text" : "text-dark-charcoal"
               }`}
             >
@@ -103,15 +103,15 @@ export default function FloodMapPage() {
           }`}
         >
           <h2
-            className={`text-lg font-semibold ${
+            className={`text-lg font-semibold transition-colors ${
               isDark ? "text-dark-text" : "text-dark-charcoal"
             }`}
           >
             Status Legend
           </h2>
           <p
-            className={`text-xs ${
-              isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"
+            className={`text-xs transition-colors ${
+              isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
             }`}
           >
             Every pin follows the Sarawak flood SOP levels.
@@ -120,8 +120,8 @@ export default function FloodMapPage() {
             {statusLegend.map((legend) => (
               <li
                 key={legend.label}
-                className={`flex items-center justify-between rounded-2xl border px-4 py-3 ${
-                  isDark ? "border-dark-border" : "border-light-grey"
+                className={`flex items-center justify-between rounded-2xl border px-4 py-3 transition-colors ${
+                  isDark ? "border-dark-border bg-dark-bg" : "border-light-grey"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -132,15 +132,15 @@ export default function FloodMapPage() {
                   </span>
                   <div>
                     <p
-                      className={`text-sm font-semibold ${
+                      className={`text-sm font-semibold transition-colors ${
                         isDark ? "text-dark-text" : "text-dark-charcoal"
                       }`}
                     >
                       {legend.label}
                     </p>
                     <p
-                      className={`text-xs ${
-                        isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"
+                      className={`text-xs transition-colors ${
+                        isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
                       }`}
                     >
                       {legend.description}
@@ -154,14 +154,14 @@ export default function FloodMapPage() {
             ))}
           </ul>
           <div
-            className={`mt-6 rounded-2xl px-4 py-3 text-xs ${
+            className={`mt-6 rounded-2xl px-4 py-3 text-xs transition-colors ${
               isDark
-                ? "bg-dark-bg text-dark-text-muted"
+                ? "bg-dark-bg text-dark-text-secondary"
                 : "bg-very-light-grey text-dark-charcoal/70"
             }`}
           >
             <p
-              className={`font-semibold uppercase tracking-wide ${
+              className={`font-semibold uppercase tracking-wide transition-colors ${
                 isDark ? "text-dark-text" : "text-dark-charcoal"
               }`}
             >

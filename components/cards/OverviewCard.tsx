@@ -29,7 +29,7 @@ export default function OverviewCard({
       ? "text-primary-red"
       : trend?.direction === "flat"
         ? isDark
-          ? "text-dark-text"
+          ? "text-dark-text-muted"
           : "text-dark-charcoal"
         : "text-status-green";
 
@@ -44,7 +44,7 @@ export default function OverviewCard({
     >
       <p
         className={clsx(
-          "text-sm font-semibold uppercase tracking-wide",
+          "text-sm font-semibold uppercase tracking-wide transition-colors",
           isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
         )}
       >
@@ -53,7 +53,7 @@ export default function OverviewCard({
       <div className="mt-3 flex items-end justify-between">
         <p
           className={clsx(
-            "text-3xl font-bold",
+            "text-3xl font-bold transition-colors",
             isDark ? "text-dark-text" : "text-dark-charcoal"
           )}
         >
@@ -68,7 +68,7 @@ export default function OverviewCard({
       {helper && (
         <p
           className={clsx(
-            "mt-2 text-xs",
+            "mt-2 text-xs transition-colors",
             isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"
           )}
         >
@@ -76,9 +76,7 @@ export default function OverviewCard({
         </p>
       )}
       {subLabel && (
-        <p className="mt-1 text-sm font-semibold text-primary-red">
-          {subLabel}
-        </p>
+        <p className="mt-1 text-sm font-semibold text-primary-red">{subLabel}</p>
       )}
     </article>
   );

@@ -135,14 +135,14 @@ export default function SensorsPage() {
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1
-            className={`text-3xl font-semibold ${
+            className={`text-3xl font-semibold transition-colors ${
               isDark ? "text-dark-text" : "text-dark-charcoal"
             }`}
           >
             IoT Sensor Networks
           </h1>
           <p
-            className={`text-sm ${
+            className={`text-sm transition-colors ${
               isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
             }`}
           >
@@ -161,8 +161,8 @@ export default function SensorsPage() {
             type="button"
             onClick={() => removeRow()}
             disabled={rows.length === 0}
-            className={`rounded-full border border-primary-red px-5 py-2 text-sm font-semibold text-primary-red transition disabled:cursor-not-allowed disabled:opacity-50 ${
-              isDark ? "hover:bg-primary-red/20" : "hover:bg-light-red/40"
+            className={`rounded-full border border-primary-red px-5 py-2 text-sm font-semibold text-primary-red transition hover:bg-light-red/40 disabled:cursor-not-allowed disabled:opacity-50 ${
+              isDark ? "hover:bg-primary-red/20" : ""
             }`}
           >
             Delete Row
@@ -172,10 +172,8 @@ export default function SensorsPage() {
 
       <div className="flex flex-wrap gap-3">
         <div
-          className={`flex flex-1 min-w-[220px] items-center gap-2 rounded-full border border-primary-red px-4 py-2 text-sm ${
-            isDark
-              ? "bg-dark-card text-dark-text"
-              : "bg-pure-white text-dark-charcoal"
+          className={`flex flex-1 min-w-[220px] items-center gap-2 rounded-full border border-primary-red px-4 py-2 text-sm transition-colors ${
+            isDark ? "bg-dark-card text-dark-text" : "bg-pure-white text-dark-charcoal"
           }`}
         >
           <svg
@@ -194,7 +192,7 @@ export default function SensorsPage() {
             value={searchValue}
             onChange={(event) => setSearchValue(event.target.value)}
             placeholder="Search Nodes"
-            className={`w-full border-none bg-transparent text-sm outline-none ${
+            className={`w-full border-none bg-transparent text-sm outline-none transition-colors ${
               isDark
                 ? "placeholder:text-dark-text-muted"
                 : "placeholder:text-dark-charcoal/60"
@@ -210,14 +208,12 @@ export default function SensorsPage() {
                 type="button"
                 onClick={() => toggleNodeFilter(option.value)}
                 className={clsx(
-                  "rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition",
+                  "rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-colors",
                   isActive
-                    ? isDark
-                      ? "border-primary-red bg-primary-red/20 text-primary-red"
-                      : "border-primary-red bg-light-red text-primary-red"
+                    ? "border-primary-red bg-light-red text-primary-red dark:bg-primary-red/20"
                     : isDark
-                    ? "border-dark-border text-dark-text hover:border-primary-red/50"
-                    : "border-light-grey text-dark-charcoal hover:border-primary-red/50"
+                      ? "border-dark-border text-dark-text-secondary hover:border-primary-red/50"
+                      : "border-light-grey text-dark-charcoal hover:border-primary-red/50"
                 )}
               >
                 {option.label}
@@ -228,18 +224,20 @@ export default function SensorsPage() {
       </div>
 
       <div
-        className={`overflow-x-auto rounded-3xl border ${
+        className={`overflow-x-auto rounded-3xl border transition-colors ${
           isDark ? "border-dark-border" : "border-dark-charcoal"
         }`}
       >
         <table
-          className={`min-w-[960px] w-full border-collapse text-left text-sm ${
-            isDark ? "text-dark-text" : "text-dark-charcoal"
+          className={`min-w-[960px] w-full border-collapse text-left text-sm transition-colors ${
+            isDark ? "text-dark-text-secondary" : "text-dark-charcoal"
           }`}
         >
           <thead
-            className={`text-xs uppercase tracking-wide ${
-              isDark ? "bg-dark-border text-dark-text" : "bg-light-red"
+            className={`text-xs uppercase tracking-wide transition-colors ${
+              isDark
+                ? "bg-dark-bg text-dark-text-muted"
+                : "bg-light-red text-dark-charcoal"
             }`}
           >
             <tr>
@@ -294,57 +292,35 @@ export default function SensorsPage() {
               <tr
                 key={row.id}
                 className={clsx(
-                  "border",
+                  "border transition-colors",
                   isDark ? "border-dark-border" : "border-light-red",
                   index % 2 === 0
                     ? isDark
                       ? "bg-dark-card"
                       : "bg-pure-white"
                     : isDark
-                    ? "bg-dark-bg"
-                    : "bg-light-red/20"
+                      ? "bg-dark-bg"
+                      : "bg-light-red/20"
                 )}
               >
-                <td className="px-4 py-3 font-semibold">{row.node_label}</td>
+                <td
+                  className={`px-4 py-3 font-semibold ${
+                    isDark ? "text-dark-text" : ""
+                  }`}
+                >
+                  {row.node_label}
+                </td>
                 <td className="px-4 py-3 text-primary-red">
                   {row.water_level} ft
                 </td>
-                <td
-                  className={`px-4 py-3 ${
-                    isDark ? "text-dark-text-secondary" : ""
-                  }`}
-                >
-                  {row.area}
-                </td>
-                <td
-                  className={`px-4 py-3 ${
-                    isDark ? "text-dark-text-secondary" : ""
-                  }`}
-                >
-                  {row.location}
-                </td>
-                <td
-                  className={`px-4 py-3 ${
-                    isDark ? "text-dark-text-secondary" : ""
-                  }`}
-                >
-                  {row.state}
-                </td>
+                <td className="px-4 py-3">{row.area}</td>
+                <td className="px-4 py-3">{row.location}</td>
+                <td className="px-4 py-3">{row.state}</td>
                 <td className="px-4 py-3">
                   <StatusPill status={row.status} />
                 </td>
-                <td
-                  className={`px-4 py-3 ${
-                    isDark ? "text-dark-text-secondary" : ""
-                  }`}
-                >
-                  {row.last_update}
-                </td>
-                <td
-                  className={`px-4 py-3 ${
-                    isDark ? "text-dark-text-secondary" : ""
-                  }`}
-                >
+                <td className="px-4 py-3">{row.last_update}</td>
+                <td className="px-4 py-3">
                   {new Date(row.timestamp).toLocaleString("en-MY", {
                     dateStyle: "medium",
                     timeStyle: "short",
@@ -365,7 +341,7 @@ export default function SensorsPage() {
               <tr>
                 <td
                   colSpan={columns.length + 1}
-                  className={`px-4 py-6 text-center text-sm font-semibold ${
+                  className={`px-4 py-6 text-center text-sm font-semibold transition-colors ${
                     isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"
                   }`}
                 >

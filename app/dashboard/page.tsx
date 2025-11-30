@@ -45,7 +45,7 @@ const stateBarData = floodTotalsByState.map((s) => ({
 
 export default function DashboardPage() {
   const { isDark } = useTheme();
-
+  
   const totalNodes = nodes.length;
   const activeNodes = nodes.filter((node) => node.is_active).length;
   const criticalAlerts = alertRecords.filter(
@@ -70,14 +70,14 @@ export default function DashboardPage() {
     <section className="space-y-6">
       <header>
         <h1
-          className={`text-3xl font-semibold ${
+          className={`text-3xl font-semibold transition-colors ${
             isDark ? "text-dark-text" : "text-dark-charcoal"
           }`}
         >
           Dashboard
         </h1>
         <p
-          className={`text-sm ${
+          className={`text-sm transition-colors ${
             isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
           }`}
         >
@@ -128,30 +128,34 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2
-                className={`text-lg font-semibold ${
+                className={`text-lg font-semibold transition-colors ${
                   isDark ? "text-dark-text" : "text-dark-charcoal"
                 }`}
               >
                 Nodes by Area
               </h2>
               <p
-                className={`text-xs uppercase tracking-wide ${
+                className={`text-xs uppercase tracking-wide transition-colors ${
                   isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
                 }`}
               >
                 Live device telemetry
               </p>
             </div>
-            <span className="rounded-full bg-light-red px-4 py-1 text-xs font-semibold text-primary-red">
+            <span className="rounded-full bg-light-red px-4 py-1 text-xs font-semibold text-primary-red dark:bg-primary-red/20">
               Updated just now
             </span>
           </div>
           <div className="mt-4 overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
+            <table
+              className={`min-w-full text-left text-sm transition-colors ${
+                isDark ? "text-dark-text-secondary" : "text-dark-charcoal"
+              }`}
+            >
               <thead
-                className={`text-xs uppercase ${
+                className={`text-xs uppercase transition-colors ${
                   isDark
-                    ? "bg-dark-border text-dark-text"
+                    ? "bg-dark-bg text-dark-text-muted"
                     : "bg-light-red text-dark-charcoal"
                 }`}
               >
@@ -169,12 +173,14 @@ export default function DashboardPage() {
                 {nodes.map((node) => (
                   <tr
                     key={node.node_id}
-                    className={`border-b last:border-b-0 ${
-                      isDark ? "border-dark-border" : "border-light-red/60"
+                    className={`border-b last:border-b-0 transition-colors ${
+                      isDark
+                        ? "border-dark-border hover:bg-dark-bg"
+                        : "border-light-red/60 hover:bg-light-red/20"
                     }`}
                   >
                     <td
-                      className={`px-4 py-3 font-semibold ${
+                      className={`px-4 py-3 font-semibold transition-colors ${
                         isDark ? "text-dark-text" : "text-dark-charcoal"
                       }`}
                     >
@@ -183,35 +189,13 @@ export default function DashboardPage() {
                     <td className="px-4 py-3 text-primary-red">
                       {node.water_level} ft
                     </td>
-                    <td
-                      className={`px-4 py-3 ${
-                        isDark ? "text-dark-text-secondary" : ""
-                      }`}
-                    >
-                      {node.area}
-                    </td>
-                    <td
-                      className={`px-4 py-3 ${
-                        isDark ? "text-dark-text-secondary" : ""
-                      }`}
-                    >
-                      {node.state}
-                    </td>
+                    <td className="px-4 py-3">{node.area}</td>
+                    <td className="px-4 py-3">{node.state}</td>
                     <td className="px-4 py-3">
                       <StatusPill status={node.status} />
                     </td>
-                    <td
-                      className={`px-4 py-3 ${
-                        isDark ? "text-dark-text-secondary" : ""
-                      }`}
-                    >
-                      {node.last_update}
-                    </td>
-                    <td
-                      className={`px-4 py-3 ${
-                        isDark ? "text-dark-text-secondary" : ""
-                      }`}
-                    >
+                    <td className="px-4 py-3">{node.last_update}</td>
+                    <td className="px-4 py-3">
                       {new Date(node.timestamp).toLocaleString("en-MY", {
                         dateStyle: "medium",
                         timeStyle: "short",
@@ -234,15 +218,15 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2
-                className={`text-lg font-semibold ${
+                className={`text-lg font-semibold transition-colors ${
                   isDark ? "text-dark-text" : "text-dark-charcoal"
                 }`}
               >
                 Hotspot Map
               </h2>
               <p
-                className={`text-xs ${
-                  isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"
+                className={`text-xs transition-colors ${
+                  isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
                 }`}
               >
                 Hover markers to inspect sensors
@@ -253,19 +237,19 @@ export default function DashboardPage() {
             </span>
           </div>
           <div
-            className={`mt-4 rounded-2xl border ${
+            className={`mt-4 rounded-2xl border transition-colors ${
               isDark ? "border-dark-border" : "border-light-grey"
             }`}
           >
             <NodeMap nodes={nodes} height={280} zoom={13} />
           </div>
           <ul
-            className={`mt-4 grid grid-cols-2 gap-3 text-xs font-semibold ${
+            className={`mt-4 grid grid-cols-2 gap-3 text-xs font-semibold transition-colors ${
               isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
             }`}
           >
             <li
-              className={`rounded-2xl border px-3 py-2 ${
+              className={`rounded-2xl border px-3 py-2 transition-colors ${
                 isDark
                   ? "border-dark-border bg-dark-bg"
                   : "border-light-grey bg-very-light-grey"
@@ -275,7 +259,7 @@ export default function DashboardPage() {
               <span className="text-primary-red">{criticalAlerts}</span>
             </li>
             <li
-              className={`rounded-2xl border px-3 py-2 ${
+              className={`rounded-2xl border px-3 py-2 transition-colors ${
                 isDark
                   ? "border-dark-border bg-dark-bg"
                   : "border-light-grey bg-very-light-grey"
@@ -300,21 +284,21 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2
-                className={`text-lg font-semibold ${
+                className={`text-lg font-semibold transition-colors ${
                   isDark ? "text-dark-text" : "text-dark-charcoal"
                 }`}
               >
                 Time Series Analysis
               </h2>
               <p
-                className={`text-xs uppercase tracking-wide ${
+                className={`text-xs uppercase tracking-wide transition-colors ${
                   isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
                 }`}
               >
                 Monthly average water level (ft)
               </p>
             </div>
-            <span className="rounded-full bg-light-red/70 px-3 py-1 text-xs font-semibold text-primary-red">
+            <span className="rounded-full bg-light-red/70 px-3 py-1 text-xs font-semibold text-primary-red dark:bg-primary-red/20">
               Monthly
             </span>
           </div>
@@ -368,11 +352,7 @@ export default function DashboardPage() {
                   verticalAlign="top"
                   height={36}
                   iconType="circle"
-                  wrapperStyle={{
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: chartTextColor,
-                  }}
+                  wrapperStyle={{ fontSize: 12, fontWeight: 500, color: chartTextColor }}
                 />
                 <Area
                   type="monotone"
@@ -397,7 +377,7 @@ export default function DashboardPage() {
           }`}
         >
           <h2
-            className={`text-lg font-semibold ${
+            className={`text-lg font-semibold transition-colors ${
               isDark ? "text-dark-text" : "text-dark-charcoal"
             }`}
           >
@@ -407,22 +387,22 @@ export default function DashboardPage() {
             {recentActivity.map((item) => (
               <li
                 key={item.id}
-                className={`rounded-2xl border px-4 py-3 ${
-                  isDark ? "border-dark-border" : "border-light-grey"
+                className={`rounded-2xl border px-4 py-3 transition-colors ${
+                  isDark ? "border-dark-border bg-dark-bg" : "border-light-grey"
                 }`}
               >
                 <p className="text-sm font-semibold text-primary-red">
                   {item.alert_type}
                 </p>
                 <p
-                  className={`text-sm ${
+                  className={`text-sm transition-colors ${
                     isDark ? "text-dark-text" : "text-dark-charcoal"
                   }`}
                 >
                   {item.message} ({item.area})
                 </p>
                 <p
-                  className={`text-xs ${
+                  className={`text-xs transition-colors ${
                     isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
                   }`}
                 >
@@ -448,14 +428,14 @@ export default function DashboardPage() {
           }`}
         >
           <h2
-            className={`text-lg font-semibold ${
+            className={`text-lg font-semibold transition-colors ${
               isDark ? "text-dark-text" : "text-dark-charcoal"
             }`}
           >
             Water Level by Node ID
           </h2>
           <p
-            className={`text-xs uppercase tracking-wide ${
+            className={`text-xs uppercase tracking-wide transition-colors ${
               isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
             }`}
           >
@@ -505,11 +485,7 @@ export default function DashboardPage() {
                   verticalAlign="top"
                   height={36}
                   iconType="square"
-                  wrapperStyle={{
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: chartTextColor,
-                  }}
+                  wrapperStyle={{ fontSize: 12, fontWeight: 500, color: chartTextColor }}
                 />
                 <Bar
                   dataKey="level"
@@ -531,14 +507,14 @@ export default function DashboardPage() {
           }`}
         >
           <h2
-            className={`text-lg font-semibold ${
+            className={`text-lg font-semibold transition-colors ${
               isDark ? "text-dark-text" : "text-dark-charcoal"
             }`}
           >
             Total Flood by State
           </h2>
           <p
-            className={`text-xs uppercase tracking-wide ${
+            className={`text-xs uppercase tracking-wide transition-colors ${
               isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
             }`}
           >
@@ -582,11 +558,7 @@ export default function DashboardPage() {
                   verticalAlign="top"
                   height={36}
                   iconType="square"
-                  wrapperStyle={{
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: chartTextColor,
-                  }}
+                  wrapperStyle={{ fontSize: 12, fontWeight: 500, color: chartTextColor }}
                 />
                 <Bar
                   dataKey="total"

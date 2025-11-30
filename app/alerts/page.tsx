@@ -56,29 +56,23 @@ const sortOrderOptions = [
 const alertTone = {
   DANGER: {
     border: "border-primary-red",
-    background: "bg-light-red/60",
-    backgroundDark: "bg-primary-red/20",
+    background: "bg-light-red/60 dark:bg-primary-red/20",
     label: "text-primary-red",
   },
   WARNING: {
     border: "border-status-warning-2",
-    background: "bg-status-warning-2/15",
-    backgroundDark: "bg-status-warning-2/20",
+    background: "bg-status-warning-2/15 dark:bg-status-warning-2/25",
     label: "text-status-warning-2",
   },
   "NEW NODE": {
     border: "border-status-green",
-    background: "bg-status-green/15",
-    backgroundDark: "bg-status-green/20",
+    background: "bg-status-green/15 dark:bg-status-green/25",
     label: "text-status-green",
   },
   INACTIVE: {
-    border: "border-light-grey",
-    borderDark: "border-dark-border",
-    background: "bg-very-light-grey",
-    backgroundDark: "bg-dark-bg",
-    label: "text-dark-charcoal",
-    labelDark: "text-dark-text-secondary",
+    border: "border-light-grey dark:border-dark-border",
+    background: "bg-very-light-grey dark:bg-dark-bg",
+    label: "text-dark-charcoal dark:text-dark-text-secondary",
   },
 };
 
@@ -172,14 +166,14 @@ export default function AlertsPage() {
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1
-            className={`text-3xl font-semibold ${
+            className={`text-3xl font-semibold transition-colors ${
               isDark ? "text-dark-text" : "text-dark-charcoal"
             }`}
           >
             Alerts Monitoring
           </h1>
           <p
-            className={`text-sm ${
+            className={`text-sm transition-colors ${
               isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
             }`}
           >
@@ -189,7 +183,7 @@ export default function AlertsPage() {
         <button
           type="button"
           onClick={() => setIsFilterModalOpen(true)}
-          className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+          className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
             isDark
               ? "border-dark-border text-dark-text hover:border-primary-red hover:text-primary-red"
               : "border-light-grey text-dark-charcoal hover:border-primary-red hover:text-primary-red"
@@ -216,12 +210,12 @@ export default function AlertsPage() {
               key={option.id}
               type="button"
               onClick={() => setActiveTypeFilter(option.id)}
-              className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide transition ${
+              className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-colors ${
                 isActive
                   ? "bg-primary-red text-pure-white"
                   : isDark
-                  ? "border border-dark-border text-dark-text hover:border-primary-red/60"
-                  : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
+                    ? "border border-dark-border text-dark-text-secondary hover:border-primary-red/60"
+                    : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
               }`}
             >
               {option.label}
@@ -231,58 +225,43 @@ export default function AlertsPage() {
       </div>
 
       {/* Active Filters Summary */}
-      <div className="flex flex-wrap items-center gap-2 text-sm">
-        <span
-          className={isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}
-        >
-          Showing:
-        </span>
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-            isDark
-              ? "bg-primary-red/20 text-primary-red"
-              : "bg-light-red/40 text-primary-red"
-          }`}
-        >
+      <div
+        className={`flex flex-wrap items-center gap-2 text-sm transition-colors ${
+          isDark ? "text-dark-text-secondary" : "text-dark-charcoal/60"
+        }`}
+      >
+        <span>Showing:</span>
+        <span className="rounded-full bg-light-red/40 px-3 py-1 text-xs font-semibold text-primary-red dark:bg-primary-red/20">
           {timePeriodOptions.find((t) => t.id === timePeriod)?.label}
         </span>
         <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-            isDark
-              ? "bg-dark-border text-dark-text"
-              : "bg-very-light-grey text-dark-charcoal"
+          className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+            isDark ? "bg-dark-bg text-dark-text" : "bg-very-light-grey text-dark-charcoal"
           }`}
         >
           {sortOrderOptions.find((s) => s.id === sortOrder)?.label}
         </span>
-        <span
-          className={isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}
-        >
-          ·{" "}
-          {filteredAndSortedAlerts.recent.length +
-            filteredAndSortedAlerts.lastWeek.length}{" "}
-          total alerts
+        <span>
+          · {filteredAndSortedAlerts.recent.length + filteredAndSortedAlerts.lastWeek.length} total alerts
         </span>
       </div>
 
       {/* Recently Section */}
       <section
         className={`space-y-4 rounded-3xl border p-5 shadow-sm transition-colors ${
-          isDark
-            ? "border-dark-border bg-dark-card"
-            : "border-light-grey bg-pure-white"
+          isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"
         }`}
       >
         <div className="flex items-center justify-between">
           <h2
-            className={`text-lg font-semibold ${
+            className={`text-lg font-semibold transition-colors ${
               isDark ? "text-dark-text" : "text-dark-charcoal"
             }`}
           >
             Recently
           </h2>
           <span
-            className={`text-xs uppercase tracking-wide ${
+            className={`text-xs uppercase tracking-wide transition-colors ${
               isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
             }`}
           >
@@ -292,41 +271,31 @@ export default function AlertsPage() {
         <div className="space-y-3">
           {filteredAndSortedAlerts.recent.map((alert) => {
             const tone = alertTone[alert.alert_type as keyof typeof alertTone];
-            const borderClass =
-              alert.alert_type === "INACTIVE" && isDark
-                ? tone.borderDark
-                : tone.border;
-            const bgClass = isDark ? tone.backgroundDark : tone.background;
-            const labelClass =
-              alert.alert_type === "INACTIVE" && isDark
-                ? tone.labelDark
-                : tone.label;
-
             return (
               <article
                 key={alert.id}
-                className={`rounded-2xl border px-4 py-3 ${borderClass} ${bgClass}`}
+                className={`rounded-2xl border px-4 py-3 ${tone.border} ${tone.background}`}
               >
-                <p className={`text-base font-semibold ${labelClass}`}>
+                <p className={`text-base font-semibold ${tone.label}`}>
                   {alert.alert_type}!
                 </p>
                 <p
-                  className={`text-sm font-semibold ${
+                  className={`text-sm font-semibold transition-colors ${
                     isDark ? "text-dark-text" : "text-dark-charcoal"
                   }`}
                 >
-                  Node {alert.node_reference.replace("node_", "")} · Water
-                  Level: {alert.water_level} ft
+                  Node {alert.node_reference.replace("node_", "")} · Water Level:{" "}
+                  {alert.water_level} ft
                 </p>
                 <p
-                  className={`text-sm ${
+                  className={`text-sm transition-colors ${
                     isDark ? "text-dark-text-secondary" : "text-dark-charcoal/80"
                   }`}
                 >
                   {alert.area}
                 </p>
                 <p
-                  className={`text-xs ${
+                  className={`text-xs transition-colors ${
                     isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
                   }`}
                 >
@@ -336,7 +305,7 @@ export default function AlertsPage() {
                   })}
                 </p>
                 <p
-                  className={`mt-2 text-sm ${
+                  className={`mt-2 text-sm transition-colors ${
                     isDark ? "text-dark-text" : "text-dark-charcoal"
                   }`}
                 >
@@ -347,7 +316,7 @@ export default function AlertsPage() {
           })}
           {filteredAndSortedAlerts.recent.length === 0 && (
             <p
-              className={`text-sm font-semibold ${
+              className={`text-sm font-semibold transition-colors ${
                 isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"
               }`}
             >
@@ -360,21 +329,19 @@ export default function AlertsPage() {
       {/* Last Week Section */}
       <section
         className={`space-y-4 rounded-3xl border p-5 shadow-sm transition-colors ${
-          isDark
-            ? "border-dark-border bg-dark-card"
-            : "border-light-grey bg-pure-white"
+          isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"
         }`}
       >
         <div className="flex items-center justify-between">
           <h2
-            className={`text-lg font-semibold ${
+            className={`text-lg font-semibold transition-colors ${
               isDark ? "text-dark-text" : "text-dark-charcoal"
             }`}
           >
             Last Week
           </h2>
           <span
-            className={`text-xs uppercase tracking-wide ${
+            className={`text-xs uppercase tracking-wide transition-colors ${
               isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
             }`}
           >
@@ -384,41 +351,31 @@ export default function AlertsPage() {
         <div className="space-y-3">
           {filteredAndSortedAlerts.lastWeek.map((alert) => {
             const tone = alertTone[alert.alert_type as keyof typeof alertTone];
-            const borderClass =
-              alert.alert_type === "INACTIVE" && isDark
-                ? tone.borderDark
-                : tone.border;
-            const bgClass = isDark ? tone.backgroundDark : tone.background;
-            const labelClass =
-              alert.alert_type === "INACTIVE" && isDark
-                ? tone.labelDark
-                : tone.label;
-
             return (
               <article
                 key={alert.id}
-                className={`rounded-2xl border px-4 py-3 ${borderClass} ${bgClass}`}
+                className={`rounded-2xl border px-4 py-3 ${tone.border} ${tone.background}`}
               >
-                <p className={`text-base font-semibold ${labelClass}`}>
+                <p className={`text-base font-semibold ${tone.label}`}>
                   {alert.alert_type}!
                 </p>
                 <p
-                  className={`text-sm font-semibold ${
+                  className={`text-sm font-semibold transition-colors ${
                     isDark ? "text-dark-text" : "text-dark-charcoal"
                   }`}
                 >
-                  Node {alert.node_reference.replace("node_", "")} · Water
-                  Level: {alert.water_level} ft
+                  Node {alert.node_reference.replace("node_", "")} · Water Level:{" "}
+                  {alert.water_level} ft
                 </p>
                 <p
-                  className={`text-sm ${
+                  className={`text-sm transition-colors ${
                     isDark ? "text-dark-text-secondary" : "text-dark-charcoal/80"
                   }`}
                 >
                   {alert.area}
                 </p>
                 <p
-                  className={`text-xs ${
+                  className={`text-xs transition-colors ${
                     isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
                   }`}
                 >
@@ -427,7 +384,7 @@ export default function AlertsPage() {
                   })}
                 </p>
                 <p
-                  className={`mt-2 text-sm ${
+                  className={`mt-2 text-sm transition-colors ${
                     isDark ? "text-dark-text" : "text-dark-charcoal"
                   }`}
                 >
@@ -438,7 +395,7 @@ export default function AlertsPage() {
           })}
           {filteredAndSortedAlerts.lastWeek.length === 0 && (
             <p
-              className={`text-sm font-semibold ${
+              className={`text-sm font-semibold transition-colors ${
                 isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"
               }`}
             >
@@ -450,19 +407,15 @@ export default function AlertsPage() {
 
       {/* Filter Modal */}
       {isFilterModalOpen && (
-        <div
-          className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${
-            isDark ? "bg-dark-bg/80" : "bg-dark-charcoal/60"
-          }`}
-        >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-charcoal/60 p-4">
           <div
-            className={`w-full max-w-md rounded-3xl p-6 shadow-xl ${
+            className={`w-full max-w-md rounded-3xl p-6 shadow-xl transition-colors ${
               isDark ? "bg-dark-card" : "bg-pure-white"
             }`}
           >
             <div className="flex items-center justify-between">
               <h2
-                className={`text-xl font-semibold ${
+                className={`text-xl font-semibold transition-colors ${
                   isDark ? "text-dark-text" : "text-dark-charcoal"
                 }`}
               >
@@ -471,9 +424,9 @@ export default function AlertsPage() {
               <button
                 type="button"
                 onClick={() => setIsFilterModalOpen(false)}
-                className={`rounded-full p-2 transition ${
+                className={`rounded-full p-2 transition-colors ${
                   isDark
-                    ? "text-dark-text-muted hover:bg-dark-border hover:text-dark-text"
+                    ? "text-dark-text-muted hover:bg-dark-bg hover:text-dark-text"
                     : "text-dark-charcoal/60 hover:bg-very-light-grey hover:text-dark-charcoal"
                 }`}
               >
@@ -485,14 +438,14 @@ export default function AlertsPage() {
               {/* Time Period */}
               <div>
                 <label
-                  className={`block text-sm font-semibold ${
+                  className={`block text-sm font-semibold transition-colors ${
                     isDark ? "text-dark-text" : "text-dark-charcoal"
                   }`}
                 >
                   Time Period
                 </label>
                 <p
-                  className={`text-xs ${
+                  className={`text-xs transition-colors ${
                     isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
                   }`}
                 >
@@ -504,12 +457,12 @@ export default function AlertsPage() {
                       key={option.id}
                       type="button"
                       onClick={() => setTimePeriod(option.id)}
-                      className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+                      className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
                         timePeriod === option.id
                           ? "bg-primary-red text-pure-white"
                           : isDark
-                          ? "border border-dark-border text-dark-text hover:border-primary-red/60"
-                          : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
+                            ? "border border-dark-border text-dark-text-secondary hover:border-primary-red/60"
+                            : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
                       }`}
                     >
                       {option.label}
@@ -521,14 +474,14 @@ export default function AlertsPage() {
               {/* Sort Order */}
               <div>
                 <label
-                  className={`block text-sm font-semibold ${
+                  className={`block text-sm font-semibold transition-colors ${
                     isDark ? "text-dark-text" : "text-dark-charcoal"
                   }`}
                 >
                   Sort Order
                 </label>
                 <p
-                  className={`text-xs ${
+                  className={`text-xs transition-colors ${
                     isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
                   }`}
                 >
@@ -540,12 +493,12 @@ export default function AlertsPage() {
                       key={option.id}
                       type="button"
                       onClick={() => setSortOrder(option.id)}
-                      className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
+                      className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
                         sortOrder === option.id
                           ? "bg-primary-red text-pure-white"
                           : isDark
-                          ? "border border-dark-border text-dark-text hover:border-primary-red/60"
-                          : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
+                            ? "border border-dark-border text-dark-text-secondary hover:border-primary-red/60"
+                            : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
                       }`}
                     >
                       {option.label}
@@ -557,14 +510,14 @@ export default function AlertsPage() {
               {/* Alert Type */}
               <div>
                 <label
-                  className={`block text-sm font-semibold ${
+                  className={`block text-sm font-semibold transition-colors ${
                     isDark ? "text-dark-text" : "text-dark-charcoal"
                   }`}
                 >
                   Alert Type
                 </label>
                 <p
-                  className={`text-xs ${
+                  className={`text-xs transition-colors ${
                     isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
                   }`}
                 >
@@ -576,12 +529,12 @@ export default function AlertsPage() {
                       key={option.id}
                       type="button"
                       onClick={() => setActiveTypeFilter(option.id)}
-                      className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide transition ${
+                      className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-colors ${
                         activeTypeFilter === option.id
                           ? "bg-primary-red text-pure-white"
                           : isDark
-                          ? "border border-dark-border text-dark-text hover:border-primary-red/60"
-                          : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
+                            ? "border border-dark-border text-dark-text-secondary hover:border-primary-red/60"
+                            : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
                       }`}
                     >
                       {option.label}
@@ -596,9 +549,9 @@ export default function AlertsPage() {
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className={`rounded-xl border px-5 py-2.5 text-sm font-semibold transition ${
+                className={`rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors ${
                   isDark
-                    ? "border-dark-border text-dark-text hover:bg-dark-border"
+                    ? "border-dark-border text-dark-text-secondary hover:bg-dark-bg"
                     : "border-light-grey text-dark-charcoal hover:bg-very-light-grey"
                 }`}
               >

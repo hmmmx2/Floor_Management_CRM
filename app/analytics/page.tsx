@@ -92,14 +92,14 @@ export default function AnalyticsPage() {
     <section className="space-y-6">
       <header>
         <h1
-          className={`text-3xl font-semibold ${
+          className={`text-3xl font-semibold transition-colors ${
             isDark ? "text-dark-text" : "text-dark-charcoal"
           }`}
         >
           Analytics
         </h1>
         <p
-          className={`text-sm ${
+          className={`text-sm transition-colors ${
             isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
           }`}
         >
@@ -142,21 +142,21 @@ export default function AnalyticsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2
-                className={`text-lg font-semibold ${
+                className={`text-lg font-semibold transition-colors ${
                   isDark ? "text-dark-text" : "text-dark-charcoal"
                 }`}
               >
                 Time Series Analysis
               </h2>
               <p
-                className={`text-xs uppercase tracking-wide ${
+                className={`text-xs uppercase tracking-wide transition-colors ${
                   isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
                 }`}
               >
                 Monthly average water level (ft)
               </p>
             </div>
-            <span className="rounded-full bg-light-red/70 px-3 py-1 text-xs font-semibold text-primary-red">
+            <span className="rounded-full bg-light-red/70 px-3 py-1 text-xs font-semibold text-primary-red dark:bg-primary-red/20">
               Monthly
             </span>
           </div>
@@ -235,14 +235,14 @@ export default function AnalyticsPage() {
           }`}
         >
           <h2
-            className={`text-lg font-semibold ${
+            className={`text-lg font-semibold transition-colors ${
               isDark ? "text-dark-text" : "text-dark-charcoal"
             }`}
           >
             Water Level by Node
           </h2>
           <p
-            className={`text-xs uppercase tracking-wide ${
+            className={`text-xs uppercase tracking-wide transition-colors ${
               isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
             }`}
           >
@@ -316,14 +316,14 @@ export default function AnalyticsPage() {
           }`}
         >
           <h2
-            className={`text-lg font-semibold ${
+            className={`text-lg font-semibold transition-colors ${
               isDark ? "text-dark-text" : "text-dark-charcoal"
             }`}
           >
             Alert Distribution
           </h2>
           <p
-            className={`text-xs uppercase tracking-wide ${
+            className={`text-xs uppercase tracking-wide transition-colors ${
               isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
             }`}
           >
@@ -380,14 +380,14 @@ export default function AnalyticsPage() {
           }`}
         >
           <h2
-            className={`text-lg font-semibold ${
+            className={`text-lg font-semibold transition-colors ${
               isDark ? "text-dark-text" : "text-dark-charcoal"
             }`}
           >
             Node Severity Bubble Map
           </h2>
           <p
-            className={`text-xs uppercase tracking-wide ${
+            className={`text-xs uppercase tracking-wide transition-colors ${
               isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
             }`}
           >
@@ -401,7 +401,7 @@ export default function AnalyticsPage() {
                   style={{ backgroundColor: item.color }}
                 />
                 <span
-                  className={`text-[10px] font-medium ${
+                  className={`text-[10px] font-medium transition-colors ${
                     isDark ? "text-dark-text" : "text-dark-charcoal"
                   }`}
                 >
@@ -483,14 +483,14 @@ export default function AnalyticsPage() {
         }`}
       >
         <h2
-          className={`text-lg font-semibold ${
+          className={`text-lg font-semibold transition-colors ${
             isDark ? "text-dark-text" : "text-dark-charcoal"
           }`}
         >
           Total Flood by State
         </h2>
         <p
-          className={`text-xs uppercase tracking-wide ${
+          className={`text-xs uppercase tracking-wide transition-colors ${
             isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
           }`}
         >
@@ -562,7 +562,7 @@ export default function AnalyticsPage() {
         }`}
       >
         <h2
-          className={`text-lg font-semibold ${
+          className={`text-lg font-semibold transition-colors ${
             isDark ? "text-dark-text" : "text-dark-charcoal"
           }`}
         >
@@ -570,13 +570,13 @@ export default function AnalyticsPage() {
         </h2>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           <div
-            className={`rounded-2xl border p-4 ${
+            className={`rounded-2xl border p-4 transition-colors ${
               isDark ? "border-dark-border" : "border-light-grey"
             }`}
           >
             <p className="text-sm font-semibold text-primary-red">Escalate</p>
             <p
-              className={`mt-2 text-sm ${
+              className={`mt-2 text-sm transition-colors ${
                 isDark ? "text-dark-text-secondary" : "text-dark-charcoal/80"
               }`}
             >
@@ -586,7 +586,7 @@ export default function AnalyticsPage() {
             </p>
           </div>
           <div
-            className={`rounded-2xl border p-4 ${
+            className={`rounded-2xl border p-4 transition-colors ${
               isDark ? "border-dark-border" : "border-light-grey"
             }`}
           >
@@ -594,7 +594,7 @@ export default function AnalyticsPage() {
               Preventive
             </p>
             <p
-              className={`mt-2 text-sm ${
+              className={`mt-2 text-sm transition-colors ${
                 isDark ? "text-dark-text-secondary" : "text-dark-charcoal/80"
               }`}
             >
@@ -603,13 +603,13 @@ export default function AnalyticsPage() {
             </p>
           </div>
           <div
-            className={`rounded-2xl border p-4 ${
+            className={`rounded-2xl border p-4 transition-colors ${
               isDark ? "border-dark-border" : "border-light-grey"
             }`}
           >
             <p className="text-sm font-semibold text-status-green">Operational</p>
             <p
-              className={`mt-2 text-sm ${
+              className={`mt-2 text-sm transition-colors ${
                 isDark ? "text-dark-text-secondary" : "text-dark-charcoal/80"
               }`}
             >

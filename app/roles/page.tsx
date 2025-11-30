@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { useTheme } from "@/lib/ThemeContext";
+
 type Role = {
   id: string;
   name: string;
@@ -132,6 +134,7 @@ const permissionLabels: Record<string, string> = {
 };
 
 export default function RolesPage() {
+  const { isDark } = useTheme();
   const [roles, setRoles] = useState<Role[]>(defaultRoles);
   const [users, setUsers] = useState<User[]>(defaultUsers);
   const [activeTab, setActiveTab] = useState<"roles" | "users">("roles");
@@ -314,10 +317,10 @@ export default function RolesPage() {
 
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-dark-charcoal">
+          <h1 className={`text-3xl font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
             Role Management
           </h1>
-          <p className="text-sm text-dark-charcoal/70">
+          <p className={`text-sm transition-colors ${isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"}`}>
             Manage user roles, permissions, and access control.
           </p>
         </div>
@@ -350,7 +353,9 @@ export default function RolesPage() {
           className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition ${
             activeTab === "roles"
               ? "bg-primary-red text-pure-white"
-              : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
+              : isDark
+                ? "border border-dark-border text-dark-text-secondary hover:border-primary-red/60"
+                : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
           }`}
         >
           Roles ({roles.length})
@@ -361,7 +366,9 @@ export default function RolesPage() {
           className={`rounded-xl px-5 py-2.5 text-sm font-semibold transition ${
             activeTab === "users"
               ? "bg-primary-red text-pure-white"
-              : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
+              : isDark
+                ? "border border-dark-border text-dark-text-secondary hover:border-primary-red/60"
+                : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
           }`}
         >
           Users ({users.length})
@@ -371,11 +378,11 @@ export default function RolesPage() {
       {activeTab === "roles" ? (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           {/* Roles List */}
-          <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
-            <h2 className="text-lg font-semibold text-dark-charcoal">
+          <article className={`rounded-3xl border p-5 shadow-sm transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
+            <h2 className={`text-lg font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
               System Roles
             </h2>
-            <p className="text-xs text-dark-charcoal/60">
+            <p className={`text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
               Click a role to view permissions
             </p>
             <div className="mt-4 space-y-3">
@@ -412,8 +419,8 @@ export default function RolesPage() {
           </article>
 
           {/* Permissions Panel */}
-          <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
-            <h2 className="text-lg font-semibold text-dark-charcoal">
+          <article className={`rounded-3xl border p-5 shadow-sm transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
+            <h2 className={`text-lg font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
               Permissions
             </h2>
             {selectedRole ? (
@@ -462,13 +469,13 @@ export default function RolesPage() {
         </div>
       ) : (
         /* Users Table */
-        <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
+        <article className={`rounded-3xl border p-5 shadow-sm transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-dark-charcoal">
+              <h2 className={`text-lg font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                 All Users
               </h2>
-              <p className="text-xs text-dark-charcoal/60">
+              <p className={`text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
                 Manage user accounts and role assignments
               </p>
             </div>
@@ -568,32 +575,32 @@ export default function RolesPage() {
 
       {/* Quick Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-light-grey bg-pure-white p-4">
-          <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+        <div className={`rounded-2xl border p-4 transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
+          <p className={`text-xs uppercase tracking-wide transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
             Total Users
           </p>
-          <p className="mt-1 text-2xl font-bold text-dark-charcoal">
+          <p className={`mt-1 text-2xl font-bold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
             {users.length}
           </p>
         </div>
-        <div className="rounded-2xl border border-light-grey bg-pure-white p-4">
-          <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+        <div className={`rounded-2xl border p-4 transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
+          <p className={`text-xs uppercase tracking-wide transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
             Active Users
           </p>
           <p className="mt-1 text-2xl font-bold text-status-green">
             {users.filter((u) => u.status === "active").length}
           </p>
         </div>
-        <div className="rounded-2xl border border-light-grey bg-pure-white p-4">
-          <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+        <div className={`rounded-2xl border p-4 transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
+          <p className={`text-xs uppercase tracking-wide transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
             Total Roles
           </p>
-          <p className="mt-1 text-2xl font-bold text-dark-charcoal">
+          <p className={`mt-1 text-2xl font-bold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
             {roles.length}
           </p>
         </div>
-        <div className="rounded-2xl border border-light-grey bg-pure-white p-4">
-          <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+        <div className={`rounded-2xl border p-4 transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
+          <p className={`text-xs uppercase tracking-wide transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
             Admins
           </p>
           <p className="mt-1 text-2xl font-bold text-primary-red">
@@ -605,11 +612,11 @@ export default function RolesPage() {
       {/* Add Role Modal */}
       {showAddRoleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-charcoal/50 p-4">
-          <div className="w-full max-w-lg rounded-3xl bg-pure-white p-6 shadow-xl">
-            <h2 className="text-xl font-semibold text-dark-charcoal">
+          <div className={`w-full max-w-lg rounded-3xl p-6 shadow-xl transition-colors ${isDark ? "bg-dark-card" : "bg-pure-white"}`}>
+            <h2 className={`text-xl font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
               Add New Role
             </h2>
-            <p className="text-sm text-dark-charcoal/60">
+            <p className={`text-sm transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
               Create a new role with specific permissions
             </p>
 
@@ -716,11 +723,11 @@ export default function RolesPage() {
       {/* Add User Modal */}
       {showAddUserModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-charcoal/50 p-4">
-          <div className="w-full max-w-md rounded-3xl bg-pure-white p-6 shadow-xl">
-            <h2 className="text-xl font-semibold text-dark-charcoal">
+          <div className={`w-full max-w-md rounded-3xl p-6 shadow-xl transition-colors ${isDark ? "bg-dark-card" : "bg-pure-white"}`}>
+            <h2 className={`text-xl font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
               Add New User
             </h2>
-            <p className="text-sm text-dark-charcoal/60">
+            <p className={`text-sm transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
               Create a new user account
             </p>
 
