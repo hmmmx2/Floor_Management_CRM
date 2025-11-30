@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { alertRecords, type AlertType } from "@/lib/data";
+import { useTheme } from "@/lib/ThemeContext";
 
 function FilterIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -56,22 +57,28 @@ const alertTone = {
   DANGER: {
     border: "border-primary-red",
     background: "bg-light-red/60",
+    backgroundDark: "bg-primary-red/20",
     label: "text-primary-red",
   },
   WARNING: {
     border: "border-status-warning-2",
     background: "bg-status-warning-2/15",
+    backgroundDark: "bg-status-warning-2/20",
     label: "text-status-warning-2",
   },
   "NEW NODE": {
     border: "border-status-green",
     background: "bg-status-green/15",
+    backgroundDark: "bg-status-green/20",
     label: "text-status-green",
   },
   INACTIVE: {
     border: "border-light-grey",
+    borderDark: "border-dark-border",
     background: "bg-very-light-grey",
+    backgroundDark: "bg-dark-bg",
     label: "text-dark-charcoal",
+    labelDark: "text-dark-text-secondary",
   },
 };
 
@@ -84,6 +91,7 @@ const alertSeverity: Record<AlertType, number> = {
 };
 
 export default function AlertsPage() {
+  const { isDark } = useTheme();
   const [activeTypeFilter, setActiveTypeFilter] = useState("all");
   const [timePeriod, setTimePeriod] = useState("weekly");
   const [sortOrder, setSortOrder] = useState("newest");
@@ -135,10 +143,8 @@ export default function AlertsPage() {
         case "oldest":
           return dateA - dateB;
         case "safe-to-warning":
-          // Lower severity first (Safe/New Node → Danger)
           return alertSeverity[a.alert_type] - alertSeverity[b.alert_type];
         case "warning-to-safe":
-          // Higher severity first (Danger → Safe/New Node)
           return alertSeverity[b.alert_type] - alertSeverity[a.alert_type];
         default:
           return dateB - dateA;
@@ -165,17 +171,29 @@ export default function AlertsPage() {
     <section className="space-y-6">
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-dark-charcoal">
+          <h1
+            className={`text-3xl font-semibold ${
+              isDark ? "text-dark-text" : "text-dark-charcoal"
+            }`}
+          >
             Alerts Monitoring
           </h1>
-          <p className="text-sm text-dark-charcoal/70">
+          <p
+            className={`text-sm ${
+              isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
+            }`}
+          >
             Triage danger, warning, new node, and inactive signals as they land.
           </p>
         </div>
         <button
           type="button"
           onClick={() => setIsFilterModalOpen(true)}
-          className="flex items-center gap-2 rounded-full border border-light-grey px-4 py-2 text-sm font-semibold text-dark-charcoal transition hover:border-primary-red hover:text-primary-red"
+          className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+            isDark
+              ? "border-dark-border text-dark-text hover:border-primary-red hover:text-primary-red"
+              : "border-light-grey text-dark-charcoal hover:border-primary-red hover:text-primary-red"
+          }`}
         >
           <FilterIcon className="h-4 w-4" />
           Filter
@@ -201,6 +219,8 @@ export default function AlertsPage() {
               className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide transition ${
                 isActive
                   ? "bg-primary-red text-pure-white"
+                  : isDark
+                  ? "border border-dark-border text-dark-text hover:border-primary-red/60"
                   : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
               }`}
             >
@@ -212,54 +232,125 @@ export default function AlertsPage() {
 
       {/* Active Filters Summary */}
       <div className="flex flex-wrap items-center gap-2 text-sm">
-        <span className="text-dark-charcoal/60">Showing:</span>
-        <span className="rounded-full bg-light-red/40 px-3 py-1 text-xs font-semibold text-primary-red">
+        <span
+          className={isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}
+        >
+          Showing:
+        </span>
+        <span
+          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+            isDark
+              ? "bg-primary-red/20 text-primary-red"
+              : "bg-light-red/40 text-primary-red"
+          }`}
+        >
           {timePeriodOptions.find((t) => t.id === timePeriod)?.label}
         </span>
-        <span className="rounded-full bg-very-light-grey px-3 py-1 text-xs font-semibold text-dark-charcoal">
+        <span
+          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+            isDark
+              ? "bg-dark-border text-dark-text"
+              : "bg-very-light-grey text-dark-charcoal"
+          }`}
+        >
           {sortOrderOptions.find((s) => s.id === sortOrder)?.label}
         </span>
-        <span className="text-dark-charcoal/60">
-          · {filteredAndSortedAlerts.recent.length + filteredAndSortedAlerts.lastWeek.length} total alerts
+        <span
+          className={isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}
+        >
+          ·{" "}
+          {filteredAndSortedAlerts.recent.length +
+            filteredAndSortedAlerts.lastWeek.length}{" "}
+          total alerts
         </span>
       </div>
 
       {/* Recently Section */}
-      <section className="space-y-4 rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
+      <section
+        className={`space-y-4 rounded-3xl border p-5 shadow-sm transition-colors ${
+          isDark
+            ? "border-dark-border bg-dark-card"
+            : "border-light-grey bg-pure-white"
+        }`}
+      >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-dark-charcoal">Recently</h2>
-          <span className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+          <h2
+            className={`text-lg font-semibold ${
+              isDark ? "text-dark-text" : "text-dark-charcoal"
+            }`}
+          >
+            Recently
+          </h2>
+          <span
+            className={`text-xs uppercase tracking-wide ${
+              isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+            }`}
+          >
             {filteredAndSortedAlerts.recent.length} records
           </span>
         </div>
         <div className="space-y-3">
           {filteredAndSortedAlerts.recent.map((alert) => {
             const tone = alertTone[alert.alert_type as keyof typeof alertTone];
+            const borderClass =
+              alert.alert_type === "INACTIVE" && isDark
+                ? tone.borderDark
+                : tone.border;
+            const bgClass = isDark ? tone.backgroundDark : tone.background;
+            const labelClass =
+              alert.alert_type === "INACTIVE" && isDark
+                ? tone.labelDark
+                : tone.label;
+
             return (
               <article
                 key={alert.id}
-                className={`rounded-2xl border px-4 py-3 ${tone.border} ${tone.background}`}
+                className={`rounded-2xl border px-4 py-3 ${borderClass} ${bgClass}`}
               >
-                <p className={`text-base font-semibold ${tone.label}`}>
+                <p className={`text-base font-semibold ${labelClass}`}>
                   {alert.alert_type}!
                 </p>
-                <p className="text-sm font-semibold text-dark-charcoal">
-                  Node {alert.node_reference.replace("node_", "")} · Water Level:{" "}
-                  {alert.water_level} ft
+                <p
+                  className={`text-sm font-semibold ${
+                    isDark ? "text-dark-text" : "text-dark-charcoal"
+                  }`}
+                >
+                  Node {alert.node_reference.replace("node_", "")} · Water
+                  Level: {alert.water_level} ft
                 </p>
-                <p className="text-sm text-dark-charcoal/80">{alert.area}</p>
-                <p className="text-xs text-dark-charcoal/60">
+                <p
+                  className={`text-sm ${
+                    isDark ? "text-dark-text-secondary" : "text-dark-charcoal/80"
+                  }`}
+                >
+                  {alert.area}
+                </p>
+                <p
+                  className={`text-xs ${
+                    isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+                  }`}
+                >
                   {new Date(alert.timestamp).toLocaleString("en-MY", {
                     dateStyle: "medium",
                     timeStyle: "short",
                   })}
                 </p>
-                <p className="mt-2 text-sm text-dark-charcoal">{alert.message}</p>
+                <p
+                  className={`mt-2 text-sm ${
+                    isDark ? "text-dark-text" : "text-dark-charcoal"
+                  }`}
+                >
+                  {alert.message}
+                </p>
               </article>
             );
           })}
           {filteredAndSortedAlerts.recent.length === 0 && (
-            <p className="text-sm font-semibold text-dark-charcoal/70">
+            <p
+              className={`text-sm font-semibold ${
+                isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"
+              }`}
+            >
               No alerts match the selected filter.
             </p>
           )}
@@ -267,40 +358,90 @@ export default function AlertsPage() {
       </section>
 
       {/* Last Week Section */}
-      <section className="space-y-4 rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
+      <section
+        className={`space-y-4 rounded-3xl border p-5 shadow-sm transition-colors ${
+          isDark
+            ? "border-dark-border bg-dark-card"
+            : "border-light-grey bg-pure-white"
+        }`}
+      >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-dark-charcoal">Last Week</h2>
-          <span className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+          <h2
+            className={`text-lg font-semibold ${
+              isDark ? "text-dark-text" : "text-dark-charcoal"
+            }`}
+          >
+            Last Week
+          </h2>
+          <span
+            className={`text-xs uppercase tracking-wide ${
+              isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+            }`}
+          >
             {filteredAndSortedAlerts.lastWeek.length} records
           </span>
         </div>
         <div className="space-y-3">
           {filteredAndSortedAlerts.lastWeek.map((alert) => {
             const tone = alertTone[alert.alert_type as keyof typeof alertTone];
+            const borderClass =
+              alert.alert_type === "INACTIVE" && isDark
+                ? tone.borderDark
+                : tone.border;
+            const bgClass = isDark ? tone.backgroundDark : tone.background;
+            const labelClass =
+              alert.alert_type === "INACTIVE" && isDark
+                ? tone.labelDark
+                : tone.label;
+
             return (
               <article
                 key={alert.id}
-                className={`rounded-2xl border px-4 py-3 ${tone.border} ${tone.background}`}
+                className={`rounded-2xl border px-4 py-3 ${borderClass} ${bgClass}`}
               >
-                <p className={`text-base font-semibold ${tone.label}`}>
+                <p className={`text-base font-semibold ${labelClass}`}>
                   {alert.alert_type}!
                 </p>
-                <p className="text-sm font-semibold text-dark-charcoal">
-                  Node {alert.node_reference.replace("node_", "")} · Water Level:{" "}
-                  {alert.water_level} ft
+                <p
+                  className={`text-sm font-semibold ${
+                    isDark ? "text-dark-text" : "text-dark-charcoal"
+                  }`}
+                >
+                  Node {alert.node_reference.replace("node_", "")} · Water
+                  Level: {alert.water_level} ft
                 </p>
-                <p className="text-sm text-dark-charcoal/80">{alert.area}</p>
-                <p className="text-xs text-dark-charcoal/60">
+                <p
+                  className={`text-sm ${
+                    isDark ? "text-dark-text-secondary" : "text-dark-charcoal/80"
+                  }`}
+                >
+                  {alert.area}
+                </p>
+                <p
+                  className={`text-xs ${
+                    isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+                  }`}
+                >
                   {new Date(alert.timestamp).toLocaleDateString("en-MY", {
                     dateStyle: "medium",
                   })}
                 </p>
-                <p className="mt-2 text-sm text-dark-charcoal">{alert.message}</p>
+                <p
+                  className={`mt-2 text-sm ${
+                    isDark ? "text-dark-text" : "text-dark-charcoal"
+                  }`}
+                >
+                  {alert.message}
+                </p>
               </article>
             );
           })}
           {filteredAndSortedAlerts.lastWeek.length === 0 && (
-            <p className="text-sm font-semibold text-dark-charcoal/70">
+            <p
+              className={`text-sm font-semibold ${
+                isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"
+              }`}
+            >
               Nothing to show here for now.
             </p>
           )}
@@ -309,16 +450,32 @@ export default function AlertsPage() {
 
       {/* Filter Modal */}
       {isFilterModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-charcoal/60 p-4">
-          <div className="w-full max-w-md rounded-3xl bg-pure-white p-6 shadow-xl">
+        <div
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${
+            isDark ? "bg-dark-bg/80" : "bg-dark-charcoal/60"
+          }`}
+        >
+          <div
+            className={`w-full max-w-md rounded-3xl p-6 shadow-xl ${
+              isDark ? "bg-dark-card" : "bg-pure-white"
+            }`}
+          >
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-dark-charcoal">
+              <h2
+                className={`text-xl font-semibold ${
+                  isDark ? "text-dark-text" : "text-dark-charcoal"
+                }`}
+              >
                 Filter Alerts
               </h2>
               <button
                 type="button"
                 onClick={() => setIsFilterModalOpen(false)}
-                className="rounded-full p-2 text-dark-charcoal/60 transition hover:bg-very-light-grey hover:text-dark-charcoal"
+                className={`rounded-full p-2 transition ${
+                  isDark
+                    ? "text-dark-text-muted hover:bg-dark-border hover:text-dark-text"
+                    : "text-dark-charcoal/60 hover:bg-very-light-grey hover:text-dark-charcoal"
+                }`}
               >
                 <CloseIcon className="h-5 w-5" />
               </button>
@@ -327,10 +484,18 @@ export default function AlertsPage() {
             <div className="mt-6 space-y-5">
               {/* Time Period */}
               <div>
-                <label className="block text-sm font-semibold text-dark-charcoal">
+                <label
+                  className={`block text-sm font-semibold ${
+                    isDark ? "text-dark-text" : "text-dark-charcoal"
+                  }`}
+                >
                   Time Period
                 </label>
-                <p className="text-xs text-dark-charcoal/60">
+                <p
+                  className={`text-xs ${
+                    isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+                  }`}
+                >
                   Filter alerts by time range
                 </p>
                 <div className="mt-3 grid grid-cols-2 gap-2">
@@ -342,6 +507,8 @@ export default function AlertsPage() {
                       className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
                         timePeriod === option.id
                           ? "bg-primary-red text-pure-white"
+                          : isDark
+                          ? "border border-dark-border text-dark-text hover:border-primary-red/60"
                           : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
                       }`}
                     >
@@ -353,10 +520,18 @@ export default function AlertsPage() {
 
               {/* Sort Order */}
               <div>
-                <label className="block text-sm font-semibold text-dark-charcoal">
+                <label
+                  className={`block text-sm font-semibold ${
+                    isDark ? "text-dark-text" : "text-dark-charcoal"
+                  }`}
+                >
                   Sort Order
                 </label>
-                <p className="text-xs text-dark-charcoal/60">
+                <p
+                  className={`text-xs ${
+                    isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+                  }`}
+                >
                   Order alerts by date or severity
                 </p>
                 <div className="mt-3 grid grid-cols-2 gap-2">
@@ -368,6 +543,8 @@ export default function AlertsPage() {
                       className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
                         sortOrder === option.id
                           ? "bg-primary-red text-pure-white"
+                          : isDark
+                          ? "border border-dark-border text-dark-text hover:border-primary-red/60"
                           : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
                       }`}
                     >
@@ -379,10 +556,18 @@ export default function AlertsPage() {
 
               {/* Alert Type */}
               <div>
-                <label className="block text-sm font-semibold text-dark-charcoal">
+                <label
+                  className={`block text-sm font-semibold ${
+                    isDark ? "text-dark-text" : "text-dark-charcoal"
+                  }`}
+                >
                   Alert Type
                 </label>
-                <p className="text-xs text-dark-charcoal/60">
+                <p
+                  className={`text-xs ${
+                    isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+                  }`}
+                >
                   Show specific alert types
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -394,6 +579,8 @@ export default function AlertsPage() {
                       className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide transition ${
                         activeTypeFilter === option.id
                           ? "bg-primary-red text-pure-white"
+                          : isDark
+                          ? "border border-dark-border text-dark-text hover:border-primary-red/60"
                           : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
                       }`}
                     >
@@ -409,7 +596,11 @@ export default function AlertsPage() {
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="rounded-xl border border-light-grey px-5 py-2.5 text-sm font-semibold text-dark-charcoal transition hover:bg-very-light-grey"
+                className={`rounded-xl border px-5 py-2.5 text-sm font-semibold transition ${
+                  isDark
+                    ? "border-dark-border text-dark-text hover:bg-dark-border"
+                    : "border-light-grey text-dark-charcoal hover:bg-very-light-grey"
+                }`}
               >
                 Reset
               </button>

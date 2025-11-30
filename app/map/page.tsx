@@ -2,33 +2,63 @@
 
 import NodeMap from "@/components/map/NodeMap";
 import { nodes, statusLegend } from "@/lib/data";
+import { useTheme } from "@/lib/ThemeContext";
 
 export default function FloodMapPage() {
+  const { isDark } = useTheme();
   const activeNodes = nodes.filter((node) => node.is_active).length;
   const inactiveNodes = nodes.length - activeNodes;
 
   return (
     <section className="space-y-6">
       <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold text-dark-charcoal">Flood Map</h1>
-        <p className="text-sm text-dark-charcoal/70">
+        <h1
+          className={`text-3xl font-semibold ${
+            isDark ? "text-dark-text" : "text-dark-charcoal"
+          }`}
+        >
+          Flood Map
+        </h1>
+        <p
+          className={`text-sm ${
+            isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
+          }`}
+        >
           Google Maps overlays show every live sensor. Hover markers to inspect
           a node&apos;s health, water level, and coordinates.
         </p>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,1.2fr)]">
-        <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
+        <article
+          className={`rounded-3xl border p-5 shadow-sm transition-colors ${
+            isDark
+              ? "border-dark-border bg-dark-card"
+              : "border-light-grey bg-pure-white"
+          }`}
+        >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+              <p
+                className={`text-xs uppercase tracking-wide ${
+                  isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+                }`}
+              >
                 Live View
               </p>
-              <h2 className="text-lg font-semibold text-dark-charcoal">
+              <h2
+                className={`text-lg font-semibold ${
+                  isDark ? "text-dark-text" : "text-dark-charcoal"
+                }`}
+              >
                 IoT Nodes on Google Maps
               </h2>
             </div>
-            <div className="flex items-center gap-4 text-sm font-semibold text-dark-charcoal">
+            <div
+              className={`flex items-center gap-4 text-sm font-semibold ${
+                isDark ? "text-dark-text" : "text-dark-charcoal"
+              }`}
+            >
               <span>
                 Active Nodes:{" "}
                 <span className="text-status-green">{activeNodes}</span>
@@ -39,11 +69,23 @@ export default function FloodMapPage() {
               </span>
             </div>
           </div>
-          <div className="mt-4 rounded-3xl border border-light-grey">
+          <div
+            className={`mt-4 rounded-3xl border ${
+              isDark ? "border-dark-border" : "border-light-grey"
+            }`}
+          >
             <NodeMap nodes={nodes} height={460} zoom={14} />
           </div>
-          <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-dark-charcoal/70">
-            <span className="font-semibold text-dark-charcoal">
+          <div
+            className={`mt-4 flex flex-wrap items-center gap-4 text-sm ${
+              isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
+            }`}
+          >
+            <span
+              className={`font-semibold ${
+                isDark ? "text-dark-text" : "text-dark-charcoal"
+              }`}
+            >
               Status Legend Logic:
             </span>
             <span>Safe = 0 ft</span>
@@ -53,18 +95,34 @@ export default function FloodMapPage() {
           </div>
         </article>
 
-        <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
-          <h2 className="text-lg font-semibold text-dark-charcoal">
+        <article
+          className={`rounded-3xl border p-5 shadow-sm transition-colors ${
+            isDark
+              ? "border-dark-border bg-dark-card"
+              : "border-light-grey bg-pure-white"
+          }`}
+        >
+          <h2
+            className={`text-lg font-semibold ${
+              isDark ? "text-dark-text" : "text-dark-charcoal"
+            }`}
+          >
             Status Legend
           </h2>
-          <p className="text-xs text-dark-charcoal/70">
+          <p
+            className={`text-xs ${
+              isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"
+            }`}
+          >
             Every pin follows the Sarawak flood SOP levels.
           </p>
           <ul className="mt-4 space-y-3">
             {statusLegend.map((legend) => (
               <li
                 key={legend.label}
-                className="flex items-center justify-between rounded-2xl border border-light-grey px-4 py-3"
+                className={`flex items-center justify-between rounded-2xl border px-4 py-3 ${
+                  isDark ? "border-dark-border" : "border-light-grey"
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <span
@@ -73,10 +131,18 @@ export default function FloodMapPage() {
                     {legend.water_level}
                   </span>
                   <div>
-                    <p className="text-sm font-semibold text-dark-charcoal">
+                    <p
+                      className={`text-sm font-semibold ${
+                        isDark ? "text-dark-text" : "text-dark-charcoal"
+                      }`}
+                    >
                       {legend.label}
                     </p>
-                    <p className="text-xs text-dark-charcoal/70">
+                    <p
+                      className={`text-xs ${
+                        isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"
+                      }`}
+                    >
                       {legend.description}
                     </p>
                   </div>
@@ -87,8 +153,18 @@ export default function FloodMapPage() {
               </li>
             ))}
           </ul>
-          <div className="mt-6 rounded-2xl bg-very-light-grey px-4 py-3 text-xs text-dark-charcoal/70">
-            <p className="font-semibold uppercase tracking-wide text-dark-charcoal">
+          <div
+            className={`mt-6 rounded-2xl px-4 py-3 text-xs ${
+              isDark
+                ? "bg-dark-bg text-dark-text-muted"
+                : "bg-very-light-grey text-dark-charcoal/70"
+            }`}
+          >
+            <p
+              className={`font-semibold uppercase tracking-wide ${
+                isDark ? "text-dark-text" : "text-dark-charcoal"
+              }`}
+            >
               Map Footer
             </p>
             <p>
@@ -105,4 +181,3 @@ export default function FloodMapPage() {
     </section>
   );
 }
-

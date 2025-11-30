@@ -27,6 +27,7 @@ import {
   trendSeriesMonthly,
   waterLevelByNode,
 } from "@/lib/data";
+import { useTheme } from "@/lib/ThemeContext";
 
 // ─── Derived data for charts ─────────────────────────────────────────────────
 const lineChartData = trendSeriesMonthly.map((pt) => ({
@@ -68,7 +69,6 @@ const stateBarData = floodTotalsByState.map((s) => ({
   critical: s.critical,
 }));
 
-// Bubble chart legend data
 const bubbleLegendData = [
   { value: "Safe (0 ft)", color: "#56E40A" },
   { value: "Warning L1 (1 ft)", color: "#FFD54F" },
@@ -77,15 +77,32 @@ const bubbleLegendData = [
 ];
 
 export default function AnalyticsPage() {
+  const { isDark } = useTheme();
   const averageBattery = 87;
   const uptime = 99.2;
   const probabilityOfFlood = 12;
 
+  // Chart colors based on theme
+  const chartTextColor = isDark ? "#a0a0a0" : "#4E4B4B";
+  const chartGridColor = isDark ? "#2d3a5a" : "#E5E5E5";
+  const tooltipBg = isDark ? "#16213e" : "#ffffff";
+  const tooltipBorder = isDark ? "#2d3a5a" : "#BFBFBF";
+
   return (
     <section className="space-y-6">
       <header>
-        <h1 className="text-3xl font-semibold text-dark-charcoal">Analytics</h1>
-        <p className="text-sm text-dark-charcoal/70">
+        <h1
+          className={`text-3xl font-semibold ${
+            isDark ? "text-dark-text" : "text-dark-charcoal"
+          }`}
+        >
+          Analytics
+        </h1>
+        <p
+          className={`text-sm ${
+            isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
+          }`}
+        >
           Insights derived from MongoDB + Google Maps telemetry to aid planning
           and mitigation.
         </p>
@@ -115,14 +132,27 @@ export default function AnalyticsPage() {
 
       {/* ─── Row 1: Line Chart + Bar Chart ──────────────────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Area/Line Chart – Time Series */}
-        <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
+        <article
+          className={`rounded-3xl border p-5 shadow-sm transition-colors ${
+            isDark
+              ? "border-dark-border bg-dark-card"
+              : "border-light-grey bg-pure-white"
+          }`}
+        >
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-dark-charcoal">
+              <h2
+                className={`text-lg font-semibold ${
+                  isDark ? "text-dark-text" : "text-dark-charcoal"
+                }`}
+              >
                 Time Series Analysis
               </h2>
-              <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+              <p
+                className={`text-xs uppercase tracking-wide ${
+                  isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+                }`}
+              >
                 Monthly average water level (ft)
               </p>
             </div>
@@ -139,10 +169,10 @@ export default function AnalyticsPage() {
                     <stop offset="95%" stopColor="#ED1C24" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
+                <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} />
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  tick={{ fontSize: 10, fill: chartTextColor }}
                   axisLine={false}
                   tickLine={false}
                   label={{
@@ -150,11 +180,11 @@ export default function AnalyticsPage() {
                     position: "insideBottom",
                     offset: -5,
                     fontSize: 11,
-                    fill: "#4E4B4B",
+                    fill: chartTextColor,
                   }}
                 />
                 <YAxis
-                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  tick={{ fontSize: 10, fill: chartTextColor }}
                   axisLine={false}
                   tickLine={false}
                   domain={[0, "dataMax + 0.5"]}
@@ -163,14 +193,16 @@ export default function AnalyticsPage() {
                     angle: -90,
                     position: "insideLeft",
                     fontSize: 11,
-                    fill: "#4E4B4B",
+                    fill: chartTextColor,
                   }}
                 />
                 <Tooltip
                   contentStyle={{
                     borderRadius: 12,
-                    border: "1px solid #BFBFBF",
+                    border: `1px solid ${tooltipBorder}`,
                     fontSize: 12,
+                    backgroundColor: tooltipBg,
+                    color: isDark ? "#e8e8e8" : "#4E4B4B",
                   }}
                   formatter={(value: number) => [`${value} ft`, "Water Level"]}
                 />
@@ -178,7 +210,7 @@ export default function AnalyticsPage() {
                   verticalAlign="top"
                   height={36}
                   iconType="circle"
-                  wrapperStyle={{ fontSize: 12, fontWeight: 500 }}
+                  wrapperStyle={{ fontSize: 12, fontWeight: 500, color: chartTextColor }}
                 />
                 <Area
                   type="monotone"
@@ -195,21 +227,34 @@ export default function AnalyticsPage() {
           </div>
         </article>
 
-        {/* Bar Chart – Water Level by Node */}
-        <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
-          <h2 className="text-lg font-semibold text-dark-charcoal">
+        <article
+          className={`rounded-3xl border p-5 shadow-sm transition-colors ${
+            isDark
+              ? "border-dark-border bg-dark-card"
+              : "border-light-grey bg-pure-white"
+          }`}
+        >
+          <h2
+            className={`text-lg font-semibold ${
+              isDark ? "text-dark-text" : "text-dark-charcoal"
+            }`}
+          >
             Water Level by Node
           </h2>
-          <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+          <p
+            className={`text-xs uppercase tracking-wide ${
+              isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+            }`}
+          >
             Current readings (ft)
           </p>
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={barChartData} barCategoryGap="20%">
-                <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
+                <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} />
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  tick={{ fontSize: 10, fill: chartTextColor }}
                   axisLine={false}
                   tickLine={false}
                   label={{
@@ -217,11 +262,11 @@ export default function AnalyticsPage() {
                     position: "insideBottom",
                     offset: -5,
                     fontSize: 11,
-                    fill: "#4E4B4B",
+                    fill: chartTextColor,
                   }}
                 />
                 <YAxis
-                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  tick={{ fontSize: 10, fill: chartTextColor }}
                   axisLine={false}
                   tickLine={false}
                   domain={[0, 4]}
@@ -230,14 +275,16 @@ export default function AnalyticsPage() {
                     angle: -90,
                     position: "insideLeft",
                     fontSize: 11,
-                    fill: "#4E4B4B",
+                    fill: chartTextColor,
                   }}
                 />
                 <Tooltip
                   contentStyle={{
                     borderRadius: 12,
-                    border: "1px solid #BFBFBF",
+                    border: `1px solid ${tooltipBorder}`,
                     fontSize: 12,
+                    backgroundColor: tooltipBg,
+                    color: isDark ? "#e8e8e8" : "#4E4B4B",
                   }}
                   formatter={(value: number) => [`${value} ft`, "Water Level"]}
                 />
@@ -245,7 +292,7 @@ export default function AnalyticsPage() {
                   verticalAlign="top"
                   height={36}
                   iconType="square"
-                  wrapperStyle={{ fontSize: 12, fontWeight: 500 }}
+                  wrapperStyle={{ fontSize: 12, fontWeight: 500, color: chartTextColor }}
                 />
                 <Bar
                   dataKey="level"
@@ -261,12 +308,25 @@ export default function AnalyticsPage() {
 
       {/* ─── Row 2: Pie Chart + Bubble/Scatter Map ──────────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Pie Chart – Alert Distribution */}
-        <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
-          <h2 className="text-lg font-semibold text-dark-charcoal">
+        <article
+          className={`rounded-3xl border p-5 shadow-sm transition-colors ${
+            isDark
+              ? "border-dark-border bg-dark-card"
+              : "border-light-grey bg-pure-white"
+          }`}
+        >
+          <h2
+            className={`text-lg font-semibold ${
+              isDark ? "text-dark-text" : "text-dark-charcoal"
+            }`}
+          >
             Alert Distribution
           </h2>
-          <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+          <p
+            className={`text-xs uppercase tracking-wide ${
+              isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+            }`}
+          >
             By alert type
           </p>
           <div className="mt-4 h-72">
@@ -283,7 +343,7 @@ export default function AnalyticsPage() {
                   label={({ name, percent }) =>
                     `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`
                   }
-                  labelLine={{ stroke: "#BFBFBF", strokeWidth: 1 }}
+                  labelLine={{ stroke: isDark ? "#6b7280" : "#BFBFBF", strokeWidth: 1 }}
                 >
                   {pieChartData.map((entry, index) => (
                     <Cell
@@ -295,30 +355,44 @@ export default function AnalyticsPage() {
                 <Tooltip
                   contentStyle={{
                     borderRadius: 12,
-                    border: "1px solid #BFBFBF",
+                    border: `1px solid ${tooltipBorder}`,
                     fontSize: 12,
+                    backgroundColor: tooltipBg,
+                    color: isDark ? "#e8e8e8" : "#4E4B4B",
                   }}
                   formatter={(value: number, name: string) => [value, name]}
                 />
                 <Legend
                   verticalAlign="bottom"
                   iconType="circle"
-                  wrapperStyle={{ fontSize: 11, fontWeight: 500 }}
+                  wrapperStyle={{ fontSize: 11, fontWeight: 500, color: chartTextColor }}
                 />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </article>
 
-        {/* Bubble Chart – Node Severity Map */}
-        <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
-          <h2 className="text-lg font-semibold text-dark-charcoal">
+        <article
+          className={`rounded-3xl border p-5 shadow-sm transition-colors ${
+            isDark
+              ? "border-dark-border bg-dark-card"
+              : "border-light-grey bg-pure-white"
+          }`}
+        >
+          <h2
+            className={`text-lg font-semibold ${
+              isDark ? "text-dark-text" : "text-dark-charcoal"
+            }`}
+          >
             Node Severity Bubble Map
           </h2>
-          <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+          <p
+            className={`text-xs uppercase tracking-wide ${
+              isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+            }`}
+          >
             Bubble size = water level severity
           </p>
-          {/* Custom Legend for Bubble Chart */}
           <div className="mt-2 flex flex-wrap justify-center gap-3">
             {bubbleLegendData.map((item) => (
               <div key={item.value} className="flex items-center gap-1.5">
@@ -326,7 +400,11 @@ export default function AnalyticsPage() {
                   className="h-3 w-3 rounded-full"
                   style={{ backgroundColor: item.color }}
                 />
-                <span className="text-[10px] font-medium text-dark-charcoal">
+                <span
+                  className={`text-[10px] font-medium ${
+                    isDark ? "text-dark-text" : "text-dark-charcoal"
+                  }`}
+                >
                   {item.value}
                 </span>
               </div>
@@ -335,12 +413,12 @@ export default function AnalyticsPage() {
           <div className="mt-2 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
+                <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} />
                 <XAxis
                   type="number"
                   dataKey="x"
                   name="Longitude"
-                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  tick={{ fontSize: 10, fill: chartTextColor }}
                   domain={["dataMin - 1", "dataMax + 1"]}
                   tickFormatter={(v) => v.toFixed(1)}
                   label={{
@@ -348,14 +426,14 @@ export default function AnalyticsPage() {
                     position: "insideBottom",
                     offset: -5,
                     fontSize: 11,
-                    fill: "#4E4B4B",
+                    fill: chartTextColor,
                   }}
                 />
                 <YAxis
                   type="number"
                   dataKey="y"
                   name="Latitude"
-                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  tick={{ fontSize: 10, fill: chartTextColor }}
                   domain={["dataMin - 0.5", "dataMax + 0.5"]}
                   tickFormatter={(v) => v.toFixed(1)}
                   label={{
@@ -363,7 +441,7 @@ export default function AnalyticsPage() {
                     angle: -90,
                     position: "insideLeft",
                     fontSize: 11,
-                    fill: "#4E4B4B",
+                    fill: chartTextColor,
                   }}
                 />
                 <ZAxis type="number" dataKey="z" range={[60, 400]} />
@@ -371,8 +449,10 @@ export default function AnalyticsPage() {
                   cursor={{ strokeDasharray: "3 3" }}
                   contentStyle={{
                     borderRadius: 12,
-                    border: "1px solid #BFBFBF",
+                    border: `1px solid ${tooltipBorder}`,
                     fontSize: 12,
+                    backgroundColor: tooltipBg,
+                    color: isDark ? "#e8e8e8" : "#4E4B4B",
                   }}
                   formatter={(value: number, name: string) => {
                     if (name === "z") return null;
@@ -395,20 +475,34 @@ export default function AnalyticsPage() {
       </div>
 
       {/* ─── Row 3: Stacked Bar – Flood by State ────────────────────────────── */}
-      <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
-        <h2 className="text-lg font-semibold text-dark-charcoal">
+      <article
+        className={`rounded-3xl border p-5 shadow-sm transition-colors ${
+          isDark
+            ? "border-dark-border bg-dark-card"
+            : "border-light-grey bg-pure-white"
+        }`}
+      >
+        <h2
+          className={`text-lg font-semibold ${
+            isDark ? "text-dark-text" : "text-dark-charcoal"
+          }`}
+        >
           Total Flood by State
         </h2>
-        <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+        <p
+          className={`text-xs uppercase tracking-wide ${
+            isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
+          }`}
+        >
           Total vs Critical incidents comparison
         </p>
         <div className="mt-4 h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={stateBarData} layout="vertical" barCategoryGap="18%">
-              <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
+              <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} />
               <XAxis
                 type="number"
-                tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                tick={{ fontSize: 10, fill: chartTextColor }}
                 axisLine={false}
                 tickLine={false}
                 label={{
@@ -416,13 +510,13 @@ export default function AnalyticsPage() {
                   position: "insideBottom",
                   offset: -5,
                   fontSize: 11,
-                  fill: "#4E4B4B",
+                  fill: chartTextColor,
                 }}
               />
               <YAxis
                 type="category"
                 dataKey="name"
-                tick={{ fontSize: 11, fill: "#4E4B4B" }}
+                tick={{ fontSize: 11, fill: chartTextColor }}
                 axisLine={false}
                 tickLine={false}
                 width={90}
@@ -430,15 +524,17 @@ export default function AnalyticsPage() {
               <Tooltip
                 contentStyle={{
                   borderRadius: 12,
-                  border: "1px solid #BFBFBF",
+                  border: `1px solid ${tooltipBorder}`,
                   fontSize: 12,
+                  backgroundColor: tooltipBg,
+                  color: isDark ? "#e8e8e8" : "#4E4B4B",
                 }}
               />
               <Legend
                 verticalAlign="top"
                 height={36}
                 iconType="square"
-                wrapperStyle={{ fontSize: 12, fontWeight: 500 }}
+                wrapperStyle={{ fontSize: 12, fontWeight: 500, color: chartTextColor }}
               />
               <Bar
                 dataKey="total"
@@ -458,31 +554,65 @@ export default function AnalyticsPage() {
       </article>
 
       {/* ─── Recommendation Engine ──────────────────────────────────────────── */}
-      <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
-        <h2 className="text-lg font-semibold text-dark-charcoal">
+      <article
+        className={`rounded-3xl border p-5 shadow-sm transition-colors ${
+          isDark
+            ? "border-dark-border bg-dark-card"
+            : "border-light-grey bg-pure-white"
+        }`}
+      >
+        <h2
+          className={`text-lg font-semibold ${
+            isDark ? "text-dark-text" : "text-dark-charcoal"
+          }`}
+        >
           Recommendation Engine
         </h2>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-light-grey p-4">
+          <div
+            className={`rounded-2xl border p-4 ${
+              isDark ? "border-dark-border" : "border-light-grey"
+            }`}
+          >
             <p className="text-sm font-semibold text-primary-red">Escalate</p>
-            <p className="mt-2 text-sm text-dark-charcoal/80">
+            <p
+              className={`mt-2 text-sm ${
+                isDark ? "text-dark-text-secondary" : "text-dark-charcoal/80"
+              }`}
+            >
               Node {nodes[1].node_id.toUpperCase()} is trending at water level{" "}
               {nodes[1].water_level} ft. Auto-create a Danger alert if it stays
               above threshold for 10 minutes.
             </p>
           </div>
-          <div className="rounded-2xl border border-light-grey p-4">
+          <div
+            className={`rounded-2xl border p-4 ${
+              isDark ? "border-dark-border" : "border-light-grey"
+            }`}
+          >
             <p className="text-sm font-semibold text-status-warning-2">
               Preventive
             </p>
-            <p className="mt-2 text-sm text-dark-charcoal/80">
+            <p
+              className={`mt-2 text-sm ${
+                isDark ? "text-dark-text-secondary" : "text-dark-charcoal/80"
+              }`}
+            >
               Schedule maintenance for nodes with battery &lt; 80%. Current
               backlog: 3 nodes.
             </p>
           </div>
-          <div className="rounded-2xl border border-light-grey p-4">
+          <div
+            className={`rounded-2xl border p-4 ${
+              isDark ? "border-dark-border" : "border-light-grey"
+            }`}
+          >
             <p className="text-sm font-semibold text-status-green">Operational</p>
-            <p className="mt-2 text-sm text-dark-charcoal/80">
+            <p
+              className={`mt-2 text-sm ${
+                isDark ? "text-dark-text-secondary" : "text-dark-charcoal/80"
+              }`}
+            >
               Auto-share a CSV snapshot with the command center every 6 hours.
             </p>
           </div>
