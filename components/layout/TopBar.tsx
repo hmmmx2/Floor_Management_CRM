@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import logo from "@/app/images/logo.png";
-import { searchPages, type SearchResult } from "@/lib/search";
+import { getAllPages, highlightMatch, searchPages, type SearchResult } from "@/lib/search";
 
 function HamburgerIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -137,6 +137,24 @@ const resultIcons: Record<SearchResult["icon"], React.ReactNode> = {
   ),
 };
 
+// Highlighted text component
+function HighlightedText({ text, query }: { text: string; query: string }) {
+  const parts = highlightMatch(text, query);
+  return (
+    <>
+      {parts.map((part, index) =>
+        part.isMatch ? (
+          <mark key={index} className="bg-light-red text-primary-red font-semibold rounded px-0.5">
+            {part.text}
+          </mark>
+        ) : (
+          <span key={index}>{part.text}</span>
+        )
+      )}
+    </>
+  );
+}
+
 type TopBarProps = {
   isSidebarCollapsed: boolean;
   onToggleSidebar: () => void;
@@ -152,28 +170,31 @@ export default function TopBar({
 }: TopBarProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const searchRef = useRef<HTMLDivElement>(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const mobileSearchContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const mobileInputRef = useRef<HTMLInputElement>(null);
 
-  // Update search results when search term changes
+  // Get results: if search term exists, filter; otherwise show all pages
+  const displayResults = searchTerm.trim()
+    ? searchPages(searchTerm)
+    : getAllPages();
+
+  // Reset selected index when results change
   useEffect(() => {
-    if (searchTerm.trim()) {
-      const results = searchPages(searchTerm);
-      setSearchResults(results);
-      setSelectedIndex(-1);
-    } else {
-      setSearchResults([]);
-      setSelectedIndex(-1);
-    }
+    setSelectedIndex(0);
   }, [searchTerm]);
 
   // Close search dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const isOutsideDesktop = searchContainerRef.current && !searchContainerRef.current.contains(target);
+      const isOutsideMobile = mobileSearchContainerRef.current && !mobileSearchContainerRef.current.contains(target);
+      
+      if (isOutsideDesktop && isOutsideMobile) {
         setIsSearchFocused(false);
       }
     };
@@ -184,30 +205,31 @@ export default function TopBar({
 
   // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!searchResults.length) return;
+    if (!displayResults.length) return;
 
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
         setSelectedIndex((prev) =>
-          prev < searchResults.length - 1 ? prev + 1 : prev
+          prev < displayResults.length - 1 ? prev + 1 : 0
         );
         break;
       case "ArrowUp":
         e.preventDefault();
-        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+        setSelectedIndex((prev) =>
+          prev > 0 ? prev - 1 : displayResults.length - 1
+        );
         break;
       case "Enter":
         e.preventDefault();
-        if (selectedIndex >= 0 && selectedIndex < searchResults.length) {
-          navigateToResult(searchResults[selectedIndex]);
-        } else if (searchResults.length > 0) {
-          navigateToResult(searchResults[0]);
+        if (selectedIndex >= 0 && selectedIndex < displayResults.length) {
+          navigateToResult(displayResults[selectedIndex]);
         }
         break;
       case "Escape":
         setIsSearchFocused(false);
         inputRef.current?.blur();
+        mobileInputRef.current?.blur();
         break;
     }
   };
@@ -216,10 +238,113 @@ export default function TopBar({
     router.push(result.href);
     setSearchTerm("");
     setIsSearchFocused(false);
-    setSearchResults([]);
   };
 
-  const showDropdown = isSearchFocused && (searchResults.length > 0 || searchTerm.trim());
+  // Search dropdown component
+  const SearchDropdown = ({ isMobile = false }: { isMobile?: boolean }) => (
+    <div 
+      className={`absolute top-full left-0 right-0 mt-2 overflow-hidden rounded-2xl border border-light-grey bg-pure-white shadow-2xl ${
+        isMobile ? "z-[60]" : "z-50"
+      }`}
+    >
+      {/* Header */}
+      <div className="border-b border-light-grey bg-very-light-grey/50 px-4 py-2">
+        <p className="text-xs font-semibold text-dark-charcoal/60">
+          {searchTerm.trim() ? (
+            <>
+              {displayResults.length} result{displayResults.length !== 1 ? "s" : ""} for &quot;{searchTerm}&quot;
+            </>
+          ) : (
+            "All Pages"
+          )}
+        </p>
+      </div>
+
+      {/* Results */}
+      {displayResults.length > 0 ? (
+        <ul className={`overflow-y-auto py-1 ${isMobile ? "max-h-64" : "max-h-80"}`}>
+          {displayResults.map((result, index) => (
+            <li key={result.id}>
+              <button
+                type="button"
+                onClick={() => navigateToResult(result)}
+                onMouseEnter={() => setSelectedIndex(index)}
+                className={`flex w-full items-start gap-3 px-4 py-3 text-left transition-colors ${
+                  selectedIndex === index
+                    ? "bg-light-red/50"
+                    : "hover:bg-very-light-grey"
+                }`}
+              >
+                <span
+                  className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                    selectedIndex === index
+                      ? "bg-primary-red text-pure-white"
+                      : "bg-light-red/60 text-primary-red"
+                  }`}
+                >
+                  {resultIcons[result.icon]}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-dark-charcoal">
+                    <HighlightedText text={result.title} query={searchTerm} />
+                  </p>
+                  <p className="mt-0.5 text-xs text-dark-charcoal/60 line-clamp-1">
+                    <HighlightedText text={result.description} query={searchTerm} />
+                  </p>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <span className="rounded-full bg-very-light-grey px-2 py-0.5 text-[10px] font-medium text-dark-charcoal/50">
+                      {result.category}
+                    </span>
+                    <span className="text-[10px] text-dark-charcoal/40">
+                      {result.href}
+                    </span>
+                  </div>
+                </div>
+                {selectedIndex === index && (
+                  <span className="mt-1 text-xs text-primary-red">
+                    ↵
+                  </span>
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="px-4 py-8 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-very-light-grey">
+            <SearchIcon className="h-6 w-6 text-dark-charcoal/40" />
+          </div>
+          <p className="text-sm font-medium text-dark-charcoal/70">
+            No pages found
+          </p>
+          <p className="mt-1 text-xs text-dark-charcoal/50">
+            Try searching for &quot;dashboard&quot;, &quot;sensors&quot;, or &quot;alerts&quot;
+          </p>
+        </div>
+      )}
+
+      {/* Keyboard hints - only on desktop */}
+      {!isMobile && (
+        <div className="flex items-center justify-between border-t border-light-grey bg-very-light-grey/50 px-4 py-2 text-[10px] text-dark-charcoal/50">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1">
+              <kbd className="rounded bg-light-grey px-1.5 py-0.5 font-mono text-[9px]">↑</kbd>
+              <kbd className="rounded bg-light-grey px-1.5 py-0.5 font-mono text-[9px]">↓</kbd>
+              <span className="ml-1">Navigate</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="rounded bg-light-grey px-1.5 py-0.5 font-mono text-[9px]">Enter</kbd>
+              <span className="ml-1">Open</span>
+            </span>
+          </div>
+          <span className="flex items-center gap-1">
+            <kbd className="rounded bg-light-grey px-1.5 py-0.5 font-mono text-[9px]">Esc</kbd>
+            <span className="ml-1">Close</span>
+          </span>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <header className="sticky top-0 z-40 border-b border-light-grey bg-pure-white/95 backdrop-blur">
@@ -278,24 +403,24 @@ export default function TopBar({
           </div>
 
           {/* Search – desktop with dropdown */}
-          <div ref={searchRef} className="relative ml-auto hidden lg:block w-full max-w-xs">
+          <div ref={searchContainerRef} className="relative ml-auto hidden lg:block w-full max-w-sm">
             <div
-              className={`flex items-center gap-2 rounded-full border bg-pure-white px-4 py-2 text-sm text-dark-charcoal transition-all ${
+              className={`flex items-center gap-2 rounded-full border bg-pure-white px-4 py-2.5 text-sm text-dark-charcoal transition-all ${
                 isSearchFocused
-                  ? "border-primary-red ring-2 ring-primary-red/20"
-                  : "border-primary-red"
+                  ? "border-primary-red ring-2 ring-primary-red/20 shadow-lg"
+                  : "border-light-grey hover:border-primary-red/50"
               }`}
             >
-              <SearchIcon className="h-5 w-5 text-primary-red" />
+              <SearchIcon className={`h-5 w-5 transition-colors ${isSearchFocused ? "text-primary-red" : "text-dark-charcoal/50"}`} />
               <input
                 ref={inputRef}
-                type="search"
+                type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search pages..."
-                className="w-full border-none bg-transparent text-sm outline-none placeholder:text-dark-charcoal/60"
+                className="w-full border-none bg-transparent text-sm outline-none placeholder:text-dark-charcoal/50"
               />
               {searchTerm && (
                 <button
@@ -304,114 +429,48 @@ export default function TopBar({
                     setSearchTerm("");
                     inputRef.current?.focus();
                   }}
-                  className="text-dark-charcoal/40 hover:text-dark-charcoal"
+                  className="rounded-full p-0.5 text-dark-charcoal/40 transition hover:bg-light-grey hover:text-dark-charcoal"
                 >
                   <CloseIcon className="h-4 w-4" />
                 </button>
               )}
             </div>
 
-            {/* Search Results Dropdown */}
-            {showDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-2 overflow-hidden rounded-2xl border border-light-grey bg-pure-white shadow-xl">
-                {searchResults.length > 0 ? (
-                  <ul className="max-h-80 overflow-y-auto py-2">
-                    {searchResults.map((result, index) => (
-                      <li key={result.id}>
-                        <button
-                          type="button"
-                          onClick={() => navigateToResult(result)}
-                          onMouseEnter={() => setSelectedIndex(index)}
-                          className={`flex w-full items-start gap-3 px-4 py-3 text-left transition ${
-                            selectedIndex === index
-                              ? "bg-light-red/40"
-                              : "hover:bg-very-light-grey"
-                          }`}
-                        >
-                          <span
-                            className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                              selectedIndex === index
-                                ? "bg-primary-red text-pure-white"
-                                : "bg-light-red/50 text-primary-red"
-                            }`}
-                          >
-                            {resultIcons[result.icon]}
-                          </span>
-                          <div className="min-w-0 flex-1">
-                            <p className="font-semibold text-dark-charcoal">
-                              {result.title}
-                            </p>
-                            <p className="truncate text-xs text-dark-charcoal/60">
-                              {result.description}
-                            </p>
-                            <span className="mt-1 inline-block rounded-full bg-very-light-grey px-2 py-0.5 text-[10px] font-medium text-dark-charcoal/50">
-                              {result.category}
-                            </span>
-                          </div>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="px-4 py-6 text-center">
-                    <p className="text-sm font-medium text-dark-charcoal/70">
-                      No results found
-                    </p>
-                    <p className="mt-1 text-xs text-dark-charcoal/50">
-                      Try searching for &quot;dashboard&quot;, &quot;sensors&quot;, or &quot;alerts&quot;
-                    </p>
-                  </div>
-                )}
-
-                {/* Keyboard hints */}
-                <div className="flex items-center justify-between border-t border-light-grey bg-very-light-grey/50 px-4 py-2 text-[10px] text-dark-charcoal/50">
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1">
-                      <kbd className="rounded bg-light-grey px-1.5 py-0.5 font-mono">↑</kbd>
-                      <kbd className="rounded bg-light-grey px-1.5 py-0.5 font-mono">↓</kbd>
-                      <span>Navigate</span>
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <kbd className="rounded bg-light-grey px-1.5 py-0.5 font-mono">↵</kbd>
-                      <span>Select</span>
-                    </span>
-                  </div>
-                  <span className="flex items-center gap-1">
-                    <kbd className="rounded bg-light-grey px-1.5 py-0.5 font-mono">Esc</kbd>
-                    <span>Close</span>
-                  </span>
-                </div>
-              </div>
-            )}
+            {/* Search Results Dropdown - Desktop */}
+            {isSearchFocused && <SearchDropdown />}
           </div>
         </div>
 
         {/* Right side actions */}
         <div className="flex items-center gap-3 sm:gap-4">
           {/* Search – mobile with dropdown */}
-          <div ref={searchRef} className="relative w-full lg:hidden">
+          <div ref={mobileSearchContainerRef} className="relative w-full lg:hidden">
             <div
-              className={`flex items-center gap-2 rounded-full border bg-pure-white px-4 py-2 text-sm text-dark-charcoal transition-all ${
+              className={`flex items-center gap-2 rounded-full border bg-pure-white px-4 py-2.5 text-sm text-dark-charcoal transition-all ${
                 isSearchFocused
                   ? "border-primary-red ring-2 ring-primary-red/20"
-                  : "border-primary-red"
+                  : "border-light-grey"
               }`}
             >
-              <SearchIcon className="h-5 w-5 text-primary-red" />
+              <SearchIcon className={`h-5 w-5 transition-colors ${isSearchFocused ? "text-primary-red" : "text-dark-charcoal/50"}`} />
               <input
-                type="search"
+                ref={mobileInputRef}
+                type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search pages..."
-                className="w-full border-none bg-transparent text-sm outline-none placeholder:text-dark-charcoal/60"
+                className="w-full border-none bg-transparent text-sm outline-none placeholder:text-dark-charcoal/50"
               />
               {searchTerm && (
                 <button
                   type="button"
-                  onClick={() => setSearchTerm("")}
-                  className="text-dark-charcoal/40 hover:text-dark-charcoal"
+                  onClick={() => {
+                    setSearchTerm("");
+                    mobileInputRef.current?.focus();
+                  }}
+                  className="rounded-full p-0.5 text-dark-charcoal/40 transition hover:bg-light-grey hover:text-dark-charcoal"
                 >
                   <CloseIcon className="h-4 w-4" />
                 </button>
@@ -419,48 +478,12 @@ export default function TopBar({
             </div>
 
             {/* Mobile Search Results Dropdown */}
-            {showDropdown && (
-              <div className="absolute top-full left-0 right-0 mt-2 overflow-hidden rounded-2xl border border-light-grey bg-pure-white shadow-xl z-50">
-                {searchResults.length > 0 ? (
-                  <ul className="max-h-60 overflow-y-auto py-2">
-                    {searchResults.map((result, index) => (
-                      <li key={result.id}>
-                        <button
-                          type="button"
-                          onClick={() => navigateToResult(result)}
-                          className={`flex w-full items-center gap-3 px-4 py-3 text-left transition ${
-                            selectedIndex === index
-                              ? "bg-light-red/40"
-                              : "hover:bg-very-light-grey"
-                          }`}
-                        >
-                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-light-red/50 text-primary-red">
-                            {resultIcons[result.icon]}
-                          </span>
-                          <div className="min-w-0 flex-1">
-                            <p className="font-semibold text-dark-charcoal">
-                              {result.title}
-                            </p>
-                            <p className="truncate text-xs text-dark-charcoal/60">
-                              {result.description}
-                            </p>
-                          </div>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="px-4 py-4 text-center">
-                    <p className="text-sm text-dark-charcoal/70">No results found</p>
-                  </div>
-                )}
-              </div>
-            )}
+            {isSearchFocused && <SearchDropdown isMobile />}
           </div>
 
           <Link
             href="/alerts"
-            className="relative flex h-11 w-11 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
+            className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
             aria-label="Notifications"
           >
             <NotificationIcon className="h-5 w-5" />
@@ -471,7 +494,7 @@ export default function TopBar({
           </Link>
           <Link
             href="/settings"
-            className="hidden sm:flex h-11 w-11 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
+            className="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
             aria-label="Settings"
           >
             <SettingsIcon className="h-5 w-5" />
@@ -480,7 +503,7 @@ export default function TopBar({
           {/* Profile card with admin info and active status – clickable to admin settings */}
           <Link
             href="/admin"
-            className="relative flex items-center gap-2 rounded-xl border border-primary-red bg-pure-white px-3 py-1.5 transition hover:bg-light-red/20"
+            className="relative flex shrink-0 items-center gap-2 rounded-xl border border-primary-red bg-pure-white px-3 py-1.5 transition hover:bg-light-red/20"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary-red bg-primary-red">
               <ProfileIcon className="h-5 w-5 text-pure-white" />

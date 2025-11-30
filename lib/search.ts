@@ -19,29 +19,10 @@ export const searchIndex: SearchResult[] = [
     category: "Main",
     icon: "dashboard",
     keywords: [
-      "dashboard",
-      "overview",
-      "kpi",
-      "nodes",
-      "alerts",
-      "water level",
-      "hotspot map",
-      "time series",
-      "analysis",
-      "recent activity",
-      "flood",
-      "total nodes",
-      "active",
-      "riskiest area",
-      "average",
-      "telemetry",
-      "monthly",
-      "state",
-      "critical",
-      "warning",
-      "live",
-      "situational",
-      "sarawak",
+      "dashboard", "overview", "kpi", "nodes", "alerts", "water level", "hotspot map",
+      "time series", "analysis", "recent activity", "flood", "total nodes", "active",
+      "riskiest area", "average", "telemetry", "monthly", "state", "critical", "warning",
+      "live", "situational", "sarawak", "sensor", "sensors",
     ],
   },
   {
@@ -52,31 +33,10 @@ export const searchIndex: SearchResult[] = [
     category: "Main",
     icon: "sensors",
     keywords: [
-      "sensors",
-      "iot",
-      "devices",
-      "nodes",
-      "water level",
-      "status",
-      "active",
-      "inactive",
-      "area",
-      "state",
-      "timestamp",
-      "last update",
-      "add sensor",
-      "delete",
-      "search",
-      "filter",
-      "sort",
-      "table",
-      "telemetry",
-      "coordinates",
-      "longitude",
-      "latitude",
-      "safe",
-      "warning",
-      "danger",
+      "sensors", "sensor", "iot", "devices", "nodes", "water level", "status", "active",
+      "inactive", "area", "state", "timestamp", "last update", "add sensor", "delete",
+      "search", "filter", "sort", "table", "telemetry", "coordinates", "longitude",
+      "latitude", "safe", "warning", "danger", "monitor", "device",
     ],
   },
   {
@@ -87,27 +47,10 @@ export const searchIndex: SearchResult[] = [
     category: "Main",
     icon: "map",
     keywords: [
-      "map",
-      "flood map",
-      "google maps",
-      "location",
-      "markers",
-      "sensors",
-      "coordinates",
-      "latitude",
-      "longitude",
-      "hotspot",
-      "area",
-      "region",
-      "sarawak",
-      "kuching",
-      "interactive",
-      "zoom",
-      "status",
-      "legend",
-      "active nodes",
-      "inactive",
-      "geolocation",
+      "map", "flood map", "google maps", "location", "markers", "sensors", "sensor",
+      "coordinates", "latitude", "longitude", "hotspot", "area", "region", "sarawak",
+      "kuching", "interactive", "zoom", "status", "legend", "active nodes", "inactive",
+      "geolocation", "geography",
     ],
   },
   {
@@ -118,31 +61,10 @@ export const searchIndex: SearchResult[] = [
     category: "Insights",
     icon: "analytics",
     keywords: [
-      "analytics",
-      "charts",
-      "graphs",
-      "statistics",
-      "data",
-      "trends",
-      "water level",
-      "monthly",
-      "weekly",
-      "daily",
-      "area chart",
-      "bar chart",
-      "pie chart",
-      "scatter plot",
-      "distribution",
-      "high risk",
-      "states",
-      "mongodb",
-      "schema",
-      "recommendations",
-      "insights",
-      "forecast",
-      "prediction",
-      "analysis",
-      "report",
+      "analytics", "charts", "graphs", "statistics", "data", "trends", "water level",
+      "monthly", "weekly", "daily", "area chart", "bar chart", "pie chart", "scatter plot",
+      "distribution", "high risk", "states", "mongodb", "schema", "recommendations",
+      "insights", "forecast", "prediction", "analysis", "report", "sensor", "sensors",
     ],
   },
   {
@@ -153,29 +75,10 @@ export const searchIndex: SearchResult[] = [
     category: "Insights",
     icon: "alerts",
     keywords: [
-      "alerts",
-      "notifications",
-      "warning",
-      "danger",
-      "critical",
-      "safe",
-      "monitoring",
-      "real-time",
-      "today",
-      "yesterday",
-      "last week",
-      "filter",
-      "latest",
-      "recent",
-      "inactive node",
-      "new nodes",
-      "water level",
-      "threshold",
-      "exceeded",
-      "rising",
-      "falling",
-      "emergency",
-      "status change",
+      "alerts", "alert", "notifications", "warning", "danger", "critical", "safe",
+      "monitoring", "real-time", "today", "yesterday", "last week", "filter", "latest",
+      "recent", "inactive node", "new nodes", "water level", "threshold", "exceeded",
+      "rising", "falling", "emergency", "status change", "sensor", "sensors",
     ],
   },
   {
@@ -186,28 +89,10 @@ export const searchIndex: SearchResult[] = [
     category: "Management",
     icon: "roles",
     keywords: [
-      "roles",
-      "users",
-      "permissions",
-      "access control",
-      "admin",
-      "operations manager",
-      "field technician",
-      "viewer",
-      "add role",
-      "add user",
-      "delete",
-      "remove",
-      "manage",
-      "full access",
-      "view dashboard",
-      "manage sensors",
-      "manage alerts",
-      "active",
-      "inactive",
-      "last active",
-      "email",
-      "team",
+      "roles", "role", "users", "user", "permissions", "access control", "admin",
+      "operations manager", "field technician", "viewer", "add role", "add user",
+      "delete", "remove", "manage", "full access", "view dashboard", "manage sensors",
+      "manage alerts", "active", "inactive", "last active", "email", "team", "member",
     ],
   },
   {
@@ -218,27 +103,10 @@ export const searchIndex: SearchResult[] = [
     category: "Management",
     icon: "admin",
     keywords: [
-      "admin",
-      "settings",
-      "account",
-      "profile",
-      "name",
-      "email",
-      "phone",
-      "department",
-      "notifications",
-      "push notifications",
-      "email alerts",
-      "sms alerts",
-      "security",
-      "password",
-      "two-factor",
-      "2fa",
-      "sessions",
-      "activity",
-      "preferences",
-      "save",
-      "reset",
+      "admin", "settings", "account", "profile", "name", "email", "phone", "department",
+      "notifications", "push notifications", "email alerts", "sms alerts", "security",
+      "password", "two-factor", "2fa", "sessions", "activity", "preferences", "save",
+      "reset", "personal", "administrator",
     ],
   },
   {
@@ -249,75 +117,67 @@ export const searchIndex: SearchResult[] = [
     category: "Management",
     icon: "settings",
     keywords: [
-      "settings",
-      "crm",
-      "configuration",
-      "general",
-      "notifications",
-      "data management",
-      "integrations",
-      "security",
-      "appearance",
-      "theme",
-      "dark mode",
-      "light mode",
-      "map settings",
-      "backup",
-      "restore",
-      "export",
-      "import",
-      "api",
-      "webhook",
-      "timezone",
-      "language",
-      "retention",
-      "cleanup",
+      "settings", "crm", "configuration", "general", "notifications", "data management",
+      "integrations", "security", "appearance", "theme", "dark mode", "light mode",
+      "map settings", "backup", "restore", "export", "import", "api", "webhook",
+      "timezone", "language", "retention", "cleanup", "system", "configure",
     ],
   },
 ];
 
+// Get all pages (for showing when search is focused but empty)
+export function getAllPages(): SearchResult[] {
+  return searchIndex;
+}
+
 // Search function that matches query against keywords
 export function searchPages(query: string): SearchResult[] {
-  if (!query.trim()) {
+  const trimmedQuery = query.toLowerCase().trim();
+  
+  // If no query, return empty (caller should use getAllPages() for initial display)
+  if (!trimmedQuery) {
     return [];
   }
 
-  const searchTerms = query.toLowerCase().trim().split(/\s+/);
+  const searchTerms = trimmedQuery.split(/\s+/);
 
   // Score each page based on keyword matches
   const scoredResults = searchIndex.map((page) => {
     let score = 0;
-    const allKeywords = [
-      page.title.toLowerCase(),
-      page.description.toLowerCase(),
-      page.category.toLowerCase(),
-      ...page.keywords,
-    ].join(" ");
+    const titleLower = page.title.toLowerCase();
+    const descLower = page.description.toLowerCase();
 
     for (const term of searchTerms) {
       // Exact title match - highest priority
-      if (page.title.toLowerCase() === term) {
+      if (titleLower === term) {
         score += 100;
       }
-      // Title contains term
-      else if (page.title.toLowerCase().includes(term)) {
-        score += 50;
+      // Title starts with term
+      else if (titleLower.startsWith(term)) {
+        score += 80;
       }
+      // Title contains term
+      else if (titleLower.includes(term)) {
+        score += 60;
+      }
+      
       // Description contains term
-      if (page.description.toLowerCase().includes(term)) {
+      if (descLower.includes(term)) {
         score += 30;
       }
+      
       // Keyword exact match
-      if (page.keywords.includes(term)) {
-        score += 20;
-      }
-      // Keyword partial match
-      else if (page.keywords.some((kw) => kw.includes(term))) {
-        score += 10;
-      }
-      // Any content contains term
-      else if (allKeywords.includes(term)) {
-        score += 5;
+      for (const keyword of page.keywords) {
+        if (keyword === term) {
+          score += 25;
+          break;
+        } else if (keyword.startsWith(term)) {
+          score += 15;
+          break;
+        } else if (keyword.includes(term)) {
+          score += 10;
+          break;
+        }
       }
     }
 
@@ -331,29 +191,34 @@ export function searchPages(query: string): SearchResult[] {
     .map((result) => result.page);
 }
 
-// Get suggested searches based on partial input
-export function getSuggestions(query: string, limit = 5): string[] {
+// Highlight matching text in a string
+export function highlightMatch(text: string, query: string): { text: string; isMatch: boolean }[] {
   if (!query.trim()) {
-    return [];
+    return [{ text, isMatch: false }];
   }
 
-  const term = query.toLowerCase().trim();
-  const suggestions = new Set<string>();
-
-  for (const page of searchIndex) {
-    // Add matching keywords as suggestions
-    for (const keyword of page.keywords) {
-      if (keyword.startsWith(term) && keyword !== term) {
-        suggestions.add(keyword);
-      }
+  const parts: { text: string; isMatch: boolean }[] = [];
+  const lowerText = text.toLowerCase();
+  const lowerQuery = query.toLowerCase().trim();
+  
+  let lastIndex = 0;
+  let index = lowerText.indexOf(lowerQuery);
+  
+  while (index !== -1) {
+    // Add non-matching part before the match
+    if (index > lastIndex) {
+      parts.push({ text: text.slice(lastIndex, index), isMatch: false });
     }
-
-    // Add title if it matches
-    if (page.title.toLowerCase().startsWith(term)) {
-      suggestions.add(page.title.toLowerCase());
-    }
+    // Add matching part
+    parts.push({ text: text.slice(index, index + lowerQuery.length), isMatch: true });
+    lastIndex = index + lowerQuery.length;
+    index = lowerText.indexOf(lowerQuery, lastIndex);
   }
-
-  return Array.from(suggestions).slice(0, limit);
+  
+  // Add remaining non-matching part
+  if (lastIndex < text.length) {
+    parts.push({ text: text.slice(lastIndex), isMatch: false });
+  }
+  
+  return parts.length > 0 ? parts : [{ text, isMatch: false }];
 }
-
