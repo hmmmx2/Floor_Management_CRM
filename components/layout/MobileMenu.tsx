@@ -13,6 +13,8 @@ import {
   SensorsIcon,
 } from "@/components/icons/NavIcons";
 
+import { useTheme } from "./ThemeProvider";
+
 type MobileMenuProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -57,6 +59,50 @@ function CloseIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+// Sun icon for light mode
+function SunIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  );
+}
+
+// Moon icon for dark mode
+function MoonIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
+}
+
 const mainNavItems = [
   { label: "Dashboard", href: "/dashboard", Icon: DashboardIcon },
   { label: "Sensors", href: "/sensors", Icon: SensorsIcon },
@@ -73,6 +119,7 @@ const managementItems = [
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const pathname = usePathname();
+  const { theme, toggleTheme } = useTheme();
 
   if (!isOpen) return null;
 
@@ -93,14 +140,14 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           isOpen ? "translate-y-0" : "-translate-y-full"
         )}
       >
-        <div className="bg-pure-white shadow-xl">
+        <div className="bg-pure-white shadow-xl dark:bg-dark-card">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-light-grey px-4 py-4">
-            <p className="text-lg font-semibold text-dark-charcoal">Menu</p>
+          <div className="flex items-center justify-between border-b border-light-grey px-4 py-4 dark:border-dark-border">
+            <p className="text-lg font-semibold text-dark-charcoal dark:text-dark-text">Menu</p>
             <button
               type="button"
               onClick={onClose}
-              className="flex h-10 w-10 items-center justify-center rounded-xl text-dark-charcoal transition hover:bg-light-red/40 hover:text-primary-red"
+              className="flex h-10 w-10 items-center justify-center rounded-xl text-dark-charcoal transition hover:bg-light-red/40 hover:text-primary-red dark:text-dark-text dark:hover:bg-primary-red/20"
               aria-label="Close menu"
             >
               <CloseIcon className="h-6 w-6" />
@@ -110,7 +157,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           {/* Navigation Links */}
           <nav className="max-h-[70vh] overflow-y-auto px-4 py-4">
             {/* Main Section */}
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-dark-charcoal/50">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-dark-charcoal/50 dark:text-dark-text-muted">
               Main
             </p>
             <div className="space-y-1">
@@ -128,14 +175,14 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     className={clsx(
                       "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
                       isActive
-                        ? "bg-light-red/60 text-primary-red"
-                        : "text-dark-charcoal hover:bg-light-red/40 hover:text-primary-red"
+                        ? "bg-light-red/60 text-primary-red dark:bg-primary-red/20"
+                        : "text-dark-charcoal hover:bg-light-red/40 hover:text-primary-red dark:text-dark-text dark:hover:bg-primary-red/15"
                     )}
                   >
                     <ItemIcon
                       className={clsx(
                         "h-5 w-5 shrink-0",
-                        isActive ? "text-primary-red" : "text-dark-charcoal"
+                        isActive ? "text-primary-red" : "text-dark-charcoal dark:text-dark-text"
                       )}
                     />
                     <span>{item.label}</span>
@@ -145,8 +192,8 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </div>
 
             {/* Management Section */}
-            <div className="my-4 border-t border-light-grey" />
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-dark-charcoal/50">
+            <div className="my-4 border-t border-light-grey dark:border-dark-border" />
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-dark-charcoal/50 dark:text-dark-text-muted">
               Management
             </p>
             <div className="space-y-1">
@@ -164,14 +211,14 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                     className={clsx(
                       "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
                       isActive
-                        ? "bg-light-red/60 text-primary-red"
-                        : "text-dark-charcoal hover:bg-light-red/40 hover:text-primary-red"
+                        ? "bg-light-red/60 text-primary-red dark:bg-primary-red/20"
+                        : "text-dark-charcoal hover:bg-light-red/40 hover:text-primary-red dark:text-dark-text dark:hover:bg-primary-red/15"
                     )}
                   >
                     <ItemIcon
                       className={clsx(
                         "h-5 w-5 shrink-0",
-                        isActive ? "text-primary-red" : "text-dark-charcoal"
+                        isActive ? "text-primary-red" : "text-dark-charcoal dark:text-dark-text"
                       )}
                     />
                     <span>{item.label}</span>
@@ -179,11 +226,42 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 );
               })}
             </div>
+
+            {/* Theme Toggle Section */}
+            <div className="my-4 border-t border-light-grey dark:border-dark-border" />
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-dark-charcoal/50 dark:text-dark-text-muted">
+              Appearance
+            </p>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-dark-charcoal transition-colors hover:bg-light-red/40 hover:text-primary-red dark:text-dark-text dark:hover:bg-primary-red/15"
+            >
+              <div className="relative h-5 w-5">
+                <SunIcon 
+                  className={clsx(
+                    "absolute inset-0 h-5 w-5 transition-all duration-300",
+                    theme === "dark" 
+                      ? "rotate-0 scale-100 opacity-100" 
+                      : "rotate-90 scale-0 opacity-0"
+                  )} 
+                />
+                <MoonIcon 
+                  className={clsx(
+                    "absolute inset-0 h-5 w-5 transition-all duration-300",
+                    theme === "light" 
+                      ? "rotate-0 scale-100 opacity-100" 
+                      : "-rotate-90 scale-0 opacity-0"
+                  )} 
+                />
+              </div>
+              <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
+            </button>
           </nav>
 
           {/* Footer */}
-          <div className="border-t border-light-grey bg-very-light-grey px-4 py-3">
-            <p className="text-center text-xs text-dark-charcoal/60">
+          <div className="border-t border-light-grey bg-very-light-grey px-4 py-3 dark:border-dark-border dark:bg-dark-bg">
+            <p className="text-center text-xs text-dark-charcoal/60 dark:text-dark-text-muted">
               © 2025 Malaysian Red Crescent
             </p>
           </div>
@@ -192,4 +270,3 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     </>
   );
 }
-

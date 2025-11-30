@@ -20,7 +20,7 @@ export default function AppShell({ children }: AppShellProps) {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-very-light-grey text-dark-charcoal">
+    <div className="flex min-h-screen flex-col bg-very-light-grey text-dark-charcoal transition-colors duration-300 dark:bg-dark-bg dark:text-dark-text">
       {/* Top navbar spans full width */}
       <TopBar
         isSidebarCollapsed={isSidebarCollapsed}

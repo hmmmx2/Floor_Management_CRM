@@ -54,8 +54,8 @@ export default function Sidebar({ isCollapsed }: SidebarProps) {
           "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors",
           isCollapsed ? "justify-center" : "justify-start",
           isActive
-            ? "bg-light-red/60 text-primary-red"
-            : "text-dark-charcoal hover:bg-light-red/40 hover:text-primary-red"
+            ? "bg-light-red/60 text-primary-red dark:bg-primary-red/20"
+            : "text-dark-charcoal hover:bg-light-red/40 hover:text-primary-red dark:text-dark-text dark:hover:bg-primary-red/15"
         )}
         aria-current={isActive ? "page" : undefined}
         title={isCollapsed ? item.label : undefined}
@@ -63,7 +63,7 @@ export default function Sidebar({ isCollapsed }: SidebarProps) {
         <ItemIcon
           className={clsx(
             "h-5 w-5 shrink-0",
-            isActive ? "text-primary-red" : "text-dark-charcoal"
+            isActive ? "text-primary-red" : "text-dark-charcoal dark:text-dark-text"
           )}
         />
         {!isCollapsed && <span>{item.label}</span>}
@@ -74,7 +74,7 @@ export default function Sidebar({ isCollapsed }: SidebarProps) {
   return (
     <aside
       className={clsx(
-        "hidden md:flex flex-col border-r border-light-grey bg-pure-white shadow-sm transition-[width] duration-200",
+        "hidden md:flex flex-col border-r border-light-grey bg-pure-white shadow-sm transition-all duration-300 dark:bg-dark-card dark:border-dark-border",
         isCollapsed ? "w-20" : "w-64"
       )}
     >
@@ -85,11 +85,11 @@ export default function Sidebar({ isCollapsed }: SidebarProps) {
         </div>
 
         {/* Management section divider */}
-        <div className="my-4 border-t border-light-grey" />
+        <div className="my-4 border-t border-light-grey dark:border-dark-border" />
 
         {/* Management section label */}
         {!isCollapsed && (
-          <p className="mb-2 px-4 text-[10px] font-bold uppercase tracking-wider text-dark-charcoal/50">
+          <p className="mb-2 px-4 text-[10px] font-bold uppercase tracking-wider text-dark-charcoal/50 dark:text-dark-text-muted">
             Management
           </p>
         )}

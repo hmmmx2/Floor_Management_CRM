@@ -8,6 +8,7 @@ import Link from "next/link";
 import logo from "@/app/images/logo.png";
 
 import SearchModal from "./SearchModal";
+import { useTheme } from "./ThemeProvider";
 
 function HamburgerIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -93,6 +94,50 @@ function ProfileIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+// Sun icon for light mode
+function SunIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  );
+}
+
+// Moon icon for dark mode
+function MoonIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
+}
+
 type TopBarProps = {
   isSidebarCollapsed: boolean;
   onToggleSidebar: () => void;
@@ -107,10 +152,11 @@ export default function TopBar({
   isMobileMenuOpen = false,
 }: TopBarProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-light-grey bg-pure-white/95 backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-light-grey bg-pure-white/95 backdrop-blur dark:bg-dark-card/95 dark:border-dark-border transition-colors duration-300">
         <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-10">
           {/* Left side */}
           <div className="flex items-center">
@@ -120,7 +166,7 @@ export default function TopBar({
               onClick={onToggleSidebar}
               aria-pressed={!isSidebarCollapsed}
               aria-label="Toggle sidebar"
-              className="hidden md:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-red transition hover:bg-light-red/40"
+              className="hidden md:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-red transition hover:bg-light-red/40 dark:hover:bg-primary-red/20"
             >
               <HamburgerIcon className="h-6 w-6" />
             </button>
@@ -131,7 +177,7 @@ export default function TopBar({
               onClick={onToggleMobileMenu}
               aria-pressed={isMobileMenuOpen}
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-              className="flex md:hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-light-red text-primary-red transition hover:bg-light-red/40"
+              className="flex md:hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-light-red text-primary-red transition hover:bg-light-red/40 dark:border-primary-red/40 dark:hover:bg-primary-red/20"
             >
               {isMobileMenuOpen ? (
                 <CloseIcon className="h-6 w-6" />
@@ -157,7 +203,7 @@ export default function TopBar({
                 priority
               />
               <div className="hidden sm:block">
-                <p className="text-base font-semibold leading-tight text-dark-charcoal">
+                <p className="text-base font-semibold leading-tight text-dark-charcoal dark:text-dark-text">
                   Flood Management
                 </p>
                 <p className="text-xs uppercase tracking-wide text-primary-red">
@@ -171,20 +217,47 @@ export default function TopBar({
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="flex flex-1 max-w-md items-center gap-3 rounded-full border border-light-grey bg-very-light-grey/50 px-4 py-2.5 text-sm text-dark-charcoal/50 transition hover:border-primary-red/50 hover:bg-pure-white hover:shadow-sm"
+            className="flex flex-1 max-w-md items-center gap-3 rounded-full border border-light-grey bg-very-light-grey/50 px-4 py-2.5 text-sm text-dark-charcoal/50 transition hover:border-primary-red/50 hover:bg-pure-white hover:shadow-sm dark:border-dark-border dark:bg-dark-card/50 dark:text-dark-text-muted dark:hover:bg-dark-card dark:hover:border-primary-red/50"
           >
             <SearchIcon className="h-5 w-5" />
             <span className="flex-1 text-left">Search pages...</span>
-            <kbd className="hidden sm:inline-flex items-center gap-1 rounded-lg border border-light-grey bg-pure-white px-2 py-1 text-[10px] font-medium text-dark-charcoal/50">
+            <kbd className="hidden sm:inline-flex items-center gap-1 rounded-lg border border-light-grey bg-pure-white px-2 py-1 text-[10px] font-medium text-dark-charcoal/50 dark:border-dark-border dark:bg-dark-card dark:text-dark-text-muted">
               <span className="text-xs">⌘</span>K
             </kbd>
           </button>
 
           {/* Right side actions */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Theme Toggle Button */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+              className="relative flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition-all duration-300 hover:border-primary-red hover:text-primary-red dark:border-dark-border dark:text-dark-text dark:hover:border-dark-accent dark:hover:text-dark-accent overflow-hidden"
+            >
+              <div className="relative w-5 h-5">
+                {/* Sun icon - visible in dark mode, hidden in light mode */}
+                <SunIcon 
+                  className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
+                    theme === "dark" 
+                      ? "rotate-0 scale-100 opacity-100" 
+                      : "rotate-90 scale-0 opacity-0"
+                  }`} 
+                />
+                {/* Moon icon - visible in light mode, hidden in dark mode */}
+                <MoonIcon 
+                  className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
+                    theme === "light" 
+                      ? "rotate-0 scale-100 opacity-100" 
+                      : "-rotate-90 scale-0 opacity-0"
+                  }`} 
+                />
+              </div>
+            </button>
+
             <Link
               href="/alerts"
-              className="relative flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
+              className="relative flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red dark:border-dark-border dark:text-dark-text dark:hover:border-primary-red"
               aria-label="Notifications"
             >
               <NotificationIcon className="h-5 w-5" />
@@ -195,7 +268,7 @@ export default function TopBar({
             </Link>
             <Link
               href="/settings"
-              className="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
+              className="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red dark:border-dark-border dark:text-dark-text dark:hover:border-primary-red"
               aria-label="Settings"
             >
               <SettingsIcon className="h-5 w-5" />
@@ -204,18 +277,18 @@ export default function TopBar({
             {/* Profile card with admin info and active status – clickable to admin settings */}
             <Link
               href="/admin"
-              className="relative flex shrink-0 items-center gap-2 rounded-xl border border-primary-red bg-pure-white px-2 sm:px-3 py-1.5 transition hover:bg-light-red/20"
+              className="relative flex shrink-0 items-center gap-2 rounded-xl border border-primary-red bg-pure-white px-2 sm:px-3 py-1.5 transition hover:bg-light-red/20 dark:bg-dark-card dark:hover:bg-primary-red/20"
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary-red bg-primary-red">
                 <ProfileIcon className="h-5 w-5 text-pure-white" />
               </div>
               <div className="hidden sm:block">
-                <p className="text-xs font-semibold leading-tight text-dark-charcoal">
+                <p className="text-xs font-semibold leading-tight text-dark-charcoal dark:text-dark-text">
                   Admin
                 </p>
                 <div className="flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-status-green" />
-                  <span className="text-[10px] text-dark-charcoal/70">Active</span>
+                  <span className="text-[10px] text-dark-charcoal/70 dark:text-dark-text-secondary">Active</span>
                 </div>
               </div>
             </Link>

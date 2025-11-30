@@ -184,9 +184,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
       {/* Modal - Centered */}
       <div className="fixed inset-0 z-[101] flex items-start justify-center px-4 pt-[10vh] sm:pt-[15vh]">
-        <div className="w-full max-w-2xl overflow-hidden rounded-3xl border border-light-grey bg-pure-white shadow-2xl">
+        <div className="w-full max-w-2xl overflow-hidden rounded-3xl border border-light-grey bg-pure-white shadow-2xl dark:border-dark-border dark:bg-dark-card">
           {/* Search Header */}
-          <div className="border-b border-light-grey p-4">
+          <div className="border-b border-light-grey p-4 dark:border-dark-border">
             <div className="flex items-center gap-3">
               <SearchIcon className="h-6 w-6 text-primary-red" />
               <input
@@ -196,12 +196,12 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search pages... (e.g., sensor, dashboard, alerts)"
-                className="flex-1 bg-transparent text-lg font-medium text-dark-charcoal outline-none placeholder:text-dark-charcoal/40"
+                className="flex-1 bg-transparent text-lg font-medium text-dark-charcoal outline-none placeholder:text-dark-charcoal/40 dark:text-dark-text dark:placeholder:text-dark-text-muted"
               />
               <button
                 type="button"
                 onClick={onClose}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-dark-charcoal/50 transition hover:bg-light-grey hover:text-dark-charcoal"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-dark-charcoal/50 transition hover:bg-light-grey hover:text-dark-charcoal dark:text-dark-text-muted dark:hover:bg-dark-border dark:hover:text-dark-text"
               >
                 <CloseIcon className="h-5 w-5" />
               </button>
@@ -209,8 +209,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </div>
 
           {/* Results Header */}
-          <div className="border-b border-light-grey bg-very-light-grey/50 px-4 py-2">
-            <p className="text-xs font-semibold text-dark-charcoal/60">
+          <div className="border-b border-light-grey bg-very-light-grey/50 px-4 py-2 dark:border-dark-border dark:bg-dark-bg/50">
+            <p className="text-xs font-semibold text-dark-charcoal/60 dark:text-dark-text-muted">
               {searchTerm.trim() ? (
                 <>
                   {displayResults.length} page{displayResults.length !== 1 ? "s" : ""} found for &quot;
@@ -233,8 +233,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={`flex w-full items-center gap-4 px-4 py-4 text-left transition-colors ${
                     selectedIndex === index
-                      ? "bg-light-red/40"
-                      : "hover:bg-very-light-grey"
+                      ? "bg-light-red/40 dark:bg-primary-red/20"
+                      : "hover:bg-very-light-grey dark:hover:bg-dark-border/50"
                   }`}
                 >
                   {/* Icon */}
@@ -242,7 +242,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition-colors ${
                       selectedIndex === index
                         ? "bg-primary-red text-pure-white"
-                        : "bg-light-red/60 text-primary-red"
+                        : "bg-light-red/60 text-primary-red dark:bg-primary-red/20"
                     }`}
                   >
                     {resultIcons[result.icon]}
@@ -251,21 +251,21 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-base font-semibold text-dark-charcoal">
+                      <p className="text-base font-semibold text-dark-charcoal dark:text-dark-text">
                         <HighlightedText text={result.title} query={searchTerm} />
                       </p>
-                      <span className="rounded-full bg-very-light-grey px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-dark-charcoal/50">
+                      <span className="rounded-full bg-very-light-grey px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-dark-charcoal/50 dark:bg-dark-border dark:text-dark-text-muted">
                         Page
                       </span>
                     </div>
-                    <p className="mt-0.5 text-sm text-dark-charcoal/60 line-clamp-1">
+                    <p className="mt-0.5 text-sm text-dark-charcoal/60 line-clamp-1 dark:text-dark-text-secondary">
                       <HighlightedText text={result.description} query={searchTerm} />
                     </p>
                     <div className="mt-1 flex items-center gap-2">
-                      <span className="rounded-full bg-primary-red/10 px-2 py-0.5 text-[10px] font-medium text-primary-red">
+                      <span className="rounded-full bg-primary-red/10 px-2 py-0.5 text-[10px] font-medium text-primary-red dark:bg-primary-red/20">
                         {result.category}
                       </span>
-                      <span className="text-[11px] text-dark-charcoal/40">
+                      <span className="text-[11px] text-dark-charcoal/40 dark:text-dark-text-muted">
                         {result.href}
                       </span>
                     </div>
@@ -284,13 +284,13 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               ))
             ) : (
               <div className="px-4 py-12 text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-very-light-grey">
-                  <SearchIcon className="h-8 w-8 text-dark-charcoal/30" />
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-very-light-grey dark:bg-dark-border">
+                  <SearchIcon className="h-8 w-8 text-dark-charcoal/30 dark:text-dark-text-muted" />
                 </div>
-                <p className="text-base font-semibold text-dark-charcoal/70">
+                <p className="text-base font-semibold text-dark-charcoal/70 dark:text-dark-text">
                   No pages found
                 </p>
-                <p className="mt-1 text-sm text-dark-charcoal/50">
+                <p className="mt-1 text-sm text-dark-charcoal/50 dark:text-dark-text-muted">
                   Try searching for &quot;dashboard&quot;, &quot;sensor&quot;, or &quot;alerts&quot;
                 </p>
               </div>
@@ -298,19 +298,19 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           </div>
 
           {/* Footer with keyboard hints */}
-          <div className="flex items-center justify-center gap-6 border-t border-light-grey bg-very-light-grey/50 px-4 py-3">
-            <div className="flex items-center gap-4 text-xs text-dark-charcoal/50">
+          <div className="flex items-center justify-center gap-6 border-t border-light-grey bg-very-light-grey/50 px-4 py-3 dark:border-dark-border dark:bg-dark-bg/50">
+            <div className="flex items-center gap-4 text-xs text-dark-charcoal/50 dark:text-dark-text-muted">
               <span className="flex items-center gap-1.5">
-                <kbd className="rounded bg-light-grey px-2 py-1 font-mono text-[10px] font-medium">↑</kbd>
-                <kbd className="rounded bg-light-grey px-2 py-1 font-mono text-[10px] font-medium">↓</kbd>
+                <kbd className="rounded bg-light-grey px-2 py-1 font-mono text-[10px] font-medium dark:bg-dark-border dark:text-dark-text-secondary">↑</kbd>
+                <kbd className="rounded bg-light-grey px-2 py-1 font-mono text-[10px] font-medium dark:bg-dark-border dark:text-dark-text-secondary">↓</kbd>
                 <span>Navigate</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <kbd className="rounded bg-light-grey px-2 py-1 font-mono text-[10px] font-medium">Enter</kbd>
+                <kbd className="rounded bg-light-grey px-2 py-1 font-mono text-[10px] font-medium dark:bg-dark-border dark:text-dark-text-secondary">Enter</kbd>
                 <span>Open page</span>
               </span>
               <span className="flex items-center gap-1.5">
-                <kbd className="rounded bg-light-grey px-2 py-1 font-mono text-[10px] font-medium">Esc</kbd>
+                <kbd className="rounded bg-light-grey px-2 py-1 font-mono text-[10px] font-medium dark:bg-dark-border dark:text-dark-text-secondary">Esc</kbd>
                 <span>Close</span>
               </span>
             </div>
