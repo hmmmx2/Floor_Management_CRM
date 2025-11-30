@@ -393,23 +393,27 @@ export default function RolesPage() {
                   onClick={() => setSelectedRole(role)}
                   className={`w-full rounded-2xl border p-4 text-left transition ${
                     selectedRole?.id === role.id
-                      ? "border-primary-red bg-light-red/20"
-                      : "border-light-grey hover:border-primary-red/40"
+                      ? isDark
+                        ? "border-primary-red bg-primary-red/20"
+                        : "border-primary-red bg-light-red/20"
+                      : isDark
+                        ? "border-dark-border hover:border-primary-red/40"
+                        : "border-light-grey hover:border-primary-red/40"
                   }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <span className={`h-3 w-3 rounded-full ${role.color}`} />
                       <div>
-                        <p className="font-semibold text-dark-charcoal">
+                        <p className={`font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                           {role.name}
                         </p>
-                        <p className="text-xs text-dark-charcoal/60">
+                        <p className={`text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
                           {role.description}
                         </p>
                       </div>
                     </div>
-                    <span className="rounded-full bg-very-light-grey px-2.5 py-1 text-xs font-semibold text-dark-charcoal">
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold transition-colors ${isDark ? "bg-dark-bg text-dark-text" : "bg-very-light-grey text-dark-charcoal"}`}>
                       {role.usersCount} user{role.usersCount !== 1 ? "s" : ""}
                     </span>
                   </div>
@@ -425,14 +429,14 @@ export default function RolesPage() {
             </h2>
             {selectedRole ? (
               <>
-                <p className="text-xs text-dark-charcoal/60">
+                <p className={`text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
                   {selectedRole.name} has access to:
                 </p>
                 <div className="mt-4 space-y-2">
                   {selectedRole.permissions.map((perm) => (
                     <div
                       key={perm}
-                      className="flex items-center gap-2 rounded-xl bg-very-light-grey px-3 py-2"
+                      className={`flex items-center gap-2 rounded-xl px-3 py-2 transition-colors ${isDark ? "bg-dark-bg" : "bg-very-light-grey"}`}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -442,7 +446,7 @@ export default function RolesPage() {
                       >
                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                       </svg>
-                      <span className="text-sm font-medium text-dark-charcoal">
+                      <span className={`text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                         {permissionLabels[perm] || perm}
                       </span>
                     </div>
@@ -461,7 +465,7 @@ export default function RolesPage() {
                 </div>
               </>
             ) : (
-              <p className="mt-4 text-sm text-dark-charcoal/60">
+              <p className={`mt-4 text-sm transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
                 Select a role to view its permissions.
               </p>
             )}
@@ -481,8 +485,8 @@ export default function RolesPage() {
             </div>
           </div>
           <div className="mt-4 overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead className="bg-very-light-grey text-xs uppercase text-dark-charcoal">
+            <table className={`min-w-full text-left text-sm transition-colors ${isDark ? "text-dark-text-secondary" : "text-dark-charcoal"}`}>
+              <thead className={`text-xs uppercase transition-colors ${isDark ? "bg-dark-bg text-dark-text-muted" : "bg-very-light-grey text-dark-charcoal"}`}>
                 <tr>
                   <th className="rounded-l-xl px-4 py-3 font-semibold">User</th>
                   <th className="px-4 py-3 font-semibold">Role</th>
@@ -497,11 +501,11 @@ export default function RolesPage() {
                 {users.map((user) => (
                   <tr
                     key={user.id}
-                    className="border-b border-light-grey/60 last:border-b-0"
+                    className={`border-b last:border-b-0 transition-colors ${isDark ? "border-dark-border" : "border-light-grey/60"}`}
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-light-red/40 text-sm font-bold text-primary-red">
+                        <div className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold text-primary-red ${isDark ? "bg-primary-red/20" : "bg-light-red/40"}`}>
                           {user.name
                             .split(" ")
                             .map((n) => n[0])
@@ -509,10 +513,10 @@ export default function RolesPage() {
                             .slice(0, 2)}
                         </div>
                         <div>
-                          <p className="font-semibold text-dark-charcoal">
+                          <p className={`font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                             {user.name}
                           </p>
-                          <p className="text-xs text-dark-charcoal/60">
+                          <p className={`text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
                             {user.email}
                           </p>
                         </div>
@@ -522,12 +526,12 @@ export default function RolesPage() {
                       <span
                         className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
                           user.role === "Admin"
-                            ? "bg-light-red text-primary-red"
+                            ? isDark ? "bg-primary-red/20 text-primary-red" : "bg-light-red text-primary-red"
                             : user.role === "Operations Manager"
                             ? "bg-status-warning-2/20 text-status-warning-2"
                             : user.role === "Field Technician"
                             ? "bg-status-green/20 text-status-green"
-                            : "bg-very-light-grey text-dark-charcoal"
+                            : isDark ? "bg-dark-bg text-dark-text" : "bg-very-light-grey text-dark-charcoal"
                         }`}
                       >
                         {user.role}
@@ -539,28 +543,28 @@ export default function RolesPage() {
                           className={`h-2 w-2 rounded-full ${
                             user.status === "active"
                               ? "bg-status-green"
-                              : "bg-light-grey"
+                              : isDark ? "bg-dark-border" : "bg-light-grey"
                           }`}
                         />
                         <span
                           className={`text-xs font-medium capitalize ${
                             user.status === "active"
                               ? "text-status-green"
-                              : "text-dark-charcoal/60"
+                              : isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
                           }`}
                         >
                           {user.status}
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-dark-charcoal/70">
+                    <td className={`px-4 py-3 transition-colors ${isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"}`}>
                       {user.lastActive}
                     </td>
                     <td className="px-4 py-3">
                       <button
                         type="button"
                         onClick={() => handleRemoveUser(user.id)}
-                        className="rounded-lg px-3 py-1.5 text-xs font-semibold text-primary-red hover:bg-light-red/40"
+                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold text-primary-red ${isDark ? "hover:bg-primary-red/20" : "hover:bg-light-red/40"}`}
                       >
                         Remove
                       </button>
@@ -622,7 +626,7 @@ export default function RolesPage() {
 
             <div className="mt-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">
+                <label className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                   Role Name *
                 </label>
                 <input
@@ -632,12 +636,16 @@ export default function RolesPage() {
                     setNewRole((prev) => ({ ...prev, name: e.target.value }))
                   }
                   placeholder="e.g., Supervisor"
-                  className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
+                    isDark
+                      ? "border-dark-border bg-dark-bg text-dark-text placeholder:text-dark-text-muted"
+                      : "border-light-grey bg-pure-white text-dark-charcoal"
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">
+                <label className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                   Description
                 </label>
                 <input
@@ -650,12 +658,16 @@ export default function RolesPage() {
                     }))
                   }
                   placeholder="Brief description of the role"
-                  className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
+                    isDark
+                      ? "border-dark-border bg-dark-bg text-dark-text placeholder:text-dark-text-muted"
+                      : "border-light-grey bg-pure-white text-dark-charcoal"
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">
+                <label className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                   Color
                 </label>
                 <div className="mt-2 flex gap-2">
@@ -668,7 +680,9 @@ export default function RolesPage() {
                       }
                       className={`h-8 w-8 rounded-full ${color} ${
                         newRole.color === color
-                          ? "ring-2 ring-dark-charcoal ring-offset-2"
+                          ? isDark
+                            ? "ring-2 ring-dark-text ring-offset-2 ring-offset-dark-card"
+                            : "ring-2 ring-dark-charcoal ring-offset-2"
                           : ""
                       }`}
                     />
@@ -677,14 +691,16 @@ export default function RolesPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">
+                <label className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                   Permissions
                 </label>
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   {allPermissions.map((perm) => (
                     <label
                       key={perm.key}
-                      className="flex items-center gap-2 rounded-lg border border-light-grey px-3 py-2 text-sm"
+                      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
+                        isDark ? "border-dark-border" : "border-light-grey"
+                      }`}
                     >
                       <input
                         type="checkbox"
@@ -692,7 +708,7 @@ export default function RolesPage() {
                         onChange={() => togglePermission(perm.key)}
                         className="h-4 w-4 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                       />
-                      <span className="text-dark-charcoal">{perm.label}</span>
+                      <span className={`transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>{perm.label}</span>
                     </label>
                   ))}
                 </div>
@@ -703,7 +719,11 @@ export default function RolesPage() {
               <button
                 type="button"
                 onClick={() => setShowAddRoleModal(false)}
-                className="rounded-xl border border-light-grey px-5 py-2.5 text-sm font-semibold text-dark-charcoal transition hover:bg-very-light-grey"
+                className={`rounded-xl border px-5 py-2.5 text-sm font-semibold transition ${
+                  isDark
+                    ? "border-dark-border text-dark-text hover:bg-dark-bg"
+                    : "border-light-grey text-dark-charcoal hover:bg-very-light-grey"
+                }`}
               >
                 Cancel
               </button>
@@ -733,7 +753,7 @@ export default function RolesPage() {
 
             <div className="mt-4 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">
+                <label className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                   Full Name *
                 </label>
                 <input
@@ -743,12 +763,16 @@ export default function RolesPage() {
                     setNewUser((prev) => ({ ...prev, name: e.target.value }))
                   }
                   placeholder="e.g., John Doe"
-                  className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
+                    isDark
+                      ? "border-dark-border bg-dark-bg text-dark-text placeholder:text-dark-text-muted"
+                      : "border-light-grey bg-pure-white text-dark-charcoal"
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">
+                <label className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                   Email Address *
                 </label>
                 <input
@@ -758,12 +782,16 @@ export default function RolesPage() {
                     setNewUser((prev) => ({ ...prev, email: e.target.value }))
                   }
                   placeholder="e.g., john@example.com"
-                  className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
+                    isDark
+                      ? "border-dark-border bg-dark-bg text-dark-text placeholder:text-dark-text-muted"
+                      : "border-light-grey bg-pure-white text-dark-charcoal"
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">
+                <label className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                   Role
                 </label>
                 <select
@@ -771,7 +799,11 @@ export default function RolesPage() {
                   onChange={(e) =>
                     setNewUser((prev) => ({ ...prev, role: e.target.value }))
                   }
-                  className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
+                    isDark
+                      ? "border-dark-border bg-dark-bg text-dark-text"
+                      : "border-light-grey bg-pure-white text-dark-charcoal"
+                  }`}
                 >
                   {roles.map((role) => (
                     <option key={role.id} value={role.name}>
@@ -782,7 +814,7 @@ export default function RolesPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">
+                <label className={`block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                   Status
                 </label>
                 <select
@@ -793,7 +825,11 @@ export default function RolesPage() {
                       status: e.target.value as "active" | "inactive",
                     }))
                   }
-                  className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
+                    isDark
+                      ? "border-dark-border bg-dark-bg text-dark-text"
+                      : "border-light-grey bg-pure-white text-dark-charcoal"
+                  }`}
                 >
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
@@ -805,7 +841,11 @@ export default function RolesPage() {
               <button
                 type="button"
                 onClick={() => setShowAddUserModal(false)}
-                className="rounded-xl border border-light-grey px-5 py-2.5 text-sm font-semibold text-dark-charcoal transition hover:bg-very-light-grey"
+                className={`rounded-xl border px-5 py-2.5 text-sm font-semibold transition ${
+                  isDark
+                    ? "border-dark-border text-dark-text hover:bg-dark-bg"
+                    : "border-light-grey text-dark-charcoal hover:bg-very-light-grey"
+                }`}
               >
                 Cancel
               </button>
