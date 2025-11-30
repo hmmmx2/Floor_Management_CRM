@@ -1,185 +1,187 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
 import logo from "@/app/images/logo.png";
 
-function FacebookIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      {...props}
-    >
-      <path d="M12 2.04C6.5 2.04 2 6.53 2 12.04c0 5.07 3.69 9.29 8.5 9.96v-7.05H7.5V12.04h3V9.5c0-2.97 1.81-4.6 4.45-4.6 1.31 0 2.44.23 2.77.33v3.05h-1.8c-1.41 0-1.68.67-1.68 1.65v2.14h3.39l-.55 3.41h-2.84v7.05c4.81-.67 8.5-4.89 8.5-9.96 0-5.51-4.5-10-9.96-10z" />
-    </svg>
-  );
-}
+const navigationLinks = [
+  {
+    title: "Main",
+    links: [
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Sensors", href: "/sensors" },
+      { label: "Flood Map", href: "/map" },
+    ],
+  },
+  {
+    title: "Insights",
+    links: [
+      { label: "Analytics", href: "/analytics" },
+      { label: "Alerts", href: "/alerts" },
+    ],
+  },
+  {
+    title: "Management",
+    links: [
+      { label: "Role Management", href: "/roles" },
+      { label: "Admin Settings", href: "/admin" },
+    ],
+  },
+];
 
-function TwitterIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      {...props}
-    >
-      <path d="M22.46 5.94c-.66.29-1.37.48-2.1.57.76-.46 1.34-1.18 1.62-2.04-.71.42-1.5.73-2.34.9-.67-.71-1.62-1.15-2.68-1.15-2.03 0-3.68 1.65-3.68 3.68 0 .29.03.57.08.84-3.06-.15-5.77-1.62-7.59-3.84-.32.55-.5 1.19-.5 1.88 0 1.28.65 2.41 1.64 3.07-.6-.02-1.16-.18-1.65-.45v.05c0 1.78 1.27 3.27 2.95 3.61-.31.08-.64.12-.98.12-.24 0-.47-.02-.7-.07.47 1.46 1.83 2.53 3.45 2.56-1.26.99-2.85 1.58-4.58 1.58-.3 0-.59-.02-.88-.05 1.63 1.05 3.57 1.66 5.66 1.66 6.79 0 10.5-5.62 10.5-10.5 0-.16-.01-.32-.01-.48.72-.52 1.34-1.17 1.83-1.91z" />
-    </svg>
-  );
-}
-
-function InstagramIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      {...props}
-    >
-      <path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.27.06 2.05.27 2.67.51.62.25 1.13.6 1.64 1.11.51.51.86 1.02 1.11 1.64.24.62.45 1.4.51 2.67.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.06 1.27-.27 2.05-.51 2.67-.25.62-.6 1.13-1.11 1.64-.51.51-1.02.86-1.64 1.11-.62.24-1.4.45-2.67.51-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.27-.06-2.05-.27-2.67-.51-.62-.25-1.13-.6-1.64-1.11-.51-.51-.86-1.02-1.11-1.64-.24-.62-.45-1.4-.51-2.67-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.06-1.27.27-2.05.51-2.67.25-.62.6-1.13 1.11-1.64.51-.51 1.02-.86 1.64-1.11.62-.24 1.4-.45 2.67-.51 1.27-.06 1.65-.07 4.85-.07zm0-2.16c-3.26 0-3.68.01-4.95.07-1.3.06-2.2.28-2.98.58-.78.3-1.4.72-2.06 1.38-.66.66-1.08 1.28-1.38 2.06-.3.78-.52 1.68-.58 2.98-.06 1.27-.07 1.69-.07 4.95s.01 3.68.07 4.95c.06 1.3.28 2.2.58 2.98.3.78.72 1.4 1.38 2.06.66.66 1.28 1.08 2.06 1.38.78.3 1.68.52 2.98.58 1.27.06 1.69.07 4.95.07s3.68-.01 4.95-.07c1.3-.06 2.2-.28 2.98-.58.78-.3 1.4-.72 2.06-1.38.66-.66 1.08-1.28 1.38-2.06.3-.78.52-1.68.58-2.98.06-1.27.07-1.69.07-4.95s-.01-3.68-.07-4.95c-.06-1.3-.28-2.2-.58-2.98-.3-.78-.72-1.4-1.38-2.06-.66-.66-1.28-1.08-2.06-1.38-.78-.3-1.68-.52-2.98-.58-1.27-.06-1.69-.07-4.95-.07zM12 15.8c-2.1 0-3.8-1.7-3.8-3.8s1.7-3.8 3.8-3.8 3.8 1.7 3.8 3.8-1.7 3.8-3.8 3.8zm0-6.4c-1.43 0-2.6 1.17-2.6 2.6s1.17 2.6 2.6 2.6 2.6-1.17 2.6-2.6-1.17-2.6-2.6-2.6zm6.4-3.8c-.54 0-.98.44-.98.98s.44.98.98.98.98-.44.98-.98-.44-.98-.98-.98z" />
-    </svg>
-  );
-}
+const socialLinks = [
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/MalaysianRC/",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+      </svg>
+    ),
+  },
+  {
+    label: "X (Twitter)",
+    href: "https://x.com/MalaysianRC",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/malaysianredcrescent/?hl=en",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+      </svg>
+    ),
+  },
+];
 
 export default function Footer() {
   return (
-    <footer className="mt-auto bg-primary-red text-pure-white">
+    <footer className="bg-primary-red">
+      {/* Main Footer Content */}
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-10">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4 lg:grid-cols-5">
-          {/* Brand Info */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-2">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
+          {/* Brand Section */}
+          <div className="lg:col-span-2">
             <div className="flex items-center gap-3">
-              <Image
-                src={logo}
-                alt="Flood Management logo"
-                width={40}
-                height={40}
-                priority
-                className="filter brightness-0 invert"
-              />
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-pure-white p-1">
+                <Image
+                  src={logo}
+                  alt="Malaysian Red Crescent"
+                  width={40}
+                  height={40}
+                />
+              </div>
               <div>
-                <p className="text-lg font-semibold leading-tight">
+                <p className="text-lg font-bold text-pure-white">
                   Flood Management
                 </p>
-                <p className="text-xs uppercase tracking-wide opacity-80">
+                <p className="text-xs uppercase tracking-wider text-pure-white/70">
                   IoT Command Center
                 </p>
               </div>
             </div>
-            <p className="mt-4 text-sm opacity-90">
-              Dedicated to providing real-time flood monitoring and alert
-              systems to protect communities in Malaysia.
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-pure-white/80">
+              Real-time flood monitoring and early warning system powered by IoT
+              sensors across Malaysia. Protecting communities through technology
+              and humanitarian action.
             </p>
-            <div className="mt-6 flex gap-4">
-              <a
-                href="#"
-                aria-label="Facebook"
-                className="text-pure-white/80 transition hover:text-pure-white"
-              >
-                <FacebookIcon className="h-6 w-6" />
-              </a>
-              <a
-                href="#"
-                aria-label="Twitter"
-                className="text-pure-white/80 transition hover:text-pure-white"
-              >
-                <TwitterIcon className="h-6 w-6" />
-              </a>
-              <a
-                href="#"
-                aria-label="Instagram"
-                className="text-pure-white/80 transition hover:text-pure-white"
-              >
-                <InstagramIcon className="h-6 w-6" />
-              </a>
+            {/* Social Links */}
+            <div className="mt-6 flex gap-3">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-pure-white/10 text-pure-white transition hover:bg-pure-white/20"
+                >
+                  {social.icon}
+                </a>
+              ))}
             </div>
           </div>
 
           {/* Navigation Links */}
-          <div className="col-span-1">
-            <h3 className="text-base font-semibold">Main</h3>
-            <ul className="mt-4 space-y-2 text-sm opacity-90">
-              <li>
-                <Link href="/dashboard" className="hover:underline">
-                  Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link href="/sensors" className="hover:underline">
-                  Sensors
-                </Link>
-              </li>
-              <li>
-                <Link href="/map" className="hover:underline">
-                  Flood Map
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="col-span-1">
-            <h3 className="text-base font-semibold">Insights</h3>
-            <ul className="mt-4 space-y-2 text-sm opacity-90">
-              <li>
-                <Link href="/analytics" className="hover:underline">
-                  Analytics
-                </Link>
-              </li>
-              <li>
-                <Link href="/alerts" className="hover:underline">
-                  Alerts
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="col-span-1">
-            <h3 className="text-base font-semibold">Management</h3>
-            <ul className="mt-4 space-y-2 text-sm opacity-90">
-              <li>
-                <Link href="/roles" className="hover:underline">
-                  Role Management
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin" className="hover:underline">
-                  Admin Settings
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {navigationLinks.map((section) => (
+            <div key={section.title}>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-pure-white/50">
+                {section.title}
+              </h3>
+              <ul className="mt-4 space-y-3">
+                {section.links.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm font-medium text-pure-white/90 transition hover:text-pure-white hover:underline"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* Contact Info Bar */}
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4 rounded-2xl bg-pure-white/10 px-6 py-4 text-sm font-medium md:justify-between">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-6 rounded-2xl bg-pure-white/10 px-6 py-4 text-sm text-pure-white/90">
           <div className="flex items-center gap-2">
             <svg
-              xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
-              className="h-5 w-5"
+              className="h-4 w-4 text-pure-white/60"
             >
-              <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+              <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
             </svg>
-            <span>+60 3-2333 2333</span>
+            <span>+60 3-4257 8122</span>
           </div>
           <div className="flex items-center gap-2">
             <svg
-              xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
-              className="h-5 w-5"
+              className="h-4 w-4 text-pure-white/60"
             >
               <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
             </svg>
-            <span>info@floodmanagement.my</span>
+            <span>secgen@redcrescent.org.my</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="h-4 w-4 text-pure-white/60"
+            >
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+            </svg>
+            <span>Kuala Lumpur, Malaysia</span>
           </div>
         </div>
+      </div>
 
-        {/* Copyright */}
-        <div className="mt-8 border-t border-pure-white/20 pt-8 text-center">
-          <p className="text-sm opacity-90">
+      {/* Bottom Copyright Bar */}
+      <div className="border-t border-pure-white/10 bg-dark-charcoal/20">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-4 sm:flex-row sm:px-6 lg:px-10">
+          <div className="flex items-center gap-4 text-xs text-pure-white/60">
+            <Link href="#" className="transition hover:text-pure-white">
+              Privacy Policy
+            </Link>
+            <span>•</span>
+            <Link href="#" className="transition hover:text-pure-white">
+              Terms of Service
+            </Link>
+            <span>•</span>
+            <Link href="#" className="transition hover:text-pure-white">
+              Cookie Policy
+            </Link>
+          </div>
+          <p className="text-sm font-medium text-pure-white">
             © 2025 Malaysian Red Crescent. All rights reserved.
           </p>
         </div>

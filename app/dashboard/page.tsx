@@ -1,5 +1,18 @@
 "use client";
 
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
 import OverviewCard from "@/components/cards/OverviewCard";
 import StatusPill from "@/components/common/StatusPill";
 import NodeMap from "@/components/map/NodeMap";
@@ -12,15 +25,22 @@ import {
   waterLevelByNode,
 } from "@/lib/data";
 
-const maxTrendValue = Math.max(...trendSeriesMonthly.map((point) => point.value));
+// ─── Derived data for Recharts ───────────────────────────────────────────────
+const lineChartData = trendSeriesMonthly.map((pt) => ({
+  name: pt.label,
+  waterLevel: pt.value,
+}));
 
-const trendPolyline = trendSeriesMonthly
-  .map((point, index) => {
-    const x = (index / (trendSeriesMonthly.length - 1)) * 100;
-    const y = 100 - (point.value / maxTrendValue) * 100;
-    return `${x},${y}`;
-  })
-  .join(" ");
+const barChartData = waterLevelByNode.map((n) => ({
+  name: n.label.replace("Node No. ", "N"),
+  level: n.value,
+}));
+
+const stateBarData = floodTotalsByState.map((s) => ({
+  name: s.state,
+  total: s.total,
+  critical: s.critical,
+}));
 
 export default function DashboardPage() {
   const totalNodes = nodes.length;
@@ -46,6 +66,7 @@ export default function DashboardPage() {
         </p>
       </header>
 
+      {/* ─── KPI Cards ──────────────────────────────────────────────────────── */}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <OverviewCard
           title="Total Nodes"
@@ -63,7 +84,10 @@ export default function DashboardPage() {
           title="Riskiest Area"
           value={riskiestNode.area.split(",")[0]}
           subLabel={riskiestNode.state}
-          trend={{ label: `Node ${riskiestNode.node_id.split("_")[1]}`, direction: "down" }}
+          trend={{
+            label: `Node ${riskiestNode.node_id.split("_")[1]}`,
+            direction: "down",
+          }}
         />
         <OverviewCard
           title="Average Water Level"
@@ -73,6 +97,7 @@ export default function DashboardPage() {
         />
       </div>
 
+      {/* ─── Table + Map Row ────────────────────────────────────────────────── */}
       <div className="grid gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
@@ -162,6 +187,7 @@ export default function DashboardPage() {
         </article>
       </div>
 
+      {/* ─── Time Series + Recent Activity ──────────────────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-3">
         <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm lg:col-span-2">
           <div className="flex items-center justify-between">
@@ -173,33 +199,72 @@ export default function DashboardPage() {
                 Monthly average water level (ft)
               </p>
             </div>
-            <div className="flex gap-2 text-xs font-semibold text-dark-charcoal/70">
-              <span className="rounded-full bg-light-red/70 px-3 py-1 text-primary-red">
-                Monthly
-              </span>
-              <span className="rounded-full border border-light-grey px-3 py-1">
-                Yearly
-              </span>
-            </div>
+            <span className="rounded-full bg-light-red/70 px-3 py-1 text-xs font-semibold text-primary-red">
+              Monthly
+            </span>
           </div>
-          <div className="mt-4 h-56 rounded-2xl bg-very-light-grey p-4">
-            <svg
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              className="h-full w-full text-primary-red"
-            >
-              <polyline
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                points={trendPolyline}
-              />
-            </svg>
-            <div className="mt-2 grid grid-cols-6 text-center text-xs font-semibold uppercase tracking-wide text-dark-charcoal/60">
-              {trendSeriesMonthly.map((point) => (
-                <span key={point.label}>{point.label}</span>
-              ))}
-            </div>
+          <div className="mt-4 h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={lineChartData}>
+                <defs>
+                  <linearGradient id="colorWaterDash" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ED1C24" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#ED1C24" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  axisLine={false}
+                  tickLine={false}
+                  label={{
+                    value: "Month",
+                    position: "insideBottom",
+                    offset: -5,
+                    fontSize: 11,
+                    fill: "#4E4B4B",
+                  }}
+                />
+                <YAxis
+                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  axisLine={false}
+                  tickLine={false}
+                  domain={[0, "dataMax + 0.5"]}
+                  label={{
+                    value: "Water Level (ft)",
+                    angle: -90,
+                    position: "insideLeft",
+                    fontSize: 11,
+                    fill: "#4E4B4B",
+                  }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 12,
+                    border: "1px solid #BFBFBF",
+                    fontSize: 12,
+                  }}
+                  formatter={(value: number) => [`${value} ft`, "Water Level"]}
+                />
+                <Legend
+                  verticalAlign="top"
+                  height={36}
+                  iconType="circle"
+                  wrapperStyle={{ fontSize: 12, fontWeight: 500 }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="waterLevel"
+                  name="Water Level"
+                  stroke="#ED1C24"
+                  strokeWidth={2}
+                  fill="url(#colorWaterDash)"
+                  dot={{ r: 4, fill: "#ED1C24" }}
+                  activeDot={{ r: 6 }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </article>
 
@@ -207,7 +272,7 @@ export default function DashboardPage() {
           <h2 className="text-lg font-semibold text-dark-charcoal">
             Recent Activity
           </h2>
-          <ul className="mt-4 space-y-3">
+          <ul className="mt-4 space-y-3 max-h-64 overflow-y-auto">
             {recentActivity.map((item) => (
               <li
                 key={item.id}
@@ -231,54 +296,134 @@ export default function DashboardPage() {
         </article>
       </div>
 
+      {/* ─── Bar Charts Row ─────────────────────────────────────────────────── */}
       <div className="grid gap-6 lg:grid-cols-2">
+        {/* Water Level by Node – Vertical Bar */}
         <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
           <h2 className="text-lg font-semibold text-dark-charcoal">
             Water Level by Node ID
           </h2>
-          <div className="mt-4 space-y-4">
-            {waterLevelByNode.map((entry) => (
-              <div key={entry.label}>
-                <div className="flex items-center justify-between text-sm font-semibold text-dark-charcoal">
-                  <span>{entry.label}</span>
-                  <span>{entry.value} ft</span>
-                </div>
-                <div className="mt-2 h-3 rounded-full bg-very-light-grey">
-                  <div
-                    className="h-full rounded-full bg-primary-red"
-                    style={{ width: `${(entry.value / 3) * 100}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+          <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+            Current readings (ft)
+          </p>
+          <div className="mt-4 h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={barChartData} barCategoryGap="20%">
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  axisLine={false}
+                  tickLine={false}
+                  label={{
+                    value: "Node ID",
+                    position: "insideBottom",
+                    offset: -5,
+                    fontSize: 11,
+                    fill: "#4E4B4B",
+                  }}
+                />
+                <YAxis
+                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  axisLine={false}
+                  tickLine={false}
+                  domain={[0, 4]}
+                  label={{
+                    value: "Water Level (ft)",
+                    angle: -90,
+                    position: "insideLeft",
+                    fontSize: 11,
+                    fill: "#4E4B4B",
+                  }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 12,
+                    border: "1px solid #BFBFBF",
+                    fontSize: 12,
+                  }}
+                  formatter={(value: number) => [`${value} ft`, "Water Level"]}
+                />
+                <Legend
+                  verticalAlign="top"
+                  height={36}
+                  iconType="square"
+                  wrapperStyle={{ fontSize: 12, fontWeight: 500 }}
+                />
+                <Bar
+                  dataKey="level"
+                  name="Water Level"
+                  fill="#ED1C24"
+                  radius={[6, 6, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </article>
 
+        {/* Total Flood by State – Horizontal Bar */}
         <article className="rounded-3xl border border-light-grey bg-pure-white p-5 shadow-sm">
           <h2 className="text-lg font-semibold text-dark-charcoal">
             Total Flood by State
           </h2>
-          <div className="mt-4 space-y-4">
-            {floodTotalsByState.map((stateStat) => (
-              <div key={stateStat.state}>
-                <div className="flex items-center justify-between text-sm font-semibold text-dark-charcoal">
-                  <span>{stateStat.state}</span>
-                  <span>{stateStat.total}</span>
-                </div>
-                <div className="mt-2 h-4 rounded-full bg-very-light-grey">
-                  <div
-                    className="h-full rounded-full bg-light-red"
-                    style={{
-                      width: `${(stateStat.total / 900) * 100}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+          <p className="text-xs uppercase tracking-wide text-dark-charcoal/60">
+            Total vs Critical incidents
+          </p>
+          <div className="mt-4 h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={stateBarData} layout="vertical" barCategoryGap="18%">
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" />
+                <XAxis
+                  type="number"
+                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  axisLine={false}
+                  tickLine={false}
+                  label={{
+                    value: "Number of Incidents",
+                    position: "insideBottom",
+                    offset: -5,
+                    fontSize: 11,
+                    fill: "#4E4B4B",
+                  }}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  tick={{ fontSize: 10, fill: "#4E4B4B" }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={80}
+                />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 12,
+                    border: "1px solid #BFBFBF",
+                    fontSize: 12,
+                  }}
+                />
+                <Legend
+                  verticalAlign="top"
+                  height={36}
+                  iconType="square"
+                  wrapperStyle={{ fontSize: 12, fontWeight: 500 }}
+                />
+                <Bar
+                  dataKey="total"
+                  name="Total Incidents"
+                  fill="#ED1C24"
+                  radius={[0, 6, 6, 0]}
+                />
+                <Bar
+                  dataKey="critical"
+                  name="Critical Incidents"
+                  fill="#FF9F1C"
+                  radius={[0, 6, 6, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </article>
       </div>
     </section>
   );
 }
-

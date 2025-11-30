@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import AppShell from "@/components/layout/AppShell";
+import AppShellWrapper from "@/components/layout/AppShellWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   title: "Flood Management CRM",
   description:
     "Command center for IoT flood sensors, live alerts, and predictive analytics.",
+  icons: {
+    icon: "/images/logo.png",
+    shortcut: "/images/logo.png",
+    apple: "/images/logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -29,7 +34,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-very-light-grey`}
       >
-        <AppShell>{children}</AppShell>
+        <AppShellWrapper>{children}</AppShellWrapper>
       </body>
     </html>
   );
