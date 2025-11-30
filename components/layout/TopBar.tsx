@@ -7,6 +7,8 @@ import Link from "next/link";
 
 import logo from "@/app/images/logo.png";
 
+import SearchModal from "./SearchModal";
+
 function HamburgerIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -19,6 +21,35 @@ function HamburgerIcon(props: React.SVGProps<SVGSVGElement>) {
       {...props}
     >
       <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+function CloseIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      {...props}
+    >
+      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
+    </svg>
+  );
+}
+
+function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      {...props}
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="M16.5 16.5L21 21" />
     </svg>
   );
 }
@@ -65,152 +96,135 @@ function ProfileIcon(props: React.SVGProps<SVGSVGElement>) {
 type TopBarProps = {
   isSidebarCollapsed: boolean;
   onToggleSidebar: () => void;
+  onToggleMobileMenu?: () => void;
+  isMobileMenuOpen?: boolean;
 };
 
 export default function TopBar({
   isSidebarCollapsed,
   onToggleSidebar,
+  onToggleMobileMenu,
+  isMobileMenuOpen = false,
 }: TopBarProps) {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-light-grey bg-pure-white/95 backdrop-blur">
-      <div className="flex flex-col gap-4 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-10">
-        <div className="flex flex-1 items-center">
-          {/* Hamburger – always visible to toggle sidebar */}
-          <button
-            type="button"
-            onClick={onToggleSidebar}
-            aria-pressed={!isSidebarCollapsed}
-            aria-label="Toggle sidebar"
-            className="hidden md:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-red transition hover:bg-light-red/40"
-          >
-            <HamburgerIcon className="h-6 w-6" />
-          </button>
-
-          {/* Mobile hamburger (visible on small screens) */}
-          <button
-            type="button"
-            onClick={onToggleSidebar}
-            aria-pressed={!isSidebarCollapsed}
-            aria-label="Toggle navigation"
-            className="flex md:hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-light-red text-primary-red transition hover:bg-light-red/40"
-          >
-            <HamburgerIcon className="h-6 w-6" />
-          </button>
-
-          {/* Dynamic spacer – adjusts based on sidebar state */}
-          <div
-            className={`hidden md:block shrink-0 transition-[width] duration-200 ${
-              isSidebarCollapsed ? "w-4" : "w-40 lg:w-52 xl:w-64"
-            }`}
-          />
-
-          {/* Logo + Title – positioned near main content area */}
-          <div className="ml-4 md:ml-0 flex items-center gap-3 shrink-0">
-            <Image
-              src={logo}
-              alt="Flood Management logo"
-              width={40}
-              height={40}
-              priority
-            />
-            <div>
-              <p className="text-base font-semibold leading-tight text-dark-charcoal">
-                Flood Management
-              </p>
-              <p className="text-xs uppercase tracking-wide text-primary-red">
-                IoT Command Center
-              </p>
-            </div>
-          </div>
-
-          {/* Search – desktop */}
-          <div className="ml-auto hidden w-full max-w-xs items-center gap-2 rounded-full border border-primary-red bg-pure-white px-4 py-2 text-sm text-dark-charcoal focus-within:ring-2 focus-within:ring-primary-red/40 lg:flex">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              className="h-5 w-5 text-primary-red"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
+    <>
+      <header className="sticky top-0 z-40 border-b border-light-grey bg-pure-white/95 backdrop-blur">
+        <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-10">
+          {/* Left side */}
+          <div className="flex items-center">
+            {/* Hamburger – desktop (toggles sidebar) */}
+            <button
+              type="button"
+              onClick={onToggleSidebar}
+              aria-pressed={!isSidebarCollapsed}
+              aria-label="Toggle sidebar"
+              className="hidden md:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-red transition hover:bg-light-red/40"
             >
-              <circle cx="11" cy="11" r="7" />
-              <path d="M16.5 16.5L21 21" />
-            </svg>
-            <input
-              type="search"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search"
-              className="w-full border-none bg-transparent text-sm outline-none placeholder:text-dark-charcoal/60"
-            />
-          </div>
-        </div>
+              <HamburgerIcon className="h-6 w-6" />
+            </button>
 
-        {/* Right side actions */}
-        <div className="flex items-center gap-3 sm:gap-4">
-          {/* Search – mobile */}
-          <div className="flex w-full items-center gap-2 rounded-full border border-primary-red bg-pure-white px-4 py-2 text-sm text-dark-charcoal lg:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              className="h-5 w-5 text-primary-red"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
+            {/* Mobile hamburger (toggles mobile menu) */}
+            <button
+              type="button"
+              onClick={onToggleMobileMenu}
+              aria-pressed={isMobileMenuOpen}
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              className="flex md:hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-light-red text-primary-red transition hover:bg-light-red/40"
             >
-              <circle cx="11" cy="11" r="7" />
-              <path d="M16.5 16.5L21 21" />
-            </svg>
-            <input
-              type="search"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search"
-              className="w-full border-none bg-transparent text-sm outline-none placeholder:text-dark-charcoal/60"
-            />
-          </div>
-          <Link
-            href="/alerts"
-            className="relative flex h-11 w-11 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
-            aria-label="Notifications"
-          >
-            <NotificationIcon className="h-5 w-5" />
-            {/* Notification badge */}
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary-red text-[10px] font-bold text-pure-white">
-              3
-            </span>
-          </Link>
-          <Link
-            href="/settings"
-            className="flex h-11 w-11 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
-            aria-label="Settings"
-          >
-            <SettingsIcon className="h-5 w-5" />
-          </Link>
+              {isMobileMenuOpen ? (
+                <CloseIcon className="h-6 w-6" />
+              ) : (
+                <HamburgerIcon className="h-6 w-6" />
+              )}
+            </button>
 
-          {/* Profile card with admin info and active status – clickable to admin settings */}
-          <Link
-            href="/admin"
-            className="relative flex items-center gap-2 rounded-xl border border-primary-red bg-pure-white px-3 py-1.5 transition hover:bg-light-red/20"
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary-red bg-primary-red">
-              <ProfileIcon className="h-5 w-5 text-pure-white" />
-            </div>
-            <div className="hidden sm:block">
-              <p className="text-xs font-semibold leading-tight text-dark-charcoal">
-                Admin
-              </p>
-              <div className="flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-status-green" />
-                <span className="text-[10px] text-dark-charcoal/70">Active</span>
+            {/* Dynamic spacer – adjusts based on sidebar state (desktop only) */}
+            <div
+              className={`hidden md:block shrink-0 transition-[width] duration-200 ${
+                isSidebarCollapsed ? "w-4" : "w-40 lg:w-52 xl:w-64"
+              }`}
+            />
+
+            {/* Logo + Title – positioned near main content area */}
+            <div className="ml-4 md:ml-0 flex items-center gap-3 shrink-0">
+              <Image
+                src={logo}
+                alt="Flood Management logo"
+                width={40}
+                height={40}
+                priority
+              />
+              <div className="hidden sm:block">
+                <p className="text-base font-semibold leading-tight text-dark-charcoal">
+                  Flood Management
+                </p>
+                <p className="text-xs uppercase tracking-wide text-primary-red">
+                  IoT Command Center
+                </p>
               </div>
             </div>
-          </Link>
+          </div>
+
+          {/* Center - Search Button */}
+          <button
+            type="button"
+            onClick={() => setIsSearchOpen(true)}
+            className="flex flex-1 max-w-md items-center gap-3 rounded-full border border-light-grey bg-very-light-grey/50 px-4 py-2.5 text-sm text-dark-charcoal/50 transition hover:border-primary-red/50 hover:bg-pure-white hover:shadow-sm"
+          >
+            <SearchIcon className="h-5 w-5" />
+            <span className="flex-1 text-left">Search pages...</span>
+            <kbd className="hidden sm:inline-flex items-center gap-1 rounded-lg border border-light-grey bg-pure-white px-2 py-1 text-[10px] font-medium text-dark-charcoal/50">
+              <span className="text-xs">⌘</span>K
+            </kbd>
+          </button>
+
+          {/* Right side actions */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/alerts"
+              className="relative flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
+              aria-label="Notifications"
+            >
+              <NotificationIcon className="h-5 w-5" />
+              {/* Notification badge */}
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary-red text-[10px] font-bold text-pure-white">
+                3
+              </span>
+            </Link>
+            <Link
+              href="/settings"
+              className="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red"
+              aria-label="Settings"
+            >
+              <SettingsIcon className="h-5 w-5" />
+            </Link>
+
+            {/* Profile card with admin info and active status – clickable to admin settings */}
+            <Link
+              href="/admin"
+              className="relative flex shrink-0 items-center gap-2 rounded-xl border border-primary-red bg-pure-white px-2 sm:px-3 py-1.5 transition hover:bg-light-red/20"
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary-red bg-primary-red">
+                <ProfileIcon className="h-5 w-5 text-pure-white" />
+              </div>
+              <div className="hidden sm:block">
+                <p className="text-xs font-semibold leading-tight text-dark-charcoal">
+                  Admin
+                </p>
+                <div className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-status-green" />
+                  <span className="text-[10px] text-dark-charcoal/70">Active</span>
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Search Modal */}
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+    </>
   );
 }
-

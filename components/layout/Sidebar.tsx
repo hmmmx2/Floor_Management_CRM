@@ -12,7 +12,7 @@ import {
   DashboardIcon,
   MapIcon,
   RolesIcon,
-  SensorsIcon as SensorsSvgIcon,
+  SensorsIcon,
 } from "@/components/icons/NavIcons";
 
 type SidebarProps = {
@@ -28,7 +28,7 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", Icon: DashboardIcon, section: "main" },
-  { label: "Sensors", href: "/sensors", Icon: SensorsSvgIcon, section: "main" },
+  { label: "Sensors", href: "/sensors", Icon: SensorsIcon, section: "main" },
   { label: "Flood Map", href: "/map", Icon: MapIcon, section: "main" },
   { label: "Analytics", href: "/analytics", Icon: AnalyticsIcon, section: "main" },
   { label: "Alerts", href: "/alerts", Icon: AlertsIcon, section: "main" },
@@ -101,4 +101,3 @@ export default function Sidebar({ isCollapsed }: SidebarProps) {
     </aside>
   );
 }
-
