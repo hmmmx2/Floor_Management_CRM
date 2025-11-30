@@ -84,13 +84,11 @@ type SettingsTab =
   | "backup";
 
 type CRMSettings = {
-  // General
   systemName: string;
   organizationName: string;
   timezone: string;
   language: string;
   dateFormat: string;
-  // Notifications
   emailNotifications: boolean;
   smsNotifications: boolean;
   pushNotifications: boolean;
@@ -99,32 +97,26 @@ type CRMSettings = {
   dailyDigest: boolean;
   weeklyReport: boolean;
   alertSound: string;
-  // Data
   dataRetentionDays: number;
   autoArchive: boolean;
   exportFormat: string;
-  // Integrations
   googleMapsApiKey: string;
   mongoDbUri: string;
   webhookUrl: string;
   slackWebhook: string;
-  // Security
   sessionTimeout: number;
   requireMfa: boolean;
   ipWhitelist: string;
   auditLogging: boolean;
-  // Appearance
   theme: string;
   primaryColor: string;
   sidebarPosition: string;
   compactMode: boolean;
-  // Map
   defaultMapZoom: number;
   defaultMapLat: number;
   defaultMapLng: number;
   mapStyle: string;
   showInactiveNodes: boolean;
-  // Backup
   autoBackup: boolean;
   backupFrequency: string;
   backupRetention: number;
@@ -132,13 +124,11 @@ type CRMSettings = {
 };
 
 const defaultSettings: CRMSettings = {
-  // General
   systemName: "Flood Management CRM",
   organizationName: "Malaysian Red Crescent",
   timezone: "Asia/Kuala_Lumpur",
   language: "en-MY",
   dateFormat: "DD/MM/YYYY",
-  // Notifications
   emailNotifications: true,
   smsNotifications: false,
   pushNotifications: true,
@@ -147,32 +137,26 @@ const defaultSettings: CRMSettings = {
   dailyDigest: true,
   weeklyReport: true,
   alertSound: "default",
-  // Data
   dataRetentionDays: 365,
   autoArchive: true,
   exportFormat: "csv",
-  // Integrations
   googleMapsApiKey: "••••••••••••••••",
   mongoDbUri: "mongodb+srv://••••••••",
   webhookUrl: "",
   slackWebhook: "",
-  // Security
   sessionTimeout: 30,
   requireMfa: false,
   ipWhitelist: "",
   auditLogging: true,
-  // Appearance
   theme: "light",
   primaryColor: "#ED1C24",
   sidebarPosition: "left",
   compactMode: false,
-  // Map
   defaultMapZoom: 14,
   defaultMapLat: 1.5559,
   defaultMapLng: 110.3463,
   mapStyle: "satellite",
   showInactiveNodes: true,
-  // Backup
   autoBackup: true,
   backupFrequency: "daily",
   backupRetention: 30,
@@ -217,7 +201,6 @@ export default function SettingsPage() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 800));
     localStorage.setItem("crmSettings", JSON.stringify(settings));
     setOriginalSettings(settings);
@@ -264,6 +247,17 @@ export default function SettingsPage() {
 
   const ActiveIcon = tabs.find((t) => t.id === activeTab)?.icon || GeneralIcon;
 
+  // Common input class based on theme
+  const inputClass = `mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
+    isDark
+      ? "border-dark-border bg-dark-bg text-dark-text placeholder:text-dark-text-muted"
+      : "border-light-grey bg-pure-white text-dark-charcoal"
+  }`;
+
+  const labelClass = `block text-sm font-medium transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`;
+  const subLabelClass = `text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`;
+  const cardClass = `rounded-xl border p-4 transition-colors ${isDark ? "border-dark-border bg-dark-bg" : "border-light-grey"}`;
+
   return (
     <section className="space-y-6">
       <Toaster position="top-right" reverseOrder={false} />
@@ -284,7 +278,11 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={handleExportSettings}
-            className="rounded-xl border border-light-grey px-4 py-2.5 text-sm font-semibold text-dark-charcoal transition hover:bg-very-light-grey"
+            className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition ${
+              isDark
+                ? "border-dark-border text-dark-text hover:bg-dark-bg"
+                : "border-light-grey text-dark-charcoal hover:bg-very-light-grey"
+            }`}
           >
             Export
           </button>
@@ -301,7 +299,9 @@ export default function SettingsPage() {
 
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         {/* Sidebar Tabs */}
-        <aside className="space-y-2 rounded-3xl border border-light-grey bg-pure-white p-4 shadow-sm lg:h-fit lg:sticky lg:top-24">
+        <aside className={`space-y-2 rounded-3xl border p-4 shadow-sm lg:h-fit lg:sticky lg:top-24 transition-colors ${
+          isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"
+        }`}>
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -312,8 +312,12 @@ export default function SettingsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${
                   isActive
-                    ? "bg-light-red/60 text-primary-red"
-                    : "text-dark-charcoal hover:bg-very-light-grey"
+                    ? isDark
+                      ? "bg-primary-red/20 text-primary-red"
+                      : "bg-light-red/60 text-primary-red"
+                    : isDark
+                      ? "text-dark-text hover:bg-dark-bg"
+                      : "text-dark-charcoal hover:bg-very-light-grey"
                 }`}
               >
                 <Icon className="h-5 w-5" />
@@ -324,16 +328,18 @@ export default function SettingsPage() {
         </aside>
 
         {/* Settings Content */}
-        <article className="rounded-3xl border border-light-grey bg-pure-white p-6 shadow-sm">
-          <div className="mb-6 flex items-center gap-3 border-b border-light-grey pb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-light-red/40 text-primary-red">
+        <article className={`rounded-3xl border p-6 shadow-sm transition-colors ${
+          isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"
+        }`}>
+          <div className={`mb-6 flex items-center gap-3 border-b pb-4 ${isDark ? "border-dark-border" : "border-light-grey"}`}>
+            <div className={`flex h-10 w-10 items-center justify-center rounded-xl text-primary-red ${isDark ? "bg-primary-red/20" : "bg-light-red/40"}`}>
               <ActiveIcon className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-dark-charcoal">
+              <h2 className={`text-lg font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                 {tabs.find((t) => t.id === activeTab)?.label}
               </h2>
-              <p className="text-xs text-dark-charcoal/60">
+              <p className={subLabelClass}>
                 {activeTab === "general" && "Basic system configuration"}
                 {activeTab === "notifications" && "Alert and notification preferences"}
                 {activeTab === "data" && "Data retention and export settings"}
@@ -351,29 +357,29 @@ export default function SettingsPage() {
             <div className="space-y-5">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-dark-charcoal">System Name</label>
+                  <label className={labelClass}>System Name</label>
                   <input
                     type="text"
                     value={settings.systemName}
                     onChange={(e) => handleChange("systemName", e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                    className={inputClass}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-dark-charcoal">Organization Name</label>
+                  <label className={labelClass}>Organization Name</label>
                   <input
                     type="text"
                     value={settings.organizationName}
                     onChange={(e) => handleChange("organizationName", e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                    className={inputClass}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-dark-charcoal">Timezone</label>
+                  <label className={labelClass}>Timezone</label>
                   <select
                     value={settings.timezone}
                     onChange={(e) => handleChange("timezone", e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                    className={inputClass}
                   >
                     <option value="Asia/Kuala_Lumpur">Asia/Kuala Lumpur (GMT+8)</option>
                     <option value="Asia/Singapore">Asia/Singapore (GMT+8)</option>
@@ -382,11 +388,11 @@ export default function SettingsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-dark-charcoal">Language</label>
+                  <label className={labelClass}>Language</label>
                   <select
                     value={settings.language}
                     onChange={(e) => handleChange("language", e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                    className={inputClass}
                   >
                     <option value="en-MY">English (Malaysia)</option>
                     <option value="ms-MY">Bahasa Melayu</option>
@@ -395,11 +401,11 @@ export default function SettingsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-dark-charcoal">Date Format</label>
+                  <label className={labelClass}>Date Format</label>
                   <select
                     value={settings.dateFormat}
                     onChange={(e) => handleChange("dateFormat", e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                    className={inputClass}
                   >
                     <option value="DD/MM/YYYY">DD/MM/YYYY</option>
                     <option value="MM/DD/YYYY">MM/DD/YYYY</option>
@@ -414,12 +420,12 @@ export default function SettingsPage() {
           {activeTab === "notifications" && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-semibold text-dark-charcoal">Notification Channels</h3>
+                <h3 className={`text-sm font-semibold ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Notification Channels</h3>
                 <div className="mt-3 space-y-3">
-                  <label className="flex items-center justify-between rounded-xl border border-light-grey p-4">
+                  <label className={`flex items-center justify-between ${cardClass}`}>
                     <div>
-                      <p className="font-medium text-dark-charcoal">Email Notifications</p>
-                      <p className="text-xs text-dark-charcoal/60">Receive alerts via email</p>
+                      <p className={`font-medium ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Email Notifications</p>
+                      <p className={subLabelClass}>Receive alerts via email</p>
                     </div>
                     <input
                       type="checkbox"
@@ -428,10 +434,10 @@ export default function SettingsPage() {
                       className="h-5 w-5 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                     />
                   </label>
-                  <label className="flex items-center justify-between rounded-xl border border-light-grey p-4">
+                  <label className={`flex items-center justify-between ${cardClass}`}>
                     <div>
-                      <p className="font-medium text-dark-charcoal">SMS Notifications</p>
-                      <p className="text-xs text-dark-charcoal/60">Receive critical alerts via SMS</p>
+                      <p className={`font-medium ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>SMS Notifications</p>
+                      <p className={subLabelClass}>Receive critical alerts via SMS</p>
                     </div>
                     <input
                       type="checkbox"
@@ -440,10 +446,10 @@ export default function SettingsPage() {
                       className="h-5 w-5 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                     />
                   </label>
-                  <label className="flex items-center justify-between rounded-xl border border-light-grey p-4">
+                  <label className={`flex items-center justify-between ${cardClass}`}>
                     <div>
-                      <p className="font-medium text-dark-charcoal">Push Notifications</p>
-                      <p className="text-xs text-dark-charcoal/60">Browser push notifications</p>
+                      <p className={`font-medium ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Push Notifications</p>
+                      <p className={subLabelClass}>Browser push notifications</p>
                     </div>
                     <input
                       type="checkbox"
@@ -455,7 +461,7 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-dark-charcoal">Alert Preferences</h3>
+                <h3 className={`text-sm font-semibold ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Alert Preferences</h3>
                 <div className="mt-3 space-y-3">
                   <label className="flex items-center gap-3">
                     <input
@@ -464,7 +470,7 @@ export default function SettingsPage() {
                       onChange={(e) => handleChange("dangerAlertEmail", e.target.checked)}
                       className="h-4 w-4 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                     />
-                    <span className="text-sm text-dark-charcoal">Email for Danger-level alerts</span>
+                    <span className={`text-sm ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Email for Danger-level alerts</span>
                   </label>
                   <label className="flex items-center gap-3">
                     <input
@@ -473,7 +479,7 @@ export default function SettingsPage() {
                       onChange={(e) => handleChange("warningAlertEmail", e.target.checked)}
                       className="h-4 w-4 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                     />
-                    <span className="text-sm text-dark-charcoal">Email for Warning-level alerts</span>
+                    <span className={`text-sm ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Email for Warning-level alerts</span>
                   </label>
                   <label className="flex items-center gap-3">
                     <input
@@ -482,7 +488,7 @@ export default function SettingsPage() {
                       onChange={(e) => handleChange("dailyDigest", e.target.checked)}
                       className="h-4 w-4 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                     />
-                    <span className="text-sm text-dark-charcoal">Daily digest summary</span>
+                    <span className={`text-sm ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Daily digest summary</span>
                   </label>
                   <label className="flex items-center gap-3">
                     <input
@@ -491,16 +497,16 @@ export default function SettingsPage() {
                       onChange={(e) => handleChange("weeklyReport", e.target.checked)}
                       className="h-4 w-4 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                     />
-                    <span className="text-sm text-dark-charcoal">Weekly analytics report</span>
+                    <span className={`text-sm ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Weekly analytics report</span>
                   </label>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">Alert Sound</label>
+                <label className={labelClass}>Alert Sound</label>
                 <select
                   value={settings.alertSound}
                   onChange={(e) => handleChange("alertSound", e.target.value)}
-                  className="mt-1 w-full max-w-xs rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`${inputClass} max-w-xs`}
                 >
                   <option value="default">Default</option>
                   <option value="urgent">Urgent</option>
@@ -515,22 +521,22 @@ export default function SettingsPage() {
           {activeTab === "data" && (
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">Data Retention Period</label>
-                <p className="text-xs text-dark-charcoal/60">How long to keep historical data</p>
+                <label className={labelClass}>Data Retention Period</label>
+                <p className={subLabelClass}>How long to keep historical data</p>
                 <div className="mt-2 flex items-center gap-3">
                   <input
                     type="number"
                     value={settings.dataRetentionDays}
                     onChange={(e) => handleChange("dataRetentionDays", parseInt(e.target.value))}
-                    className="w-32 rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                    className={`${inputClass} w-32`}
                   />
-                  <span className="text-sm text-dark-charcoal/70">days</span>
+                  <span className={`text-sm ${isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"}`}>days</span>
                 </div>
               </div>
-              <label className="flex items-center justify-between rounded-xl border border-light-grey p-4">
+              <label className={`flex items-center justify-between ${cardClass}`}>
                 <div>
-                  <p className="font-medium text-dark-charcoal">Auto-Archive Old Data</p>
-                  <p className="text-xs text-dark-charcoal/60">Automatically archive data older than retention period</p>
+                  <p className={`font-medium ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Auto-Archive Old Data</p>
+                  <p className={subLabelClass}>Automatically archive data older than retention period</p>
                 </div>
                 <input
                   type="checkbox"
@@ -540,11 +546,11 @@ export default function SettingsPage() {
                 />
               </label>
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">Default Export Format</label>
+                <label className={labelClass}>Default Export Format</label>
                 <select
                   value={settings.exportFormat}
                   onChange={(e) => handleChange("exportFormat", e.target.value)}
-                  className="mt-1 w-full max-w-xs rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={`${inputClass} max-w-xs`}
                 >
                   <option value="csv">CSV</option>
                   <option value="json">JSON</option>
@@ -552,12 +558,12 @@ export default function SettingsPage() {
                   <option value="pdf">PDF Report</option>
                 </select>
               </div>
-              <div className="rounded-2xl border border-light-grey bg-very-light-grey p-4">
-                <p className="text-sm font-semibold text-dark-charcoal">Storage Usage</p>
-                <div className="mt-2 h-3 overflow-hidden rounded-full bg-light-grey">
+              <div className={`rounded-2xl p-4 ${isDark ? "bg-dark-bg" : "bg-very-light-grey"}`}>
+                <p className={`text-sm font-semibold ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Storage Usage</p>
+                <div className={`mt-2 h-3 overflow-hidden rounded-full ${isDark ? "bg-dark-border" : "bg-light-grey"}`}>
                   <div className="h-full w-3/5 rounded-full bg-primary-red" />
                 </div>
-                <p className="mt-2 text-xs text-dark-charcoal/70">2.4 GB of 4 GB used (60%)</p>
+                <p className={`mt-2 text-xs ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"}`}>2.4 GB of 4 GB used (60%)</p>
               </div>
             </div>
           )}
@@ -565,100 +571,82 @@ export default function SettingsPage() {
           {/* Integrations Tab */}
           {activeTab === "integrations" && (
             <div className="space-y-5">
-              <div className="rounded-2xl border border-light-grey p-4">
+              <div className={cardClass}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-dark-charcoal">Google Maps API</p>
-                    <p className="text-xs text-dark-charcoal/60">For interactive flood maps</p>
+                    <p className={`font-semibold ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Google Maps API</p>
+                    <p className={subLabelClass}>For interactive flood maps</p>
                   </div>
                   <span className="rounded-full bg-status-green/20 px-2.5 py-1 text-xs font-semibold text-status-green">
                     Connected
                   </span>
                 </div>
                 <div className="mt-3">
-                  <label className="block text-xs font-medium text-dark-charcoal/70">API Key</label>
+                  <label className={`block text-xs font-medium ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"}`}>API Key</label>
                   <div className="mt-1 flex gap-2">
                     <input
                       type="password"
                       value={settings.googleMapsApiKey}
                       onChange={(e) => handleChange("googleMapsApiKey", e.target.value)}
-                      className="flex-1 rounded-xl border border-light-grey px-4 py-2 text-sm text-dark-charcoal outline-none focus:border-primary-red"
+                      className={`${inputClass} flex-1`}
                     />
                     <button
                       type="button"
                       onClick={() => handleTestConnection("Google Maps")}
-                      className="rounded-xl border border-primary-red px-4 py-2 text-sm font-semibold text-primary-red hover:bg-light-red/20"
+                      className={`rounded-xl border px-4 py-2 text-sm font-semibold text-primary-red transition ${isDark ? "border-primary-red hover:bg-primary-red/20" : "border-primary-red hover:bg-light-red/20"}`}
                     >
                       Test
                     </button>
                   </div>
                 </div>
               </div>
-              <div className="rounded-2xl border border-light-grey p-4">
+              <div className={cardClass}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-dark-charcoal">MongoDB Database</p>
-                    <p className="text-xs text-dark-charcoal/60">Primary data storage</p>
+                    <p className={`font-semibold ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>MongoDB Database</p>
+                    <p className={subLabelClass}>Primary data storage</p>
                   </div>
                   <span className="rounded-full bg-status-green/20 px-2.5 py-1 text-xs font-semibold text-status-green">
                     Connected
                   </span>
                 </div>
                 <div className="mt-3">
-                  <label className="block text-xs font-medium text-dark-charcoal/70">Connection URI</label>
+                  <label className={`block text-xs font-medium ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"}`}>Connection URI</label>
                   <div className="mt-1 flex gap-2">
                     <input
                       type="password"
                       value={settings.mongoDbUri}
                       onChange={(e) => handleChange("mongoDbUri", e.target.value)}
-                      className="flex-1 rounded-xl border border-light-grey px-4 py-2 text-sm text-dark-charcoal outline-none focus:border-primary-red"
+                      className={`${inputClass} flex-1`}
                     />
                     <button
                       type="button"
                       onClick={() => handleTestConnection("MongoDB")}
-                      className="rounded-xl border border-primary-red px-4 py-2 text-sm font-semibold text-primary-red hover:bg-light-red/20"
+                      className={`rounded-xl border px-4 py-2 text-sm font-semibold text-primary-red transition ${isDark ? "border-primary-red hover:bg-primary-red/20" : "border-primary-red hover:bg-light-red/20"}`}
                     >
                       Test
                     </button>
                   </div>
                 </div>
               </div>
-              <div className="rounded-2xl border border-light-grey p-4">
+              <div className={cardClass}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-dark-charcoal">Slack Integration</p>
-                    <p className="text-xs text-dark-charcoal/60">Send alerts to Slack channels</p>
+                    <p className={`font-semibold ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Slack Integration</p>
+                    <p className={subLabelClass}>Send alerts to Slack channels</p>
                   </div>
-                  <span className="rounded-full bg-very-light-grey px-2.5 py-1 text-xs font-semibold text-dark-charcoal/60">
+                  <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${isDark ? "bg-dark-border text-dark-text-muted" : "bg-very-light-grey text-dark-charcoal/60"}`}>
                     Not configured
                   </span>
                 </div>
                 <div className="mt-3">
-                  <label className="block text-xs font-medium text-dark-charcoal/70">Webhook URL</label>
+                  <label className={`block text-xs font-medium ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/70"}`}>Webhook URL</label>
                   <input
                     type="text"
                     value={settings.slackWebhook}
                     onChange={(e) => handleChange("slackWebhook", e.target.value)}
                     placeholder="https://hooks.slack.com/services/..."
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2 text-sm text-dark-charcoal outline-none focus:border-primary-red"
-                  />
-                </div>
-              </div>
-              <div className="rounded-2xl border border-light-grey p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold text-dark-charcoal">Custom Webhook</p>
-                    <p className="text-xs text-dark-charcoal/60">POST alerts to external systems</p>
-                  </div>
-                </div>
-                <div className="mt-3">
-                  <label className="block text-xs font-medium text-dark-charcoal/70">Webhook URL</label>
-                  <input
-                    type="text"
-                    value={settings.webhookUrl}
-                    onChange={(e) => handleChange("webhookUrl", e.target.value)}
-                    placeholder="https://your-api.com/webhook"
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2 text-sm text-dark-charcoal outline-none focus:border-primary-red"
+                    className={inputClass}
                   />
                 </div>
               </div>
@@ -669,22 +657,22 @@ export default function SettingsPage() {
           {activeTab === "security" && (
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">Session Timeout</label>
-                <p className="text-xs text-dark-charcoal/60">Auto-logout after inactivity</p>
+                <label className={labelClass}>Session Timeout</label>
+                <p className={subLabelClass}>Auto-logout after inactivity</p>
                 <div className="mt-2 flex items-center gap-3">
                   <input
                     type="number"
                     value={settings.sessionTimeout}
                     onChange={(e) => handleChange("sessionTimeout", parseInt(e.target.value))}
-                    className="w-32 rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                    className={`${inputClass} w-32`}
                   />
-                  <span className="text-sm text-dark-charcoal/70">minutes</span>
+                  <span className={`text-sm ${isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"}`}>minutes</span>
                 </div>
               </div>
-              <label className="flex items-center justify-between rounded-xl border border-light-grey p-4">
+              <label className={`flex items-center justify-between ${cardClass}`}>
                 <div>
-                  <p className="font-medium text-dark-charcoal">Require Multi-Factor Authentication</p>
-                  <p className="text-xs text-dark-charcoal/60">Enforce MFA for all users</p>
+                  <p className={`font-medium ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Require Multi-Factor Authentication</p>
+                  <p className={subLabelClass}>Enforce MFA for all users</p>
                 </div>
                 <input
                   type="checkbox"
@@ -693,10 +681,10 @@ export default function SettingsPage() {
                   className="h-5 w-5 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                 />
               </label>
-              <label className="flex items-center justify-between rounded-xl border border-light-grey p-4">
+              <label className={`flex items-center justify-between ${cardClass}`}>
                 <div>
-                  <p className="font-medium text-dark-charcoal">Audit Logging</p>
-                  <p className="text-xs text-dark-charcoal/60">Log all user actions for compliance</p>
+                  <p className={`font-medium ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Audit Logging</p>
+                  <p className={subLabelClass}>Log all user actions for compliance</p>
                 </div>
                 <input
                   type="checkbox"
@@ -706,19 +694,19 @@ export default function SettingsPage() {
                 />
               </label>
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">IP Whitelist</label>
-                <p className="text-xs text-dark-charcoal/60">Comma-separated IP addresses (leave empty to allow all)</p>
+                <label className={labelClass}>IP Whitelist</label>
+                <p className={subLabelClass}>Comma-separated IP addresses (leave empty to allow all)</p>
                 <textarea
                   value={settings.ipWhitelist}
                   onChange={(e) => handleChange("ipWhitelist", e.target.value)}
                   placeholder="192.168.1.1, 10.0.0.0/24"
                   rows={3}
-                  className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                  className={inputClass}
                 />
               </div>
               <div className="rounded-2xl border border-status-warning-2/40 bg-status-warning-2/10 p-4">
                 <p className="text-sm font-semibold text-status-warning-2">Security Recommendations</p>
-                <ul className="mt-2 space-y-1 text-xs text-dark-charcoal/80">
+                <ul className={`mt-2 space-y-1 text-xs ${isDark ? "text-dark-text-secondary" : "text-dark-charcoal/80"}`}>
                   <li>• Enable MFA for enhanced security</li>
                   <li>• Set session timeout to 30 minutes or less</li>
                   <li>• Configure IP whitelist for production environments</li>
@@ -731,7 +719,7 @@ export default function SettingsPage() {
           {activeTab === "appearance" && (
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">Theme</label>
+                <label className={labelClass}>Theme</label>
                 <div className="mt-2 flex gap-3">
                   {["light", "dark", "system"].map((theme) => (
                     <button
@@ -741,7 +729,9 @@ export default function SettingsPage() {
                       className={`rounded-xl px-5 py-2.5 text-sm font-semibold capitalize transition ${
                         settings.theme === theme
                           ? "bg-primary-red text-pure-white"
-                          : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
+                          : isDark
+                            ? "border border-dark-border text-dark-text hover:border-primary-red/60"
+                            : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
                       }`}
                     >
                       {theme}
@@ -750,24 +740,24 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">Primary Color</label>
+                <label className={labelClass}>Primary Color</label>
                 <div className="mt-2 flex items-center gap-3">
                   <input
                     type="color"
                     value={settings.primaryColor}
                     onChange={(e) => handleChange("primaryColor", e.target.value)}
-                    className="h-10 w-16 cursor-pointer rounded-lg border border-light-grey"
+                    className={`h-10 w-16 cursor-pointer rounded-lg border ${isDark ? "border-dark-border" : "border-light-grey"}`}
                   />
                   <input
                     type="text"
                     value={settings.primaryColor}
                     onChange={(e) => handleChange("primaryColor", e.target.value)}
-                    className="w-32 rounded-xl border border-light-grey px-4 py-2 text-sm text-dark-charcoal outline-none focus:border-primary-red"
+                    className={`${inputClass} w-32`}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-dark-charcoal">Sidebar Position</label>
+                <label className={labelClass}>Sidebar Position</label>
                 <div className="mt-2 flex gap-3">
                   {["left", "right"].map((pos) => (
                     <button
@@ -777,7 +767,9 @@ export default function SettingsPage() {
                       className={`rounded-xl px-5 py-2.5 text-sm font-semibold capitalize transition ${
                         settings.sidebarPosition === pos
                           ? "bg-primary-red text-pure-white"
-                          : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
+                          : isDark
+                            ? "border border-dark-border text-dark-text hover:border-primary-red/60"
+                            : "border border-light-grey text-dark-charcoal hover:border-primary-red/60"
                       }`}
                     >
                       {pos}
@@ -785,10 +777,10 @@ export default function SettingsPage() {
                   ))}
                 </div>
               </div>
-              <label className="flex items-center justify-between rounded-xl border border-light-grey p-4">
+              <label className={`flex items-center justify-between ${cardClass}`}>
                 <div>
-                  <p className="font-medium text-dark-charcoal">Compact Mode</p>
-                  <p className="text-xs text-dark-charcoal/60">Reduce spacing for more content</p>
+                  <p className={`font-medium ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Compact Mode</p>
+                  <p className={subLabelClass}>Reduce spacing for more content</p>
                 </div>
                 <input
                   type="checkbox"
@@ -805,22 +797,22 @@ export default function SettingsPage() {
             <div className="space-y-5">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-dark-charcoal">Default Zoom Level</label>
+                  <label className={labelClass}>Default Zoom Level</label>
                   <input
                     type="number"
                     min={1}
                     max={20}
                     value={settings.defaultMapZoom}
                     onChange={(e) => handleChange("defaultMapZoom", parseInt(e.target.value))}
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                    className={inputClass}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-dark-charcoal">Map Style</label>
+                  <label className={labelClass}>Map Style</label>
                   <select
                     value={settings.mapStyle}
                     onChange={(e) => handleChange("mapStyle", e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                    className={inputClass}
                   >
                     <option value="satellite">Satellite</option>
                     <option value="roadmap">Roadmap</option>
@@ -829,30 +821,30 @@ export default function SettingsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-dark-charcoal">Default Latitude</label>
+                  <label className={labelClass}>Default Latitude</label>
                   <input
                     type="number"
                     step="0.0001"
                     value={settings.defaultMapLat}
                     onChange={(e) => handleChange("defaultMapLat", parseFloat(e.target.value))}
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                    className={inputClass}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-dark-charcoal">Default Longitude</label>
+                  <label className={labelClass}>Default Longitude</label>
                   <input
                     type="number"
                     step="0.0001"
                     value={settings.defaultMapLng}
                     onChange={(e) => handleChange("defaultMapLng", parseFloat(e.target.value))}
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20"
+                    className={inputClass}
                   />
                 </div>
               </div>
-              <label className="flex items-center justify-between rounded-xl border border-light-grey p-4">
+              <label className={`flex items-center justify-between ${cardClass}`}>
                 <div>
-                  <p className="font-medium text-dark-charcoal">Show Inactive Nodes</p>
-                  <p className="text-xs text-dark-charcoal/60">Display offline sensors on map</p>
+                  <p className={`font-medium ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Show Inactive Nodes</p>
+                  <p className={subLabelClass}>Display offline sensors on map</p>
                 </div>
                 <input
                   type="checkbox"
@@ -861,10 +853,10 @@ export default function SettingsPage() {
                   className="h-5 w-5 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
                 />
               </label>
-              <div className="rounded-2xl border border-light-grey bg-very-light-grey p-4">
-                <p className="text-sm font-semibold text-dark-charcoal">Map Preview</p>
+              <div className={`rounded-2xl p-4 ${isDark ? "bg-dark-bg" : "bg-very-light-grey"}`}>
+                <p className={`text-sm font-semibold ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Map Preview</p>
                 <div className="mt-2 h-40 overflow-hidden rounded-xl bg-gradient-to-br from-status-green/20 via-status-warning-1/20 to-primary-red/20">
-                  <div className="flex h-full items-center justify-center text-sm text-dark-charcoal/60">
+                  <div className={`flex h-full items-center justify-center text-sm ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
                     Map preview with current settings
                   </div>
                 </div>
@@ -875,10 +867,10 @@ export default function SettingsPage() {
           {/* Backup Tab */}
           {activeTab === "backup" && (
             <div className="space-y-5">
-              <label className="flex items-center justify-between rounded-xl border border-light-grey p-4">
+              <label className={`flex items-center justify-between ${cardClass}`}>
                 <div>
-                  <p className="font-medium text-dark-charcoal">Automatic Backups</p>
-                  <p className="text-xs text-dark-charcoal/60">Schedule regular data backups</p>
+                  <p className={`font-medium ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Automatic Backups</p>
+                  <p className={subLabelClass}>Schedule regular data backups</p>
                 </div>
                 <input
                   type="checkbox"
@@ -889,12 +881,12 @@ export default function SettingsPage() {
               </label>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-dark-charcoal">Backup Frequency</label>
+                  <label className={labelClass}>Backup Frequency</label>
                   <select
                     value={settings.backupFrequency}
                     onChange={(e) => handleChange("backupFrequency", e.target.value)}
                     disabled={!settings.autoBackup}
-                    className="mt-1 w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 disabled:opacity-50"
+                    className={`${inputClass} disabled:opacity-50`}
                   >
                     <option value="hourly">Hourly</option>
                     <option value="daily">Daily</option>
@@ -903,24 +895,24 @@ export default function SettingsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-dark-charcoal">Retention Period</label>
+                  <label className={labelClass}>Retention Period</label>
                   <div className="mt-1 flex items-center gap-3">
                     <input
                       type="number"
                       value={settings.backupRetention}
                       onChange={(e) => handleChange("backupRetention", parseInt(e.target.value))}
                       disabled={!settings.autoBackup}
-                      className="w-full rounded-xl border border-light-grey px-4 py-2.5 text-sm text-dark-charcoal outline-none focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 disabled:opacity-50"
+                      className={`${inputClass} disabled:opacity-50`}
                     />
-                    <span className="text-sm text-dark-charcoal/70">days</span>
+                    <span className={`text-sm ${isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"}`}>days</span>
                   </div>
                 </div>
               </div>
-              <div className="rounded-2xl border border-light-grey p-4">
+              <div className={cardClass}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-dark-charcoal">Last Backup</p>
-                    <p className="text-xs text-dark-charcoal/60">
+                    <p className={`font-semibold ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Last Backup</p>
+                    <p className={subLabelClass}>
                       {new Date(settings.lastBackup).toLocaleString("en-MY", {
                         dateStyle: "medium",
                         timeStyle: "short",
@@ -939,7 +931,11 @@ export default function SettingsPage() {
               <div className="grid gap-3 sm:grid-cols-2">
                 <button
                   type="button"
-                  className="rounded-xl border border-light-grey px-4 py-3 text-sm font-semibold text-dark-charcoal transition hover:bg-very-light-grey"
+                  className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${
+                    isDark
+                      ? "border-dark-border text-dark-text hover:bg-dark-bg"
+                      : "border-light-grey text-dark-charcoal hover:bg-very-light-grey"
+                  }`}
                 >
                   Download Backup
                 </button>
@@ -954,11 +950,15 @@ export default function SettingsPage() {
           )}
 
           {/* Action Buttons */}
-          <div className="mt-8 flex justify-end gap-3 border-t border-light-grey pt-6">
+          <div className={`mt-8 flex justify-end gap-3 border-t pt-6 ${isDark ? "border-dark-border" : "border-light-grey"}`}>
             <button
               type="button"
               onClick={handleReset}
-              className="rounded-xl border border-light-grey px-5 py-2.5 text-sm font-semibold text-dark-charcoal transition hover:bg-very-light-grey"
+              className={`rounded-xl border px-5 py-2.5 text-sm font-semibold transition ${
+                isDark
+                  ? "border-dark-border text-dark-text hover:bg-dark-bg"
+                  : "border-light-grey text-dark-charcoal hover:bg-very-light-grey"
+              }`}
             >
               Reset to Defaults
             </button>
@@ -966,7 +966,11 @@ export default function SettingsPage() {
               type="button"
               onClick={handleCancel}
               disabled={!hasChanges}
-              className="rounded-xl border border-light-grey px-5 py-2.5 text-sm font-semibold text-dark-charcoal transition hover:bg-very-light-grey disabled:cursor-not-allowed disabled:opacity-50"
+              className={`rounded-xl border px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                isDark
+                  ? "border-dark-border text-dark-text hover:bg-dark-bg"
+                  : "border-light-grey text-dark-charcoal hover:bg-very-light-grey"
+              }`}
             >
               Cancel
             </button>
@@ -984,4 +988,3 @@ export default function SettingsPage() {
     </section>
   );
 }
-
