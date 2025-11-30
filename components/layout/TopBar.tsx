@@ -197,9 +197,9 @@ export default function TopBar({
             : "border-light-grey bg-pure-white/95"
         }`}
       >
-        <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-10">
+        <div className="flex items-center justify-between gap-2 sm:gap-4 px-4 py-3 sm:px-6 lg:px-10 min-w-0">
           {/* Left side */}
-          <div className="flex items-center">
+          <div className="flex items-center shrink-0 min-w-0">
             {/* Hamburger – desktop (toggles sidebar) */}
             <button
               type="button"
@@ -236,7 +236,7 @@ export default function TopBar({
             />
 
             {/* Logo + Title – positioned near main content area */}
-            <div className="ml-4 md:ml-0 flex items-center gap-3 shrink-0">
+            <div className="ml-4 md:ml-0 flex items-center gap-2 sm:gap-3 shrink-0">
               <Image
                 src={logo}
                 alt="Flood Management logo"
@@ -263,16 +263,16 @@ export default function TopBar({
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className={`flex flex-1 max-w-md items-center gap-3 rounded-full border px-4 py-2.5 text-sm transition ${
+            className={`flex flex-1 min-w-0 max-w-md items-center gap-2 sm:gap-3 rounded-full border px-2 sm:px-4 py-2.5 text-sm transition shrink ${
               isDark
                 ? "border-dark-border bg-dark-bg/50 text-dark-text-muted hover:border-primary-red/50 hover:bg-dark-card"
                 : "border-light-grey bg-very-light-grey/50 text-dark-charcoal/50 hover:border-primary-red/50 hover:bg-pure-white hover:shadow-sm"
             }`}
           >
-            <SearchIcon className="h-5 w-5" />
-            <span className="flex-1 text-left">Search pages...</span>
+            <SearchIcon className="h-5 w-5 shrink-0" />
+            <span className="hidden sm:inline flex-1 text-left truncate min-w-0">Search pages...</span>
             <kbd
-              className={`hidden sm:inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-medium ${
+              className={`hidden lg:inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-medium shrink-0 ${
                 isDark
                   ? "border-dark-border bg-dark-card text-dark-text-muted"
                   : "border-light-grey bg-pure-white text-dark-charcoal/50"
@@ -283,7 +283,7 @@ export default function TopBar({
           </button>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Theme Toggle */}
             <ThemeToggle />
 
