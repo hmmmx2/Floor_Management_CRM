@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { useTheme } from "@/lib/ThemeContext";
+
 function ProfileIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -38,6 +40,7 @@ const defaultSettings: AdminSettings = {
 };
 
 export default function AdminPage() {
+  const { isDark } = useTheme();
   const [formData, setFormData] = useState<AdminSettings>(defaultSettings);
   const [originalData, setOriginalData] = useState<AdminSettings>(defaultSettings);
   const [isSaving, setIsSaving] = useState(false);
@@ -134,25 +137,25 @@ export default function AdminPage() {
       )}
 
       <header>
-        <h1 className="text-3xl font-semibold text-dark-charcoal">
+        <h1 className={`text-3xl font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
           Admin Settings
         </h1>
-        <p className="text-sm text-dark-charcoal/70">
+        <p className={`text-sm transition-colors ${isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"}`}>
           Manage your account details and notification preferences.
         </p>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
         {/* Profile Card */}
-        <article className="rounded-3xl border border-light-grey bg-pure-white p-6 shadow-sm">
+        <article className={`rounded-3xl border p-6 shadow-sm transition-colors ${isDark ? "border-dark-border bg-dark-card" : "border-light-grey bg-pure-white"}`}>
           <div className="flex flex-col items-center text-center">
             <div className="flex h-24 w-24 items-center justify-center rounded-2xl border-2 border-primary-red bg-light-red/30">
               <ProfileIcon className="h-12 w-12 text-primary-red" />
             </div>
-            <h2 className="mt-4 text-xl font-semibold text-dark-charcoal">
+            <h2 className={`mt-4 text-xl font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
               {formData.name}
             </h2>
-            <p className="text-sm text-dark-charcoal/70">{formData.role}</p>
+            <p className={`text-sm transition-colors ${isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"}`}>{formData.role}</p>
             <div className="mt-2 flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-status-green" />
               <span className="text-xs font-medium text-status-green">

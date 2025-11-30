@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
 
+import { useTheme } from "@/lib/ThemeContext";
+
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
 function GeneralIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -189,6 +191,7 @@ const tabs: { id: SettingsTab; label: string; icon: React.ComponentType<React.SV
 ];
 
 export default function SettingsPage() {
+  const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<SettingsTab>("general");
   const [settings, setSettings] = useState<CRMSettings>(defaultSettings);
   const [originalSettings, setOriginalSettings] = useState<CRMSettings>(defaultSettings);
@@ -267,8 +270,8 @@ export default function SettingsPage() {
 
       <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-dark-charcoal">CRM Settings</h1>
-          <p className="text-sm text-dark-charcoal/70">
+          <h1 className={`text-3xl font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>CRM Settings</h1>
+          <p className={`text-sm transition-colors ${isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"}`}>
             Configure system preferences, integrations, and security options.
           </p>
         </div>
