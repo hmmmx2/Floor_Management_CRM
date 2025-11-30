@@ -1,31 +1,36 @@
 @import "tailwindcss";
 
+:root {
+  --background: #f8f9fa;
+  --foreground: #4e4b4b;
+}
+
+/* Dark mode variables */
+.dark {
+  --background: #1a1a2e;
+  --foreground: #e8e8e8;
+}
+
 @theme inline {
-  /* Brand colors */
   --color-primary-red: #ed1c24;
   --color-light-red: #fcc6c6;
   --color-dark-charcoal: #4e4b4b;
   --color-light-grey: #bfbfbf;
   --color-very-light-grey: #f8f9fa;
   --color-pure-white: #ffffff;
-  
-  /* Status colors */
   --color-status-green: #56e40a;
   --color-status-warning-1: #ffd54f;
   --color-status-warning-2: #ff9f1c;
   --color-status-danger: #d7263d;
   
-  /* Dark mode specific colors */
-  --color-dark-bg: #0f172a;
-  --color-dark-card: #1e293b;
-  --color-dark-border: #334155;
-  --color-dark-text: #f1f5f9;
-  --color-dark-text-secondary: #cbd5e1;
-  --color-dark-text-muted: #94a3b8;
-  --color-dark-accent: #38bdf8;
-  --color-dark-accent-muted: #0ea5e9;
+  /* Dark mode colors */
+  --color-dark-bg: #1a1a2e;
+  --color-dark-card: #16213e;
+  --color-dark-border: #2d3a5a;
+  --color-dark-text: #e8e8e8;
+  --color-dark-text-secondary: #a0a0a0;
+  --color-dark-text-muted: #6b7280;
   
-  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -35,19 +40,33 @@
 }
 
 body {
+  background: var(--background);
+  color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Dark mode scrollbar */
+/* Dark mode body styles */
+.dark body,
+html.dark body {
+  background: var(--color-dark-bg);
+  color: var(--color-dark-text);
+}
+
+/* Smooth transitions for theme switching */
+.dark * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom scrollbar for dark mode */
 .dark ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: var(--color-dark-card);
+  background: var(--color-dark-bg);
 }
 
 .dark ::-webkit-scrollbar-thumb {
@@ -56,5 +75,5 @@ body {
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #3d4a6a;
 }

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { useTheme } from "@/lib/ThemeContext";
+
 import Footer from "./Footer";
 import MobileMenu from "./MobileMenu";
 import Sidebar from "./Sidebar";
@@ -14,13 +16,20 @@ type AppShellProps = {
 export default function AppShell({ children }: AppShellProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isDark } = useTheme();
 
   const toggleSidebar = () => setIsSidebarCollapsed((prev) => !prev);
   const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-very-light-grey text-dark-charcoal transition-colors duration-300 dark:bg-dark-bg dark:text-dark-text">
+    <div
+      className={`flex min-h-screen flex-col transition-colors duration-300 ${
+        isDark
+          ? "bg-dark-bg text-dark-text"
+          : "bg-very-light-grey text-dark-charcoal"
+      }`}
+    >
       {/* Top navbar spans full width */}
       <TopBar
         isSidebarCollapsed={isSidebarCollapsed}

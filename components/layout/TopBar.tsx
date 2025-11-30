@@ -6,9 +6,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import logo from "@/app/images/logo.png";
+import { useTheme } from "@/lib/ThemeContext";
 
 import SearchModal from "./SearchModal";
-import { useTheme } from "./ThemeProvider";
 
 function HamburgerIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -94,47 +94,81 @@ function ProfileIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-// Sun icon for light mode
 function SunIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
       {...props}
     >
-      <circle cx="12" cy="12" r="5" />
-      <line x1="12" y1="1" x2="12" y2="3" />
-      <line x1="12" y1="21" x2="12" y2="23" />
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-      <line x1="1" y1="12" x2="3" y2="12" />
-      <line x1="21" y1="12" x2="23" y2="12" />
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+      <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
     </svg>
   );
 }
 
-// Moon icon for dark mode
 function MoonIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
       {...props}
     >
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      <path
+        fillRule="evenodd"
+        d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z"
+        clipRule="evenodd"
+      />
     </svg>
+  );
+}
+
+// Theme Toggle Switch Component
+function ThemeToggle() {
+  const { isDark, toggleTheme } = useTheme();
+
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      className={`relative flex h-10 w-10 sm:h-11 sm:w-[70px] items-center justify-center sm:justify-start rounded-full border transition-all duration-300 ${
+        isDark
+          ? "border-dark-border bg-dark-card hover:border-primary-red"
+          : "border-light-grey bg-very-light-grey/50 hover:border-primary-red"
+      }`}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {/* Mobile: Single icon */}
+      <span className="sm:hidden">
+        {isDark ? (
+          <MoonIcon className="h-5 w-5 text-yellow-400" />
+        ) : (
+          <SunIcon className="h-5 w-5 text-amber-500" />
+        )}
+      </span>
+
+      {/* Desktop: Toggle switch with both icons */}
+      <span className="hidden sm:flex items-center w-full px-1">
+        {/* Sun icon */}
+        <span
+          className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ${
+            !isDark ? "bg-amber-500 text-white" : "text-dark-text-muted"
+          }`}
+        >
+          <SunIcon className="h-4 w-4" />
+        </span>
+
+        {/* Moon icon */}
+        <span
+          className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ${
+            isDark ? "bg-indigo-500 text-white" : "text-dark-charcoal/40"
+          }`}
+        >
+          <MoonIcon className="h-4 w-4" />
+        </span>
+      </span>
+    </button>
   );
 }
 
@@ -152,11 +186,17 @@ export default function TopBar({
   isMobileMenuOpen = false,
 }: TopBarProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const { isDark } = useTheme();
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-light-grey bg-pure-white/95 backdrop-blur dark:bg-dark-card/95 dark:border-dark-border transition-colors duration-300">
+      <header
+        className={`sticky top-0 z-40 border-b backdrop-blur transition-colors duration-300 ${
+          isDark
+            ? "border-dark-border bg-dark-card/95"
+            : "border-light-grey bg-pure-white/95"
+        }`}
+      >
         <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-10">
           {/* Left side */}
           <div className="flex items-center">
@@ -166,7 +206,7 @@ export default function TopBar({
               onClick={onToggleSidebar}
               aria-pressed={!isSidebarCollapsed}
               aria-label="Toggle sidebar"
-              className="hidden md:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-red transition hover:bg-light-red/40 dark:hover:bg-primary-red/20"
+              className="hidden md:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-red transition hover:bg-light-red/40"
             >
               <HamburgerIcon className="h-6 w-6" />
             </button>
@@ -177,7 +217,9 @@ export default function TopBar({
               onClick={onToggleMobileMenu}
               aria-pressed={isMobileMenuOpen}
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-              className="flex md:hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-light-red text-primary-red transition hover:bg-light-red/40 dark:border-primary-red/40 dark:hover:bg-primary-red/20"
+              className={`flex md:hidden h-11 w-11 shrink-0 items-center justify-center rounded-2xl border text-primary-red transition hover:bg-light-red/40 ${
+                isDark ? "border-dark-border" : "border-light-red"
+              }`}
             >
               {isMobileMenuOpen ? (
                 <CloseIcon className="h-6 w-6" />
@@ -203,7 +245,11 @@ export default function TopBar({
                 priority
               />
               <div className="hidden sm:block">
-                <p className="text-base font-semibold leading-tight text-dark-charcoal dark:text-dark-text">
+                <p
+                  className={`text-base font-semibold leading-tight transition-colors ${
+                    isDark ? "text-dark-text" : "text-dark-charcoal"
+                  }`}
+                >
                   Flood Management
                 </p>
                 <p className="text-xs uppercase tracking-wide text-primary-red">
@@ -217,35 +263,37 @@ export default function TopBar({
           <button
             type="button"
             onClick={() => setIsSearchOpen(true)}
-            className="flex flex-1 max-w-md items-center gap-3 rounded-full border border-light-grey bg-very-light-grey/50 px-4 py-2.5 text-sm text-dark-charcoal/50 transition hover:border-primary-red/50 hover:bg-pure-white hover:shadow-sm dark:border-dark-border dark:bg-dark-card/50 dark:text-dark-text-muted dark:hover:bg-dark-card dark:hover:border-primary-red/50"
+            className={`flex flex-1 max-w-md items-center gap-3 rounded-full border px-4 py-2.5 text-sm transition ${
+              isDark
+                ? "border-dark-border bg-dark-bg/50 text-dark-text-muted hover:border-primary-red/50 hover:bg-dark-card"
+                : "border-light-grey bg-very-light-grey/50 text-dark-charcoal/50 hover:border-primary-red/50 hover:bg-pure-white hover:shadow-sm"
+            }`}
           >
             <SearchIcon className="h-5 w-5" />
             <span className="flex-1 text-left">Search pages...</span>
-            <kbd className="hidden sm:inline-flex items-center gap-1 rounded-lg border border-light-grey bg-pure-white px-2 py-1 text-[10px] font-medium text-dark-charcoal/50 dark:border-dark-border dark:bg-dark-card dark:text-dark-text-muted">
+            <kbd
+              className={`hidden sm:inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-medium ${
+                isDark
+                  ? "border-dark-border bg-dark-card text-dark-text-muted"
+                  : "border-light-grey bg-pure-white text-dark-charcoal/50"
+              }`}
+            >
               <span className="text-xs">⌘</span>K
             </kbd>
           </button>
 
           {/* Right side actions */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Theme Toggle Switch */}
-            <button
-              type="button"
-              onClick={toggleTheme}
-              aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
-              className="relative flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border border-light-grey bg-very-light-grey text-dark-charcoal transition-all duration-300 hover:border-primary-red dark:border-dark-border dark:bg-dark-card dark:text-dark-text"
-            >
-              {/* Sun icon - shown in dark mode (click to go light) */}
-              {theme === "dark" ? (
-                <SunIcon className="h-5 w-5 text-amber-400" />
-              ) : (
-                <MoonIcon className="h-5 w-5 text-slate-600" />
-              )}
-            </button>
+            {/* Theme Toggle */}
+            <ThemeToggle />
 
             <Link
               href="/alerts"
-              className="relative flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red dark:border-dark-border dark:text-dark-text dark:hover:border-primary-red"
+              className={`relative flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border transition ${
+                isDark
+                  ? "border-dark-border text-dark-text hover:text-primary-red hover:border-primary-red"
+                  : "border-light-grey text-dark-charcoal hover:text-primary-red hover:border-primary-red"
+              }`}
               aria-label="Notifications"
             >
               <NotificationIcon className="h-5 w-5" />
@@ -256,7 +304,11 @@ export default function TopBar({
             </Link>
             <Link
               href="/settings"
-              className="hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-light-grey text-dark-charcoal transition hover:text-primary-red hover:border-primary-red dark:border-dark-border dark:text-dark-text dark:hover:border-primary-red"
+              className={`hidden sm:flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition ${
+                isDark
+                  ? "border-dark-border text-dark-text hover:text-primary-red hover:border-primary-red"
+                  : "border-light-grey text-dark-charcoal hover:text-primary-red hover:border-primary-red"
+              }`}
               aria-label="Settings"
             >
               <SettingsIcon className="h-5 w-5" />
@@ -265,18 +317,32 @@ export default function TopBar({
             {/* Profile card with admin info and active status – clickable to admin settings */}
             <Link
               href="/admin"
-              className="relative flex shrink-0 items-center gap-2 rounded-xl border border-primary-red bg-pure-white px-2 sm:px-3 py-1.5 transition hover:bg-light-red/20 dark:bg-dark-card dark:hover:bg-primary-red/20"
+              className={`relative flex shrink-0 items-center gap-2 rounded-xl border border-primary-red px-2 sm:px-3 py-1.5 transition ${
+                isDark
+                  ? "bg-dark-card hover:bg-primary-red/20"
+                  : "bg-pure-white hover:bg-light-red/20"
+              }`}
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary-red bg-primary-red">
                 <ProfileIcon className="h-5 w-5 text-pure-white" />
               </div>
               <div className="hidden sm:block">
-                <p className="text-xs font-semibold leading-tight text-dark-charcoal dark:text-dark-text">
+                <p
+                  className={`text-xs font-semibold leading-tight ${
+                    isDark ? "text-dark-text" : "text-dark-charcoal"
+                  }`}
+                >
                   Admin
                 </p>
                 <div className="flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-status-green" />
-                  <span className="text-[10px] text-dark-charcoal/70 dark:text-dark-text-secondary">Active</span>
+                  <span
+                    className={`text-[10px] ${
+                      isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
+                    }`}
+                  >
+                    Active
+                  </span>
                 </div>
               </div>
             </Link>
