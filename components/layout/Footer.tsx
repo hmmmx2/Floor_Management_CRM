@@ -25,7 +25,7 @@ const navigationLinks = [
     title: "Management",
     links: [
       { label: "Role Management", href: "/roles" },
-      { label: "Admin Settings", href: "/admin" },
+      { label: "Account Settings", href: "/admin" },
     ],
   },
 ];

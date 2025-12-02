@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import Image from "next/image";
 import Link from "next/link";
 
 import logo from "@/app/images/logo.png";
 import { useTheme } from "@/lib/ThemeContext";
+import { useAuth } from "@/lib/AuthContext";
 
 import SearchModal from "./SearchModal";
 
@@ -124,6 +125,25 @@ function MoonIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function LogoutIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  );
+}
+
 // Theme Toggle Switch Component
 function ThemeToggle() {
   const { isDark, toggleTheme } = useTheme();
@@ -186,7 +206,37 @@ export default function TopBar({
   isMobileMenuOpen = false,
 }: TopBarProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const { isDark } = useTheme();
+  const { user, logout } = useAuth();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    setIsProfileDropdownOpen(false);
+  };
+
+  const getUserInitials = () => {
+    if (!user?.name) return "U";
+    return user.name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  };
 
   return (
     <>
@@ -314,38 +364,89 @@ export default function TopBar({
               <SettingsIcon className="h-5 w-5" />
             </Link>
 
-            {/* Profile card with admin info and active status – clickable to admin settings */}
-            <Link
-              href="/admin"
-              className={`relative flex shrink-0 items-center gap-2 rounded-xl border border-primary-red px-2 sm:px-3 py-1.5 transition ${
-                isDark
-                  ? "bg-dark-card hover:bg-primary-red/20"
-                  : "bg-pure-white hover:bg-light-red/20"
-              }`}
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary-red bg-primary-red">
-                <ProfileIcon className="h-5 w-5 text-pure-white" />
-              </div>
-              <div className="hidden sm:block">
-                <p
-                  className={`text-xs font-semibold leading-tight ${
-                    isDark ? "text-dark-text" : "text-dark-charcoal"
-                  }`}
-                >
-                  Admin
-                </p>
-                <div className="flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-status-green" />
-                  <span
-                    className={`text-[10px] ${
-                      isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
+            {/* Profile card with user info and dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                className={`relative flex shrink-0 items-center gap-2 rounded-xl border border-primary-red px-2 sm:px-3 py-1.5 transition ${
+                  isDark
+                    ? "bg-dark-card hover:bg-primary-red/20"
+                    : "bg-pure-white hover:bg-light-red/20"
+                }`}
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary-red bg-primary-red text-xs font-bold text-pure-white">
+                  {getUserInitials()}
+                </div>
+                <div className="hidden sm:block text-left">
+                  <p
+                    className={`text-xs font-semibold leading-tight ${
+                      isDark ? "text-dark-text" : "text-dark-charcoal"
                     }`}
                   >
-                    Active
-                  </span>
+                    {user?.name || "User"}
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-status-green" />
+                    <span
+                      className={`text-[10px] ${
+                        isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
+                      }`}
+                    >
+                      {user?.role || "User"}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </button>
+
+              {/* Dropdown Menu */}
+              {isProfileDropdownOpen && (
+                <div
+                  className={`absolute right-0 top-full mt-2 w-48 rounded-xl border shadow-lg transition-colors ${
+                    isDark
+                      ? "border-dark-border bg-dark-card"
+                      : "border-light-grey bg-pure-white"
+                  }`}
+                >
+                  <div className={`p-2 border-b ${isDark ? "border-dark-border" : "border-light-grey"}`}>
+                    <p
+                      className={`text-sm font-semibold ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}
+                    >
+                      {user?.name}
+                    </p>
+                    <p
+                      className={`text-xs ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}
+                    >
+                      {user?.email}
+                    </p>
+                  </div>
+                  <div className="p-1">
+                    <Link
+                      href="/admin"
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                      className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition ${
+                        isDark
+                          ? "text-dark-text hover:bg-dark-bg"
+                          : "text-dark-charcoal hover:bg-very-light-grey"
+                      }`}
+                    >
+                      <ProfileIcon className="h-4 w-4" />
+                      Account Settings
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-primary-red transition ${
+                        isDark ? "hover:bg-dark-bg" : "hover:bg-very-light-grey"
+                      }`}
+                    >
+                      <LogoutIcon className="h-4 w-4" />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>

@@ -97,6 +97,9 @@ type CRMSettings = {
   dailyDigest: boolean;
   weeklyReport: boolean;
   alertSound: string;
+  // Data Sync Settings
+  liveDataEnabled: boolean;
+  refreshInterval: number;
   dataRetentionDays: number;
   autoArchive: boolean;
   exportFormat: string;
@@ -137,6 +140,8 @@ const defaultSettings: CRMSettings = {
   dailyDigest: true,
   weeklyReport: true,
   alertSound: "default",
+  liveDataEnabled: true,
+  refreshInterval: 30000,
   dataRetentionDays: 365,
   autoArchive: true,
   exportFormat: "csv",
@@ -520,6 +525,49 @@ export default function SettingsPage() {
           {/* Data Management Tab */}
           {activeTab === "data" && (
             <div className="space-y-5">
+              {/* Live Data Sync Section */}
+              <div>
+                <h3 className={`text-sm font-semibold ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Live Data Sync</h3>
+                <p className={subLabelClass}>Control how data is fetched from MongoDB across all pages</p>
+                <div className="mt-3 space-y-3">
+                  <label className={`flex items-center justify-between ${cardClass}`}>
+                    <div>
+                      <p className={`font-medium ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>Live Mode</p>
+                      <p className={subLabelClass}>Automatically refresh data from sensors</p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={settings.liveDataEnabled}
+                      onChange={(e) => handleChange("liveDataEnabled", e.target.checked)}
+                      className="h-5 w-5 rounded border-light-grey text-primary-red focus:ring-primary-red/40"
+                    />
+                  </label>
+                  <div>
+                    <label className={labelClass}>Refresh Interval</label>
+                    <p className={subLabelClass}>How often to fetch new data from MongoDB (applies to all pages)</p>
+                    <select
+                      value={settings.refreshInterval}
+                      onChange={(e) => handleChange("refreshInterval", parseInt(e.target.value))}
+                      disabled={!settings.liveDataEnabled}
+                      className={`${inputClass} mt-2 max-w-xs disabled:opacity-50`}
+                    >
+                      <option value={10000}>10 seconds</option>
+                      <option value={30000}>30 seconds</option>
+                      <option value={60000}>1 minute</option>
+                      <option value={120000}>2 minutes</option>
+                      <option value={300000}>5 minutes</option>
+                      <option value={600000}>10 minutes</option>
+                      <option value={1800000}>30 minutes</option>
+                      <option value={3600000}>1 hour</option>
+                      <option value={7200000}>2 hours</option>
+                      <option value={18000000}>5 hours</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`border-t ${isDark ? "border-dark-border" : "border-light-grey"}`} />
+
               <div>
                 <label className={labelClass}>Data Retention Period</label>
                 <p className={subLabelClass}>How long to keep historical data</p>

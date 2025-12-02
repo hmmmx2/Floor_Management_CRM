@@ -13,6 +13,8 @@ import {
   SensorsIcon,
 } from "@/components/icons/NavIcons";
 import { useTheme } from "@/lib/ThemeContext";
+import { usePermissions } from "@/lib/hooks/usePermissions";
+import { Permission } from "@/lib/permissions";
 
 type MobileMenuProps = {
   isOpen: boolean;
@@ -32,7 +34,7 @@ function SettingsIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-function AdminIcon(props: React.SVGProps<SVGSVGElement>) {
+function AccountIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -58,23 +60,41 @@ function CloseIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-const mainNavItems = [
-  { label: "Dashboard", href: "/dashboard", Icon: DashboardIcon },
-  { label: "Sensors", href: "/sensors", Icon: SensorsIcon },
-  { label: "Flood Map", href: "/map", Icon: MapIcon },
-  { label: "Analytics", href: "/analytics", Icon: AnalyticsIcon },
-  { label: "Alerts", href: "/alerts", Icon: AlertsIcon },
+type NavItemType = {
+  label: string;
+  href: string;
+  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  permission?: Permission;
+  alwaysShow?: boolean;
+};
+
+const mainNavItems: NavItemType[] = [
+  { label: "Dashboard", href: "/dashboard", Icon: DashboardIcon, permission: "dashboard.view" },
+  { label: "Sensors", href: "/sensors", Icon: SensorsIcon, permission: "sensors.view" },
+  { label: "Flood Map", href: "/map", Icon: MapIcon, permission: "map.view" },
+  { label: "Analytics", href: "/analytics", Icon: AnalyticsIcon, permission: "analytics.view" },
+  { label: "Alerts", href: "/alerts", Icon: AlertsIcon, permission: "alerts.view" },
 ];
 
-const managementItems = [
-  { label: "Role Management", href: "/roles", Icon: RolesIcon },
-  { label: "Admin Settings", href: "/admin", Icon: AdminIcon },
-  { label: "CRM Settings", href: "/settings", Icon: SettingsIcon },
+const managementItems: NavItemType[] = [
+  { label: "Role Management", href: "/roles", Icon: RolesIcon, permission: "roles.manage" },
+  { label: "Account Settings", href: "/admin", Icon: AccountIcon, alwaysShow: true },
+  { label: "CRM Settings", href: "/settings", Icon: SettingsIcon, permission: "settings.manage" },
 ];
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const pathname = usePathname();
   const { isDark } = useTheme();
+  const { can } = usePermissions();
+
+  // Filter items based on permissions
+  const accessibleMainItems = mainNavItems.filter(
+    (item) => item.alwaysShow || (item.permission && can(item.permission))
+  );
+  
+  const accessibleManagementItems = managementItems.filter(
+    (item) => item.alwaysShow || (item.permission && can(item.permission))
+  );
 
   if (!isOpen) return null;
 
@@ -146,7 +166,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               Main
             </p>
             <div className="space-y-1">
-              {mainNavItems.map((item) => {
+              {accessibleMainItems.map((item) => {
                 const isActive =
                   pathname === item.href ||
                   pathname.startsWith(`${item.href}/`);
@@ -184,59 +204,63 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               })}
             </div>
 
-            {/* Management Section */}
-            <div
-              className={clsx(
-                "my-4 border-t",
-                isDark ? "border-dark-border" : "border-light-grey"
-              )}
-            />
-            <p
-              className={clsx(
-                "mb-2 text-[10px] font-bold uppercase tracking-wider",
-                isDark ? "text-dark-text-muted" : "text-dark-charcoal/50"
-              )}
-            >
-              Management
-            </p>
-            <div className="space-y-1">
-              {managementItems.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  pathname.startsWith(`${item.href}/`);
-                const ItemIcon = item.Icon;
+            {/* Management Section - only show if there are accessible items */}
+            {accessibleManagementItems.length > 0 && (
+              <>
+                <div
+                  className={clsx(
+                    "my-4 border-t",
+                    isDark ? "border-dark-border" : "border-light-grey"
+                  )}
+                />
+                <p
+                  className={clsx(
+                    "mb-2 text-[10px] font-bold uppercase tracking-wider",
+                    isDark ? "text-dark-text-muted" : "text-dark-charcoal/50"
+                  )}
+                >
+                  Management
+                </p>
+                <div className="space-y-1">
+                  {accessibleManagementItems.map((item) => {
+                    const isActive =
+                      pathname === item.href ||
+                      pathname.startsWith(`${item.href}/`);
+                    const ItemIcon = item.Icon;
 
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={onClose}
-                    className={clsx(
-                      "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
-                      isActive
-                        ? isDark
-                          ? "bg-primary-red/20 text-primary-red"
-                          : "bg-light-red/60 text-primary-red"
-                        : isDark
-                        ? "text-dark-text hover:bg-dark-border/50 hover:text-primary-red"
-                        : "text-dark-charcoal hover:bg-light-red/40 hover:text-primary-red"
-                    )}
-                  >
-                    <ItemIcon
-                      className={clsx(
-                        "h-5 w-5 shrink-0",
-                        isActive
-                          ? "text-primary-red"
-                          : isDark
-                          ? "text-dark-text-secondary"
-                          : "text-dark-charcoal"
-                      )}
-                    />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={onClose}
+                        className={clsx(
+                          "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
+                          isActive
+                            ? isDark
+                              ? "bg-primary-red/20 text-primary-red"
+                              : "bg-light-red/60 text-primary-red"
+                            : isDark
+                            ? "text-dark-text hover:bg-dark-border/50 hover:text-primary-red"
+                            : "text-dark-charcoal hover:bg-light-red/40 hover:text-primary-red"
+                        )}
+                      >
+                        <ItemIcon
+                          className={clsx(
+                            "h-5 w-5 shrink-0",
+                            isActive
+                              ? "text-primary-red"
+                              : isDark
+                              ? "text-dark-text-secondary"
+                              : "text-dark-charcoal"
+                          )}
+                        />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </nav>
 
           {/* Footer */}

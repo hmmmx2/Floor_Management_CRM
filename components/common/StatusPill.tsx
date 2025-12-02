@@ -3,11 +3,53 @@ import clsx from "clsx";
 import { NodeStatus, statusToneMap } from "@/lib/data";
 
 type StatusPillProps = {
-  status: NodeStatus;
+  status: string;
+  variant?: "green" | "yellow" | "orange" | "red";
 };
 
-export default function StatusPill({ status }: StatusPillProps) {
-  const tone = statusToneMap[status];
+// Variant-based tone map for custom status labels
+const variantToneMap = {
+  green: {
+    bg: "bg-status-green/15",
+    text: "text-status-green",
+    border: "border-status-green/30",
+    dot: "bg-status-green",
+  },
+  yellow: {
+    bg: "bg-status-warning-1/20",
+    text: "text-status-warning-1",
+    border: "border-status-warning-1/30",
+    dot: "bg-status-warning-1",
+  },
+  orange: {
+    bg: "bg-status-warning-2/20",
+    text: "text-status-warning-2",
+    border: "border-status-warning-2/30",
+    dot: "bg-status-warning-2",
+  },
+  red: {
+    bg: "bg-light-red",
+    text: "text-primary-red",
+    border: "border-primary-red/30",
+    dot: "bg-primary-red",
+  },
+};
+
+export default function StatusPill({ status, variant }: StatusPillProps) {
+  // Use variant if provided, otherwise fall back to status-based lookup
+  let tone;
+  
+  if (variant) {
+    tone = variantToneMap[variant];
+  } else {
+    // Try to find in statusToneMap
+    tone = statusToneMap[status as NodeStatus];
+  }
+
+  // Default fallback if no tone found
+  if (!tone) {
+    tone = variantToneMap.green;
+  }
 
   return (
     <span
@@ -26,4 +68,3 @@ export default function StatusPill({ status }: StatusPillProps) {
     </span>
   );
 }
-
