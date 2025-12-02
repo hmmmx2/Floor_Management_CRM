@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -19,22 +20,16 @@ import NodeMap from "@/components/map/NodeMap";
 import {
   alertRecords,
   floodTotalsByState,
-  nodes,
   recentActivity,
   trendSeriesMonthly,
-  waterLevelByNode,
 } from "@/lib/data";
 import { useTheme } from "@/lib/ThemeContext";
+import { NodeData, getStatusLabel } from "@/lib/types";
 
 // ─── Derived data for Recharts ───────────────────────────────────────────────
 const lineChartData = trendSeriesMonthly.map((pt) => ({
   name: pt.label,
   waterLevel: pt.value,
-}));
-
-const barChartData = waterLevelByNode.map((n) => ({
-  name: n.label.replace("Node No. ", "N"),
-  level: n.value,
 }));
 
 const stateBarData = floodTotalsByState.map((s) => ({
@@ -45,20 +40,101 @@ const stateBarData = floodTotalsByState.map((s) => ({
 
 export default function DashboardPage() {
   const { isDark } = useTheme();
+  const [nodes, setNodes] = useState<NodeData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [lastFetch, setLastFetch] = useState<Date | null>(null);
   
-  const totalNodes = nodes.length;
-  const activeNodes = nodes.filter((node) => node.is_active).length;
-  const criticalAlerts = alertRecords.filter(
-    (alert) => alert.alert_type === "DANGER"
-  ).length;
-  const warningAlerts = alertRecords.filter(
-    (alert) => alert.alert_type === "WARNING"
-  ).length;
-  const averageWaterLevel =
-    nodes.reduce((acc, node) => acc + node.water_level, 0) / totalNodes;
-  const riskiestNode = nodes.reduce((prev, current) =>
-    current.water_level > prev.water_level ? current : prev
-  );
+  // Read global settings from CRM Settings
+  const [liveDataEnabled, setLiveDataEnabled] = useState(true);
+  const [refreshInterval, setRefreshInterval] = useState(30000);
+
+  useEffect(() => {
+    const loadSettings = () => {
+      const saved = localStorage.getItem("crmSettings");
+      if (saved) {
+        const settings = JSON.parse(saved);
+        setLiveDataEnabled(settings.liveDataEnabled ?? true);
+        setRefreshInterval(settings.refreshInterval ?? 30000);
+      }
+    };
+    loadSettings();
+    // Listen for storage changes from other tabs/pages
+    window.addEventListener("storage", loadSettings);
+    return () => window.removeEventListener("storage", loadSettings);
+  }, []);
+
+  // Fetch nodes data from API
+  const fetchNodes = useCallback(async () => {
+    try {
+      const response = await fetch("/api/nodes", {
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch nodes");
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        setNodes(result.data);
+        setLastFetch(new Date());
+      }
+    } catch (error) {
+      console.error("Error fetching nodes:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Initial fetch and auto-refresh
+  useEffect(() => {
+    fetchNodes();
+    let interval: NodeJS.Timeout | null = null;
+    if (liveDataEnabled) {
+      interval = setInterval(fetchNodes, refreshInterval);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [fetchNodes, liveDataEnabled, refreshInterval]);
+
+  // Statistics from real-time data
+  const stats = useMemo(() => {
+    const totalNodes = nodes.length;
+    const activeNodes = nodes.filter((n) => !n.is_dead).length;
+    const inactiveNodes = nodes.filter((n) => n.is_dead).length;
+    const criticalNodes = nodes.filter((n) => n.current_level === 3).length;
+    const warningNodes = nodes.filter((n) => n.current_level === 2).length;
+    const alertNodes = nodes.filter((n) => n.current_level === 1).length;
+    const normalNodes = nodes.filter((n) => n.current_level === 0).length;
+    const avgWaterLevel = totalNodes > 0 
+      ? nodes.reduce((acc, n) => acc + n.current_level, 0) / totalNodes 
+      : 0;
+    const riskiestNode = nodes.reduce((prev, current) => 
+      (current.current_level > (prev?.current_level ?? -1)) ? current : prev
+    , nodes[0]);
+
+    return {
+      totalNodes,
+      activeNodes,
+      inactiveNodes,
+      criticalNodes,
+      warningNodes,
+      alertNodes,
+      normalNodes,
+      avgWaterLevel,
+      riskiestNode,
+    };
+  }, [nodes]);
+
+  // Bar chart data from real-time nodes
+  const barChartData = useMemo(() => {
+    return nodes.slice(0, 10).map((n) => ({
+      name: n.node_id.slice(-4),
+      level: n.current_level,
+    }));
+  }, [nodes]);
 
   // Chart colors based on theme
   const chartTextColor = isDark ? "#a0a0a0" : "#4E4B4B";
@@ -66,53 +142,81 @@ export default function DashboardPage() {
   const tooltipBg = isDark ? "#16213e" : "#ffffff";
   const tooltipBorder = isDark ? "#2d3a5a" : "#BFBFBF";
 
+  const criticalAlerts = alertRecords.filter(
+    (alert) => alert.alert_type === "DANGER"
+  ).length;
+  const warningAlerts = alertRecords.filter(
+    (alert) => alert.alert_type === "WARNING"
+  ).length;
+
+  // Get status variant for StatusPill
+  const getStatusVariant = (level: number): "green" | "yellow" | "orange" | "red" => {
+    switch (level) {
+      case 0: return "green";
+      case 1: return "yellow";
+      case 2: return "orange";
+      case 3: return "red";
+      default: return "green";
+    }
+  };
+
   return (
     <section className="space-y-6">
-      <header>
-        <h1
-          className={`text-3xl font-semibold transition-colors ${
-            isDark ? "text-dark-text" : "text-dark-charcoal"
-          }`}
-        >
-          Dashboard
-        </h1>
-        <p
-          className={`text-sm transition-colors ${
-            isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
-          }`}
-        >
-          Live situational awareness for Sarawak flood defences.
-        </p>
+      <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1
+            className={`text-3xl font-semibold transition-colors ${
+              isDark ? "text-dark-text" : "text-dark-charcoal"
+            }`}
+          >
+            Dashboard
+          </h1>
+          <p
+            className={`text-sm transition-colors ${
+              isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
+            }`}
+          >
+            Live situational awareness from MongoDB — Real-time flood monitoring.
+          </p>
+        </div>
+        {lastFetch && (
+          <div className="flex items-center gap-2">
+            <span className={`h-2 w-2 rounded-full ${liveDataEnabled ? "bg-status-green animate-pulse" : "bg-dark-charcoal/40"}`} />
+            <span className={`text-xs ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
+              {liveDataEnabled ? "Live" : "Paused"} | Updated: {lastFetch.toLocaleTimeString()}
+            </span>
+          </div>
+        )}
       </header>
 
       {/* ─── KPI Cards ──────────────────────────────────────────────────────── */}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <OverviewCard
           title="Total Nodes"
-          value={String(totalNodes)}
-          helper={`${activeNodes} active`}
-          trend={{ label: "+3% vs last month", direction: "up" }}
+          value={isLoading ? "..." : String(stats.totalNodes)}
+          helper={`${stats.activeNodes} online / ${stats.inactiveNodes} offline`}
+          trend={{ label: "From MongoDB", direction: "up" }}
         />
         <OverviewCard
-          title="Current Alerts"
-          value={`${criticalAlerts + warningAlerts}`}
-          helper={`${criticalAlerts} danger / ${warningAlerts} warning`}
-          trend={{ label: "Monitoring", direction: "flat" }}
+          title="Water Level Status"
+          value={isLoading ? "..." : `${stats.criticalNodes + stats.warningNodes}`}
+          helper={`${stats.criticalNodes} critical / ${stats.warningNodes} warning`}
+          trend={{ label: "Real-time", direction: stats.criticalNodes > 0 ? "down" : "flat" }}
         />
         <OverviewCard
-          title="Riskiest Area"
-          value={riskiestNode.area.split(",")[0]}
-          subLabel={riskiestNode.state}
+          title="Riskiest Node"
+          value={isLoading || !stats.riskiestNode ? "..." : stats.riskiestNode.node_id.slice(-6)}
+          subLabel={stats.riskiestNode ? `${stats.riskiestNode.current_level}ft water level` : ""}
           trend={{
-            label: `Node ${riskiestNode.node_id.split("_")[1]}`,
+            label: stats.riskiestNode ? getStatusLabel(stats.riskiestNode.current_level) : "",
             direction: "down",
           }}
         />
         <OverviewCard
           title="Average Water Level"
-          value={`<${(averageWaterLevel * 30).toFixed(0)}cm`}
-          helper={`${averageWaterLevel.toFixed(1)} ft avg`}
-          trend={{ label: "-0.2 ft today", direction: "down" }}
+          value={isLoading ? "..." : `${stats.avgWaterLevel.toFixed(1)}ft`}
+          helper={`${stats.normalNodes} normal / ${stats.alertNodes} alert`}
+          trend={{ label: "Live data", direction: "flat" }}
         />
       </div>
 
@@ -132,7 +236,7 @@ export default function DashboardPage() {
                   isDark ? "text-dark-text" : "text-dark-charcoal"
                 }`}
               >
-                Nodes by Area
+                Nodes from MongoDB
               </h2>
               <p
                 className={`text-xs uppercase tracking-wide transition-colors ${
@@ -143,68 +247,86 @@ export default function DashboardPage() {
               </p>
             </div>
             <span className="rounded-full bg-light-red px-4 py-1 text-xs font-semibold text-primary-red dark:bg-primary-red/20">
-              Updated just now
+              {nodes.length} nodes
             </span>
           </div>
-          <div className="mt-4 overflow-x-auto">
-            <table
-              className={`min-w-full text-left text-sm transition-colors ${
-                isDark ? "text-dark-text-secondary" : "text-dark-charcoal"
-              }`}
-            >
-              <thead
-                className={`text-xs uppercase transition-colors ${
-                  isDark
-                    ? "bg-dark-bg text-dark-text-muted"
-                    : "bg-light-red text-dark-charcoal"
+          <div className="mt-4 overflow-x-auto max-h-[320px]">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className={`h-8 w-8 animate-spin rounded-full border-4 ${isDark ? "border-dark-border border-t-primary-red" : "border-light-grey border-t-primary-red"}`} />
+              </div>
+            ) : (
+              <table
+                className={`min-w-full text-left text-sm transition-colors ${
+                  isDark ? "text-dark-text-secondary" : "text-dark-charcoal"
                 }`}
               >
-                <tr>
-                  <th className="px-4 py-3 font-semibold">Node ID</th>
-                  <th className="px-4 py-3 font-semibold">Water Level</th>
-                  <th className="px-4 py-3 font-semibold">Area</th>
-                  <th className="px-4 py-3 font-semibold">State</th>
-                  <th className="px-4 py-3 font-semibold">Status</th>
-                  <th className="px-4 py-3 font-semibold">Last Update</th>
-                  <th className="px-4 py-3 font-semibold">Timestamp</th>
-                </tr>
-              </thead>
-              <tbody>
-                {nodes.map((node) => (
-                  <tr
-                    key={node.node_id}
-                    className={`border-b last:border-b-0 transition-colors ${
-                      isDark
-                        ? "border-dark-border hover:bg-dark-bg"
-                        : "border-light-red/60 hover:bg-light-red/20"
-                    }`}
-                  >
-                    <td
-                      className={`px-4 py-3 font-semibold transition-colors ${
-                        isDark ? "text-dark-text" : "text-dark-charcoal"
+                <thead
+                  className={`text-xs uppercase transition-colors sticky top-0 ${
+                    isDark
+                      ? "bg-dark-bg text-dark-text-muted"
+                      : "bg-light-red text-dark-charcoal"
+                  }`}
+                >
+                  <tr>
+                    <th className="px-4 py-3 font-semibold">Node ID</th>
+                    <th className="px-4 py-3 font-semibold">Water Level</th>
+                    <th className="px-4 py-3 font-semibold">Coordinates</th>
+                    <th className="px-4 py-3 font-semibold">Status</th>
+                    <th className="px-4 py-3 font-semibold">Node Status</th>
+                    <th className="px-4 py-3 font-semibold">Last Updated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {nodes.map((node) => (
+                    <tr
+                      key={node._id}
+                      className={`border-b last:border-b-0 transition-colors ${
+                        isDark
+                          ? "border-dark-border hover:bg-dark-bg"
+                          : "border-light-red/60 hover:bg-light-red/20"
                       }`}
                     >
-                      {node.node_label}
-                    </td>
-                    <td className="px-4 py-3 text-primary-red">
-                      {node.water_level} ft
-                    </td>
-                    <td className="px-4 py-3">{node.area}</td>
-                    <td className="px-4 py-3">{node.state}</td>
-                    <td className="px-4 py-3">
-                      <StatusPill status={node.status} />
-                    </td>
-                    <td className="px-4 py-3">{node.last_update}</td>
-                    <td className="px-4 py-3">
-                      {new Date(node.timestamp).toLocaleString("en-MY", {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <td
+                        className={`px-4 py-3 font-semibold transition-colors ${
+                          isDark ? "text-dark-text" : "text-dark-charcoal"
+                        }`}
+                      >
+                        {node.node_id}
+                      </td>
+                      <td className="px-4 py-3 text-primary-red font-bold">
+                        {node.current_level} ft
+                      </td>
+                      <td className="px-4 py-3 text-xs">
+                        {node.latitude.toFixed(4)}°N, {node.longitude.toFixed(4)}°E
+                      </td>
+                      <td className="px-4 py-3">
+                        <StatusPill 
+                          status={getStatusLabel(node.current_level)} 
+                          variant={getStatusVariant(node.current_level)}
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                          node.is_dead
+                            ? "bg-status-danger/20 text-status-danger"
+                            : "bg-status-green/20 text-status-green"
+                        }`}>
+                          <span className={`h-1.5 w-1.5 rounded-full ${node.is_dead ? "bg-status-danger" : "bg-status-green"}`} />
+                          {node.is_dead ? "Offline" : "Online"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-xs">
+                        {new Date(node.last_updated).toLocaleString("en-MY", {
+                          dateStyle: "short",
+                          timeStyle: "short",
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </article>
 
@@ -229,11 +351,11 @@ export default function DashboardPage() {
                   isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"
                 }`}
               >
-                Hover markers to inspect sensors
+                Real-time sensor locations from MongoDB
               </p>
             </div>
             <span className="text-sm font-semibold text-primary-red">
-              Active Nodes: {activeNodes}
+              Online: {stats.activeNodes}
             </span>
           </div>
           <div
@@ -241,7 +363,7 @@ export default function DashboardPage() {
               isDark ? "border-dark-border" : "border-light-grey"
             }`}
           >
-            <NodeMap nodes={nodes} height={280} zoom={13} />
+            <NodeMap nodes={nodes} height={280} zoom={12} />
           </div>
           <ul
             className={`mt-4 grid grid-cols-2 gap-3 text-xs font-semibold transition-colors ${
@@ -255,8 +377,8 @@ export default function DashboardPage() {
                   : "border-light-grey bg-very-light-grey"
               }`}
             >
-              Critical Alerts:{" "}
-              <span className="text-primary-red">{criticalAlerts}</span>
+              Critical (3ft):{" "}
+              <span className="text-primary-red">{stats.criticalNodes}</span>
             </li>
             <li
               className={`rounded-2xl border px-3 py-2 transition-colors ${
@@ -265,8 +387,28 @@ export default function DashboardPage() {
                   : "border-light-grey bg-very-light-grey"
               }`}
             >
-              Standby Alerts:{" "}
-              <span className="text-status-warning-1">{warningAlerts}</span>
+              Warning (2ft):{" "}
+              <span className="text-status-warning-2">{stats.warningNodes}</span>
+            </li>
+            <li
+              className={`rounded-2xl border px-3 py-2 transition-colors ${
+                isDark
+                  ? "border-dark-border bg-dark-bg"
+                  : "border-light-grey bg-very-light-grey"
+              }`}
+            >
+              Alert (1ft):{" "}
+              <span className="text-status-warning-1">{stats.alertNodes}</span>
+            </li>
+            <li
+              className={`rounded-2xl border px-3 py-2 transition-colors ${
+                isDark
+                  ? "border-dark-border bg-dark-bg"
+                  : "border-light-grey bg-very-light-grey"
+              }`}
+            >
+              Normal (0ft):{" "}
+              <span className="text-status-green">{stats.normalNodes}</span>
             </li>
           </ul>
         </article>
@@ -439,7 +581,7 @@ export default function DashboardPage() {
               isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"
             }`}
           >
-            Current readings (ft)
+            Real-time readings from MongoDB (ft)
           </p>
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">

@@ -97,7 +97,7 @@ export const searchIndex: SearchResult[] = [
   },
   {
     id: "admin",
-    title: "Admin Settings",
+    title: "Account Settings",
     description: "Manage your account details and notification preferences",
     href: "/admin",
     category: "Management",

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { useTheme } from "@/lib/ThemeContext";
+import { useAuth } from "@/lib/AuthContext";
 
 type Role = {
   id: string;
@@ -13,7 +14,7 @@ type Role = {
   color: string;
 };
 
-type User = {
+type RoleUser = {
   id: string;
   name: string;
   email: string;
@@ -36,7 +37,7 @@ const defaultRoles: Role[] = [
     name: "Operations Manager",
     description: "Manage sensors, alerts, and view analytics",
     permissions: ["sensors.manage", "alerts.manage", "analytics.view", "map.view"],
-    usersCount: 3,
+    usersCount: 2,
     color: "bg-status-warning-2",
   },
   {
@@ -44,7 +45,7 @@ const defaultRoles: Role[] = [
     name: "Field Technician",
     description: "View sensors and respond to alerts",
     permissions: ["sensors.view", "alerts.view", "map.view"],
-    usersCount: 8,
+    usersCount: 3,
     color: "bg-status-green",
   },
   {
@@ -57,11 +58,11 @@ const defaultRoles: Role[] = [
   },
 ];
 
-const defaultUsers: User[] = [
+const defaultUsers: RoleUser[] = [
   {
-    id: "user-1",
-    name: "Ahmad bin Abdullah",
-    email: "ahmad@floodmanagement.my",
+    id: "user-admin-default",
+    name: "Alwin Tay",
+    email: "alwintay@floodmanagement.com",
     role: "Admin",
     status: "active",
     lastActive: "Just now",
@@ -92,11 +93,19 @@ const defaultUsers: User[] = [
   },
   {
     id: "user-5",
-    name: "Fatimah Zahra",
-    email: "fatimah@floodmanagement.my",
-    role: "Viewer",
+    name: "Jonathan Tang",
+    email: "jonathan@floodmanagement.my",
+    role: "Operations Manager",
     status: "active",
     lastActive: "30 mins ago",
+  },
+  {
+    id: "user-6",
+    name: "Ahmad bin Ismail",
+    email: "ahmad@floodmanagement.my",
+    role: "Field Technician",
+    status: "active",
+    lastActive: "2 hours ago",
   },
 ];
 
@@ -135,8 +144,9 @@ const permissionLabels: Record<string, string> = {
 
 export default function RolesPage() {
   const { isDark } = useTheme();
+  const { user: currentUser } = useAuth();
   const [roles, setRoles] = useState<Role[]>(defaultRoles);
-  const [users, setUsers] = useState<User[]>(defaultUsers);
+  const [users, setUsers] = useState<RoleUser[]>(defaultUsers);
   const [activeTab, setActiveTab] = useState<"roles" | "users">("roles");
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [showAddRoleModal, setShowAddRoleModal] = useState(false);
@@ -160,20 +170,76 @@ export default function RolesPage() {
     status: "active" as "active" | "inactive",
   });
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount and sync with registered users
   useEffect(() => {
     const savedRoles = localStorage.getItem("flood_roles");
     const savedUsers = localStorage.getItem("flood_users");
+    
     if (savedRoles) {
       setRoles(JSON.parse(savedRoles));
+    } else {
+      // Initialize with default roles
+      localStorage.setItem("flood_roles", JSON.stringify(defaultRoles));
     }
+    
     if (savedUsers) {
-      setUsers(JSON.parse(savedUsers));
+      // Merge with registered users from AuthContext
+      const registeredUsers = localStorage.getItem("flood_registered_users");
+      if (registeredUsers) {
+        const authUsers = JSON.parse(registeredUsers);
+        const roleUsers = JSON.parse(savedUsers);
+        
+        // Update or add users from auth system
+        authUsers.forEach((authUser: any) => {
+          const existingIndex = roleUsers.findIndex((u: RoleUser) => u.id === authUser.id);
+          if (existingIndex >= 0) {
+            roleUsers[existingIndex] = {
+              ...roleUsers[existingIndex],
+              name: authUser.name,
+              email: authUser.email,
+              role: authUser.role,
+              status: authUser.status,
+            };
+          } else {
+            roleUsers.push({
+              id: authUser.id,
+              name: authUser.name,
+              email: authUser.email,
+              role: authUser.role,
+              status: authUser.status,
+              lastActive: "Just now",
+            });
+          }
+        });
+        
+        setUsers(roleUsers);
+        localStorage.setItem("flood_users", JSON.stringify(roleUsers));
+      } else {
+        setUsers(JSON.parse(savedUsers));
+      }
+    } else {
+      // Initialize with default users
+      localStorage.setItem("flood_users", JSON.stringify(defaultUsers));
     }
   }, []);
 
+  // Update current user's lastActive
+  useEffect(() => {
+    if (currentUser) {
+      setUsers(prev => {
+        const updated = prev.map(u => 
+          u.id === currentUser.id 
+            ? { ...u, lastActive: "Just now", status: "active" as const }
+            : u
+        );
+        localStorage.setItem("flood_users", JSON.stringify(updated));
+        return updated;
+      });
+    }
+  }, [currentUser]);
+
   // Save to localStorage whenever roles or users change
-  const saveToStorage = (newRoles: Role[], newUsers: User[]) => {
+  const saveToStorage = (newRoles: Role[], newUsers: RoleUser[]) => {
     localStorage.setItem("flood_roles", JSON.stringify(newRoles));
     localStorage.setItem("flood_users", JSON.stringify(newUsers));
   };
@@ -238,7 +304,7 @@ export default function RolesPage() {
 
     setIsSaving(true);
 
-    const user: User = {
+    const user: RoleUser = {
       id: `user-${Date.now()}`,
       name: newUser.name,
       email: newUser.email,
@@ -272,6 +338,13 @@ export default function RolesPage() {
   };
 
   const handleRemoveUser = (userId: string) => {
+    // Prevent removing the current logged-in user
+    if (currentUser && userId === currentUser.id) {
+      setSaveMessage("Cannot remove your own account");
+      setTimeout(() => setSaveMessage(null), 3000);
+      return;
+    }
+
     const userToRemove = users.find((u) => u.id === userId);
     if (!userToRemove) return;
 
@@ -291,6 +364,18 @@ export default function RolesPage() {
     setTimeout(() => setSaveMessage(null), 3000);
   };
 
+  const handleToggleUserStatus = (userId: string) => {
+    const updatedUsers = users.map(u => 
+      u.id === userId 
+        ? { ...u, status: u.status === "active" ? "inactive" as const : "active" as const }
+        : u
+    );
+    setUsers(updatedUsers);
+    saveToStorage(roles, updatedUsers);
+    setSaveMessage("User status updated!");
+    setTimeout(() => setSaveMessage(null), 3000);
+  };
+
   const togglePermission = (perm: string) => {
     setNewRole((prev) => ({
       ...prev,
@@ -300,13 +385,18 @@ export default function RolesPage() {
     }));
   };
 
+  // Calculate role counts from actual users
+  const getRoleUserCount = (roleName: string) => {
+    return users.filter(u => u.role === roleName).length;
+  };
+
   return (
     <section className="space-y-6">
       {/* Success/Error Message */}
       {saveMessage && (
         <div
           className={`fixed top-20 right-6 z-50 rounded-xl px-4 py-3 text-sm font-semibold shadow-lg ${
-            saveMessage.includes("successfully")
+            saveMessage.includes("successfully") || saveMessage.includes("updated")
               ? "bg-status-green text-pure-white"
               : "bg-primary-red text-pure-white"
           }`}
@@ -414,7 +504,7 @@ export default function RolesPage() {
                       </div>
                     </div>
                     <span className={`rounded-full px-2.5 py-1 text-xs font-semibold transition-colors ${isDark ? "bg-dark-bg text-dark-text" : "bg-very-light-grey text-dark-charcoal"}`}>
-                      {role.usersCount} user{role.usersCount !== 1 ? "s" : ""}
+                      {getRoleUserCount(role.name)} user{getRoleUserCount(role.name) !== 1 ? "s" : ""}
                     </span>
                   </div>
                 </button>
@@ -515,6 +605,11 @@ export default function RolesPage() {
                         <div>
                           <p className={`font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
                             {user.name}
+                            {currentUser && user.id === currentUser.id && (
+                              <span className="ml-2 rounded-full bg-status-green/20 px-2 py-0.5 text-[10px] font-bold text-status-green">
+                                YOU
+                              </span>
+                            )}
                           </p>
                           <p className={`text-xs transition-colors ${isDark ? "text-dark-text-muted" : "text-dark-charcoal/60"}`}>
                             {user.email}
@@ -538,7 +633,12 @@ export default function RolesPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleUserStatus(user.id)}
+                        className="flex items-center gap-1.5"
+                        disabled={currentUser?.id === user.id}
+                      >
                         <span
                           className={`h-2 w-2 rounded-full ${
                             user.status === "active"
@@ -555,19 +655,21 @@ export default function RolesPage() {
                         >
                           {user.status}
                         </span>
-                      </div>
+                      </button>
                     </td>
                     <td className={`px-4 py-3 transition-colors ${isDark ? "text-dark-text-secondary" : "text-dark-charcoal/70"}`}>
                       {user.lastActive}
                     </td>
                     <td className="px-4 py-3">
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveUser(user.id)}
-                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold text-primary-red ${isDark ? "hover:bg-primary-red/20" : "hover:bg-light-red/40"}`}
-                      >
-                        Remove
-                      </button>
+                      {currentUser?.id !== user.id && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveUser(user.id)}
+                          className={`rounded-lg px-3 py-1.5 text-xs font-semibold text-primary-red ${isDark ? "hover:bg-primary-red/20" : "hover:bg-light-red/40"}`}
+                        >
+                          Remove
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -615,7 +717,7 @@ export default function RolesPage() {
 
       {/* Add Role Modal */}
       {showAddRoleModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-charcoal/50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-charcoal/50 backdrop-blur-sm p-4">
           <div className={`w-full max-w-lg rounded-3xl p-6 shadow-xl transition-colors ${isDark ? "bg-dark-card" : "bg-pure-white"}`}>
             <h2 className={`text-xl font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
               Add New Role
@@ -698,7 +800,7 @@ export default function RolesPage() {
                   {allPermissions.map((perm) => (
                     <label
                       key={perm.key}
-                      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
+                      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm cursor-pointer transition-colors ${
                         isDark ? "border-dark-border" : "border-light-grey"
                       }`}
                     >
@@ -742,7 +844,7 @@ export default function RolesPage() {
 
       {/* Add User Modal */}
       {showAddUserModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-charcoal/50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-dark-charcoal/50 backdrop-blur-sm p-4">
           <div className={`w-full max-w-md rounded-3xl p-6 shadow-xl transition-colors ${isDark ? "bg-dark-card" : "bg-pure-white"}`}>
             <h2 className={`text-xl font-semibold transition-colors ${isDark ? "text-dark-text" : "text-dark-charcoal"}`}>
               Add New User
@@ -781,7 +883,7 @@ export default function RolesPage() {
                   onChange={(e) =>
                     setNewUser((prev) => ({ ...prev, email: e.target.value }))
                   }
-                  placeholder="e.g., john@example.com"
+                  placeholder="e.g., john@floodmanagement.my"
                   className={`mt-1 w-full rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-primary-red focus:ring-2 focus:ring-primary-red/20 ${
                     isDark
                       ? "border-dark-border bg-dark-bg text-dark-text placeholder:text-dark-text-muted"
@@ -864,4 +966,3 @@ export default function RolesPage() {
     </section>
   );
 }
-
