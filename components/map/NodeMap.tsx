@@ -272,7 +272,10 @@ export default function NodeMap({
         <InfoWindow
           position={{ lat: activeNode.latitude, lng: activeNode.longitude }}
           onCloseClick={() => setActiveNodeId(null)}
-          options={{ pixelOffset: new google.maps.Size(0, -30) }}
+          options={{ 
+            pixelOffset: new google.maps.Size(0, -30),
+            disableAutoPan: true 
+          }}
         >
           <div className="min-w-[200px] p-1 text-sm">
             <div className="flex items-center justify-between">
